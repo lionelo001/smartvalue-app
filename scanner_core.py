@@ -219,63 +219,46 @@ class FMPClient:
 # METRICS FETCHER
 # =========================
 
-def fetch_metrics(ticker: str, client: FMPClient) -> Optional[dict]:
-    profile = client.get_profile(ticker)
-    if not profile:
+def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
+    """Fetch via yfinance (fonctionne depuis un serveur, gratuit, fiable)."""
+    try:
+        import yfinance as yf
+        t = yf.Ticker(ticker)
+        info = t.info
+        if not info or len(info) < 5:
+            return None
+    except Exception:
         return None
 
-    price = safe_float(profile.get("price"), 0.0)
-    mcap = safe_float(profile.get("mktCap"), 0.0)
+    price = safe_float(info.get("regularMarketPrice") or info.get("currentPrice"), 0.0)
+    mcap = safe_float(info.get("marketCap"), 0.0)
 
     if price <= 0:
         return None
     if mcap < 200_000_000:
         return None
 
-    # Endpoints gratuits FMP
-    quote = client.get_quote(ticker) or {}
-    ratios = client.get_ratios(ticker) or {}
-    incomes = client.get_income(ticker) or []
-    balance = client.get_balance(ticker) or {}
+    pe = safe_float(info.get("trailingPE") or info.get("forwardPE"), 0.0)
+    pb = safe_float(info.get("priceToBook"), 0.0)
+    ev_ebitda = safe_float(info.get("enterpriseToEbitda"), 0.0)
+    roe = safe_float(info.get("returnOnEquity"), 0.0)
+    margin = safe_float(info.get("profitMargins"), 0.0)
+    dte_raw = safe_float(info.get("debtToEquity"), 0.0)
+    dte = (dte_raw / 100.0) if dte_raw > 10 else dte_raw
+    rev_growth = safe_float(info.get("revenueGrowth"), 0.0)
+    revenue = safe_float(info.get("totalRevenue"), 0.0)
+    ocf = safe_float(info.get("operatingCashflow"), 0.0)
 
-    income = incomes[0] if incomes else {}
-    income_prev = incomes[1] if len(incomes) > 1 else {}
-
-    # PE — quote en premier (plus frais), fallback ratios
-    pe = safe_float(quote.get("pe") or ratios.get("priceEarningsRatio"), 0.0)
-    pb = safe_float(ratios.get("priceToBookRatio"), 0.0)
-    ev_ebitda = safe_float(ratios.get("enterpriseValueMultiple"), 0.0)
-    roe = safe_float(ratios.get("returnOnEquity"), 0.0)
-    margin = safe_float(ratios.get("netProfitMargin") or income.get("netIncomeRatio"), 0.0)
-
-    # Dette/Equity depuis balance sheet
-    total_debt = safe_float(balance.get("totalDebt") or balance.get("longTermDebt"), 0.0)
-    equity = safe_float(balance.get("totalStockholdersEquity"), 0.0)
-    dte = (total_debt / equity) if equity > 0 else 0.0
-
-    # Croissance CA
-    rev_curr = safe_float(income.get("revenue"), 0.0)
-    rev_prev = safe_float(income_prev.get("revenue"), 0.0)
-    rev_growth = ((rev_curr - rev_prev) / rev_prev) if rev_prev > 0 else 0.0
-
-    # Cashflow
-    ocf = safe_float(income.get("operatingIncome"), 0.0)
-    revenue = rev_curr
-
-    # Dividende
-    div_yield = safe_float(profile.get("lastDiv"), 0.0)
-    if div_yield > 0 and price > 0:
-        div_yield = div_yield / price
-    else:
-        div_yield = safe_float(ratios.get("dividendYield"), 0.0)
+    div_raw = safe_float(info.get("dividendYield") or info.get("trailingAnnualDividendYield"), 0.0)
+    div_yield = div_raw if div_raw <= 1 else div_raw / 100
 
     return {
         "ticker": ticker,
-        "name": profile.get("companyName") or ticker,
-        "currency": profile.get("currency", "USD"),
-        "exchange": profile.get("exchangeShortName", ""),
-        "country": profile.get("country", ""),
-        "sector": profile.get("sector", ""),
+        "name": info.get("longName") or info.get("shortName") or ticker,
+        "currency": info.get("currency", "USD"),
+        "exchange": info.get("exchange", ""),
+        "country": info.get("country", ""),
+        "sector": info.get("sector", ""),
         "price": price,
         "mcap": mcap,
         "pe": pe,
