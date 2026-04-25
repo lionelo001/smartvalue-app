@@ -47,6 +47,25 @@ def search(req: SearchRequest):
 def health():
     return {"status": "ok"}
 
+@app.get("/api/autocomplete")
+def autocomplete(q: str = ""):
+    if not q or len(q) < 2:
+        return {"results": []}
+    try:
+        import requests as req
+        r = req.get(
+            f"https://financialmodelingprep.com/api/v3/search",
+            params={"query": q, "limit": 8, "apikey": API_KEY},
+            timeout=5
+        )
+        if r.status_code == 200:
+            data = r.json()
+            results = [{"symbol": d.get("symbol",""), "name": d.get("name","")} for d in data if d.get("symbol")]
+            return {"results": results[:8]}
+    except Exception:
+        pass
+    return {"results": []}
+
 # Static files pour l'app scanner
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
