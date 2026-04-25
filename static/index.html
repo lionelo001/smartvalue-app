@@ -165,15 +165,42 @@ input[type=range]::-webkit-slider-runnable-track{background:var(--bg3);height:2p
 /* ── SECTOR TOGGLE BTNS ── */
 .sector-btns{display:flex;gap:6px;margin-bottom:10px;}
 
+/* ── MOBILE BOTTOM BAR ── */
+.mobile-bar{display:none;}
+.mobile-menu{display:none;position:fixed;bottom:60px;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:1rem 1.5rem;z-index:200;max-height:70vh;overflow-y:auto;}
+.mobile-menu.open{display:block;}
+.mobile-profiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:1rem;}
+.mobile-profile-btn{background:transparent;border:1px solid var(--border);color:var(--muted2);font-family:Syne,sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.6rem 0.25rem;cursor:pointer;transition:all 0.15s;}
+.mobile-profile-btn.active{background:rgba(200,241,53,0.08);border-color:rgba(200,241,53,0.3);color:var(--accent);}
+.mobile-filter-label{font-size:0.58rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin:0.75rem 0 0.5rem;}
+.mobile-filter-row{margin-bottom:0.75rem;}
+.mobile-filter-name{font-size:0.68rem;color:var(--muted2);margin-bottom:4px;display:flex;justify-content:space-between;}
+.mobile-filter-name span{font-family:DM Mono,monospace;color:var(--accent);}
+
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
   .app{grid-template-columns:1fr;}
   .sidebar{display:none;}
   .card{grid-template-columns:24px 1fr 80px;gap:8px;}
   .stats-bar{grid-template-columns:repeat(2,1fr);}
-  .topbar{padding:0.75rem 1rem;}
-  .content{padding:1rem;}
-  .search-input{width:150px;}
+  .topbar{padding:0.75rem 1rem;padding-bottom:0.75rem;}
+  .content{padding:1rem;padding-bottom:80px;}
+  .search-input{width:130px;}
+  .mobile-bar{
+    display:flex;align-items:center;justify-content:space-around;
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--bg2);border-top:1px solid var(--border);
+    padding:0.6rem 1rem;z-index:100;
+  }
+  .mobile-bar-btn{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:transparent;border:none;color:var(--muted2);
+    font-family:Syne,sans-serif;font-size:0.58rem;font-weight:700;
+    letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;
+    padding:0.25rem 0.75rem;
+  }
+  .mobile-bar-btn.active{color:var(--accent);}
+  .mobile-bar-icon{font-size:1.1rem;}
 }
 </style>
 </head>
@@ -202,32 +229,16 @@ input[type=range]::-webkit-slider-runnable-track{background:var(--bg3);height:2p
     </nav>
 
     <div class="sb-filters">
-      <div class="filter-label">Filtres</div>
-
-      <div class="filter-item">
-        <div class="filter-name">Score minimum <span id="score-val">35</span></div>
-        <input type="range" min="0" max="100" value="35" id="score-slider" oninput="updateFilter('score',this.value)">
+      <div class="filter-label">Profil investisseur</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:0.75rem;">
+        <button onclick="applyProfile('defensive')" id="btn-defensive" style="background:transparent;border:1px solid rgba(255,255,255,0.08);color:#7A7F8C;font-family:Syne,sans-serif;font-size:0.58rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 0.2rem;cursor:pointer;transition:all 0.15s;">🛡 Déf.</button>
+        <button onclick="applyProfile('balanced')" id="btn-balanced" style="background:rgba(200,241,53,0.08);border:1px solid rgba(200,241,53,0.3);color:#C8F135;font-family:Syne,sans-serif;font-size:0.58rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 0.2rem;cursor:pointer;transition:all 0.15s;">⚖ Équ.</button>
+        <button onclick="applyProfile('growth')" id="btn-growth" style="background:transparent;border:1px solid rgba(255,255,255,0.08);color:#7A7F8C;font-family:Syne,sans-serif;font-size:0.58rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 0.2rem;cursor:pointer;transition:all 0.15s;">🚀 Crois.</button>
       </div>
-
-      <div class="filter-item">
-        <div class="filter-name">Confiance minimum <span id="conf-val">50%</span></div>
-        <input type="range" min="0" max="100" step="5" value="50" id="conf-slider" oninput="updateFilter('conf',this.value)">
-      </div>
-
-      <div class="filter-item">
-        <div class="filter-name">Résultats affichés <span id="topn-val">15</span></div>
-        <input type="range" min="5" max="50" value="15" id="topn-slider" oninput="updateFilter('topn',this.value)">
-      </div>
-
-      <div style="margin-top:0.75rem;">
-        <div style="font-size:0.58rem;color:#5A5F6B;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;">Profil investisseur</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;">
-          <button onclick="applyProfile('defensive')" id="btn-defensive" style="background:transparent;border:1px solid rgba(255,255,255,0.08);color:#7A7F8C;font-family:Syne,sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 0.25rem;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="if(!this.classList.contains('active'))this.style.borderColor='rgba(255,255,255,0.08)'">🛡 Défensif</button>
-          <button onclick="applyProfile('balanced')" id="btn-balanced" style="background:rgba(200,241,53,0.08);border:1px solid rgba(200,241,53,0.3);color:#C8F135;font-family:Syne,sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 0.25rem;cursor:pointer;transition:all 0.15s;">⚖ Équilibré</button>
-          <button onclick="applyProfile('growth')" id="btn-growth" style="background:transparent;border:1px solid rgba(255,255,255,0.08);color:#7A7F8C;font-family:Syne,sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 0.25rem;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="if(!this.classList.contains('active'))this.style.borderColor='rgba(255,255,255,0.08)'">🚀 Croissance</button>
-        </div>
-        <div id="profile-desc" style="font-size:0.65rem;color:#5A5F6B;margin-top:0.5rem;line-height:1.5;">Équilibre entre qualité, valorisation et croissance.</div>
-      </div>
+      <div id="profile-desc" style="font-size:0.62rem;color:#5A5F6B;line-height:1.5;margin-bottom:0.75rem;">Équilibre entre qualité, valorisation et croissance.</div>
+      <input type="hidden" id="score-slider" value="35">
+      <input type="hidden" id="conf-slider" value="50">
+      <input type="hidden" id="topn-slider" value="15">
     </div>
   </aside>
 
@@ -263,9 +274,12 @@ input[type=range]::-webkit-slider-runnable-track{background:var(--bg3);height:2p
 
       <!-- ── VUE SCANNER ── -->
       <div id="view-scanner">
-        <div class="sector-btns">
-          <button class="btn btn-ghost" onclick="toggleAllSectors(true)" style="font-size:0.68rem;padding:0.35rem 0.75rem;">Tout ✓</button>
-          <button class="btn btn-ghost" onclick="toggleAllSectors(false)" style="font-size:0.68rem;padding:0.35rem 0.75rem;">Tout ✗</button>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:0.6rem;color:#5A5F6B;letter-spacing:0.1em;text-transform:uppercase;">Secteurs</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-ghost" onclick="toggleAllSectors(true);renderSectors();renderSbSectors();" style="font-size:0.65rem;padding:0.3rem 0.75rem;">Tout cocher</button>
+            <button class="btn btn-ghost" onclick="toggleAllSectors(false);renderSectors();renderSbSectors();" style="font-size:0.65rem;padding:0.3rem 0.75rem;">Tout décocher</button>
+          </div>
         </div>
         <div class="sectors-grid" id="sectors-grid"></div>
 
@@ -322,6 +336,36 @@ input[type=range]::-webkit-slider-runnable-track{background:var(--bg3);height:2p
     </div>
 
   </main>
+</div>
+
+<!-- ══ BARRE MOBILE ══ -->
+<div class="mobile-bar">
+  <button class="mobile-bar-btn active" id="mb-scanner" onclick="switchView('scanner');closeMobileMenu()">
+    <span class="mobile-bar-icon">⊞</span>Scanner
+  </button>
+  <button class="mobile-bar-btn" id="mb-search" onclick="switchView('search');closeMobileMenu()">
+    <span class="mobile-bar-icon">⌕</span>Recherche
+  </button>
+  <button class="mobile-bar-btn" id="mb-settings" onclick="toggleMobileMenu()">
+    <span class="mobile-bar-icon">⚙</span>Réglages
+  </button>
+</div>
+
+<!-- ══ MENU MOBILE ══ -->
+<div class="mobile-menu" id="mobile-menu">
+  <div style="font-size:0.6rem;color:#5A5F6B;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem;">Profil investisseur</div>
+  <div class="mobile-profiles">
+    <button class="mobile-profile-btn" id="mb-btn-defensive" onclick="applyProfile('defensive');closeMobileMenu()">🛡 Défensif</button>
+    <button class="mobile-profile-btn active" id="mb-btn-balanced" onclick="applyProfile('balanced');closeMobileMenu()">⚖ Équilibré</button>
+    <button class="mobile-profile-btn" id="mb-btn-growth" onclick="applyProfile('growth');closeMobileMenu()">🚀 Croissance</button>
+  </div>
+  <div style="font-size:0.6rem;color:#5A5F6B;letter-spacing:0.1em;text-transform:uppercase;margin:0.75rem 0 0.5rem;">Secteurs</div>
+  <div style="display:flex;gap:6px;margin-bottom:0.75rem;">
+    <button onclick="toggleAllSectors(true);renderSectors();renderSbSectors()" style="flex:1;background:transparent;border:1px solid rgba(255,255,255,0.08);color:#7A7F8C;font-family:Syne,sans-serif;font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:0.4rem;cursor:pointer;">Tout ✓</button>
+    <button onclick="toggleAllSectors(false);renderSectors();renderSbSectors()" style="flex:1;background:transparent;border:1px solid rgba(255,255,255,0.08);color:#7A7F8C;font-family:Syne,sans-serif;font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:0.4rem;cursor:pointer;">Tout ✗</button>
+  </div>
+  <div id="mobile-sectors-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;"></div>
+  <button onclick="startScan();closeMobileMenu()" style="width:100%;margin-top:1rem;background:#C8F135;color:#07080A;font-family:Syne,sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:0.75rem;border:none;cursor:pointer;">🚀 Lancer le scan</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -410,66 +454,18 @@ function updateFilter(type, val) {
   }
 }
 
-const PROFILES = {
-  defensive: {
-    minScore: 40, minConf: 70, topN: 15,
-    desc: 'Entreprises solides, peu de dette, dividendes stables. Idéal pour préserver le capital.',
-    sectors: ['Finance US', 'Santé US', 'Conso US', 'Utilities', 'Finance Europe', 'Santé Europe', 'Energie Europe'],
-  },
-  balanced: {
-    minScore: 35, minConf: 60, topN: 15,
-    desc: 'Équilibre entre qualité, valorisation et croissance. Recommandé pour la plupart des investisseurs.',
-    sectors: null, // tous les secteurs
-  },
-  growth: {
-    minScore: 30, minConf: 50, topN: 20,
-    desc: 'Entreprises à forte croissance. PER élevé toléré si la croissance est au rendez-vous.',
-    sectors: ['Tech US', 'Tech Europe', 'Tech Asie', 'Santé US', 'Industriels US'],
-  },
-};
-
-function applyProfile(type) {
-  const p = PROFILES[type];
-  state.minScore = p.minScore;
-  state.minConf = p.minConf;
-  state.topN = p.topN;
-  document.getElementById('score-slider').value = p.minScore;
-  document.getElementById('conf-slider').value = p.minConf;
-  document.getElementById('topn-slider').value = p.topN;
-  document.getElementById('score-val').textContent = p.minScore;
-  document.getElementById('conf-val').textContent = p.minConf + '%';
-  document.getElementById('topn-val').textContent = p.topN;
-  document.getElementById('profile-desc').textContent = p.desc;
-
-  // Activer/désactiver les secteurs selon le profil
-  if (p.sectors) {
-    Object.keys(state.sectors).forEach(s => {
-      state.sectors[s] = p.sectors.includes(s);
-    });
-  } else {
-    Object.keys(state.sectors).forEach(s => { state.sectors[s] = true; });
-  }
-  renderSectors();
-  renderSbSectors();
-
-  // Style boutons actifs
-  ['defensive','balanced','growth'].forEach(t => {
-    const btn = document.getElementById('btn-' + t);
-    if (t === type) {
-      btn.style.background = 'rgba(200,241,53,0.08)';
-      btn.style.borderColor = 'rgba(200,241,53,0.3)';
-      btn.style.color = '#C8F135';
-    } else {
-      btn.style.background = 'transparent';
-      btn.style.borderColor = 'rgba(255,255,255,0.08)';
-      btn.style.color = '#7A7F8C';
-    }
-  });
-
-  showToast('Profil ' + type + ' appliqué ✓');
+function applyRecommended() {
+  state.minScore = 45;
+  state.minConf = 70;
+  state.topN = 15;
+  document.getElementById('score-slider').value = 45;
+  document.getElementById('conf-slider').value = 70;
+  document.getElementById('topn-slider').value = 15;
+  document.getElementById('score-val').textContent = 45;
+  document.getElementById('conf-val').textContent = '70%';
+  document.getElementById('topn-val').textContent = 15;
+  showToast('Réglages recommandés appliqués ✓');
 }
-
-function applyRecommended() { applyProfile('balanced'); }
 
 // ── SCAN ──────────────────────────────────────────────────
 async function startScan() {
@@ -579,7 +575,7 @@ function renderCard(r, rank) {
     {l:'EV/EBITDA', v: r['EV/EBITDA'] ?? '—'},
     {l:'Dette/Eq.', v: r['Dette/Equity'] ?? '—'},
     {l:'Croiss.', v: r['Croissance CA %'] != null ? r['Croissance CA %']+'%' : '—'},
-    {l:'Div.', v: r['Div affichage'] || '—'},
+    {l:'Div.', v: r['Div affichage'] ? r['Div affichage']+'%' : '—'},
   ].map(m => `<div class="metric"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l}</div></div>`).join('');
 
   return `
@@ -675,6 +671,61 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── MOBILE MENU ──────────────────────────────────────────
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('open');
+  renderMobileSectors();
+}
+
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').classList.remove('open');
+}
+
+function renderMobileSectors() {
+  const grid = document.getElementById('mobile-sectors-grid');
+  if (!grid) return;
+  grid.innerHTML = Object.keys(state.sectors).map(s => `
+    <div onclick="state.sectors['${s}']=!state.sectors['${s}'];renderSectors();renderSbSectors();renderMobileSectors()"
+      style="display:flex;align-items:center;gap:6px;padding:0.4rem 0.6rem;background:${state.sectors[s]?'rgba(200,241,53,0.07)':'#131519'};border:1px solid ${state.sectors[s]?'rgba(200,241,53,0.2)':'rgba(255,255,255,0.06)'};cursor:pointer;font-size:0.65rem;color:${state.sectors[s]?'#C8F135':'#7A7F8C'};">
+      <span style="font-size:9px;">${state.sectors[s]?'✓':''}</span>${s}
+    </div>
+  `).join('');
+}
+
+// Sync profil boutons mobile
+const origApplyProfile = applyProfile;
+function applyProfile(type) {
+  origApplyProfile(type);
+  // Sync boutons mobile
+  ['defensive','balanced','growth'].forEach(t => {
+    const btn = document.getElementById('mb-btn-' + t);
+    if (btn) {
+      if (t === type) {
+        btn.style.background = 'rgba(200,241,53,0.08)';
+        btn.style.borderColor = 'rgba(200,241,53,0.3)';
+        btn.style.color = '#C8F135';
+        btn.classList.add('active');
+      } else {
+        btn.style.background = 'transparent';
+        btn.style.borderColor = 'rgba(255,255,255,0.08)';
+        btn.style.color = '#7A7F8C';
+        btn.classList.remove('active');
+      }
+    }
+  });
+}
+
+// Sync vue mobile nav
+const origSwitchView = switchView;
+function switchView(view) {
+  origSwitchView(view);
+  ['scanner','search'].forEach(v => {
+    const btn = document.getElementById('mb-' + v);
+    if (btn) btn.classList.toggle('active', v === view);
+  });
 }
 
 // ── START ─────────────────────────────────────────────────
