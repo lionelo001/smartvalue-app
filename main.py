@@ -36,8 +36,26 @@ def scan(req: ScanRequest):
     universe = {k: DEFAULT_UNIVERSE[k] for k in req.sectors if k in DEFAULT_UNIVERSE}
     if not universe:
         raise HTTPException(status_code=400, detail="Aucun secteur sélectionné.")
+    
+    # Test rapide sur le premier ticker pour debug
+    from scanner_core import FMPClient, fetch_metrics
+    client = FMPClient(API_KEY)
+    first_sector = list(universe.keys())[0]
+    first_ticker = universe[first_sector][0]
+    
+    print(f"[DEBUG] Test ticker: {first_ticker}")
+    profile = client.get_profile(first_ticker)
+    print(f"[DEBUG] Profile keys: {list(profile.keys()) if profile else 'None'}")
+    quote = client.get_quote(first_ticker)
+    print(f"[DEBUG] Quote PE: {quote.get('pe') if quote else 'None'}")
+    ratios = client.get_ratios(first_ticker)
+    print(f"[DEBUG] Ratios keys: {list(ratios.keys())[:5] if ratios else 'None'}")
+    m = fetch_metrics(first_ticker, client)
+    print(f"[DEBUG] Metrics: {m}")
+    
     scanner = SmartValueScanner(api_key=API_KEY, universe=universe)
     results = scanner.scan(min_score=req.min_score, min_confidence=req.min_confidence)
+    print(f"[DEBUG] Results count: {len(results)}")
     return {"results": results[:req.top_n], "total": len(results)}
 
 @app.post("/api/search")
