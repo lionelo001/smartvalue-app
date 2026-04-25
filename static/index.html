@@ -191,7 +191,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
   <!-- RECHERCHE TICKER -->
   <div class="sec-label">Recherche par ticker</div>
   <div class="search-wrap">
-    <input class="search-input" id="ticker-input" placeholder="Nom ou ticker — Apple, AAPL, LVMH, MC.PA…" autocomplete="off" oninput="onSearchInput(this.value)" onkeydown="onSearchKey(event)">
+    <input class="search-input" id="ticker-input" placeholder="Apple, AAPL, LVMH, MC.PA…" autocomplete="off" autocapitalize="characters" spellcheck="false" oninput="onSearchInput(this.value)" onkeydown="onSearchKey(event)">
     <div class="autocomplete" id="autocomplete"></div>
   </div>
   <button class="scan-btn" id="search-btn" onclick="searchTicker()" style="margin-top:8px;margin-bottom:1rem;background:var(--bg3);color:var(--text);border:1px solid var(--border);" onmouseover="this.style.borderColor='rgba(200,241,53,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.055)'">
@@ -247,15 +247,15 @@ const PROFILES = {
 };
 
 // ── INIT ──────────────────────────────────────────────────
-async function init() {
-  try {
-    const res = await fetch('/api/sectors');
-    const data = await res.json();
-    data.sectors.forEach(s => { state.sectors[s] = true; });
-    renderSectors();
-  } catch(e) {
-    showToast('Erreur de connexion');
-  }
+const DEFAULT_SECTORS = [
+  'Tech US','Finance US','Santé US','Energie US','Conso US','Industriels US',
+  'Tech Europe','Finance Europe','Conso Europe','Energie Europe','Santé Europe','Industriels Europe',
+  'Tech Asie','Finance Asie','Energie Asie'
+];
+
+function init() {
+  DEFAULT_SECTORS.forEach(s => { state.sectors[s] = true; });
+  renderSectors();
 }
 
 // ── SECTEURS ──────────────────────────────────────────────
