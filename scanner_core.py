@@ -228,7 +228,10 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     """Fetch via yfinance (fonctionne depuis un serveur, gratuit, fiable)."""
     try:
         import yfinance as yf
-        t = yf.Ticker(ticker)
+        # Creer une nouvelle session a chaque appel pour eviter le cache
+        session = requests.Session()
+        session.headers.update({"User-Agent": "Mozilla/5.0"})
+        t = yf.Ticker(ticker, session=session)
         info = t.info
         if not info or len(info) < 5:
             return None
