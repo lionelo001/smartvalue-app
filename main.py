@@ -7,7 +7,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from typing import Optional
 from scanner_core import SmartValueScanner, DEFAULT_UNIVERSE
 
 app = FastAPI(title="SmartValue Scanner API")
@@ -48,8 +47,15 @@ def search(req: SearchRequest):
 def health():
     return {"status": "ok"}
 
+# Static files pour l'app scanner
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Landing page sur /
 @app.get("/")
 def root():
+    return FileResponse("landing.html")
+
+# Scanner sur /app
+@app.get("/app")
+def scanner_app():
     return FileResponse("static/index.html")
