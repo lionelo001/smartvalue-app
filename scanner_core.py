@@ -152,7 +152,7 @@ def confidence_badge(c: float) -> str:
 
 
 def format_div(d: float) -> str:
-    return "—" if d <= 0 else f"{d:.2f}"
+    return "Non" if d <= 0 else "Oui"
 
 
 # =========================
@@ -228,10 +228,21 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     """Fetch via yfinance (fonctionne depuis un serveur, gratuit, fiable)."""
     try:
         import yfinance as yf
+        # fast_info est plus fiable que .info sur serveur
         t = yf.Ticker(ticker)
+        # Essayer fast_info d abord pour le prix
+        try:
+            fast = t.fast_info
+            price_check = float(fast.last_price) if hasattr(fast, "last_price") else 0
+        except Exception:
+            price_check = 0
         info = t.info
+        # Si info semble vide ou stale, retenter
         if not info or len(info) < 5:
             return None
+        # Utiliser le prix de fast_info si disponible et different
+        if price_check > 0 and abs(price_check - safe_float(info.get("regularMarketPrice") or info.get("currentPrice"), 0)) > 0.01:
+            info["regularMarketPrice"] = price_check
     except Exception:
         return None
 
@@ -254,8 +265,12 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     revenue = safe_float(info.get("totalRevenue"), 0.0)
     ocf = safe_float(info.get("operatingCashflow"), 0.0)
 
-    # dividendYield yfinance = ratio (0.032 = 3.2%), cap a 0.15 (15%)
-    raw_yield = safe_float(info.get("dividendYield") or info.get("trailingAnnualDividendYield"), 0.0)
+    # dividendYield yfinance = ratio (0.032 = 3.2%)
+    # On ignore lastDiv (montant en dollars) pour eviter confusion
+    dy1 = safe_float(info.get("dividendYield"), 0.0)
+    dy2 = safe_float(info.get("trailingAnnualDividendYield"), 0.0)
+    raw_yield = dy1 if dy1 > 0 else dy2
+    # Sanity: yield doit etre entre 0 et 15% (ratio entre 0 et 0.15)
     div_yield = raw_yield if 0 < raw_yield < 0.15 else 0.0
 
     return {
