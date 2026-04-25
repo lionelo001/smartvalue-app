@@ -125,12 +125,17 @@ def clamp(v: float, lo: float = 0.0, hi: float = 100.0) -> float:
 
 
 def normalize_div(dy) -> float:
-    """Retourne dividende en % (ex: 3.2). Cap à 20%."""
+    """Retourne dividende en % (ex: 3.2).
+    yfinance retourne dividendYield comme ratio (0.032 = 3.2%).
+    Cap a 15% pour eviter les glitches.
+    """
     dy = safe_float(dy, 0.0)
     if dy <= 0:
         return 0.0
-    pct = dy if dy > 1 else dy * 100
-    return 0.0 if pct > 20 else round(pct, 2)
+    pct = dy * 100 if dy < 1 else dy
+    if pct > 15:
+        return 0.0
+    return round(pct, 2)
 
 
 def score_badge(s: float) -> str:
@@ -249,8 +254,8 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     revenue = safe_float(info.get("totalRevenue"), 0.0)
     ocf = safe_float(info.get("operatingCashflow"), 0.0)
 
-    div_raw = safe_float(info.get("dividendYield") or info.get("trailingAnnualDividendYield"), 0.0)
-    div_yield = div_raw if div_raw <= 1 else div_raw / 100
+    # yfinance retourne dividendYield comme ratio (ex: 0.032 = 3.2%)
+    div_yield = safe_float(info.get("dividendYield") or info.get("trailingAnnualDividendYield"), 0.0)
 
     return {
         "ticker": ticker,
@@ -299,7 +304,7 @@ def quality_confidence(m: dict) -> float:
     if pe and (pe < 1 or pe > 150): penalties += 12
     if pb and (pb < 0.1 or pb > 60): penalties += 8
     if ev and (ev < 1 or ev > 100): penalties += 10
-    if roe_pct and (roe_pct < -60 or roe_pct > 90): penalties += 10
+    if roe_pct and (roe_pct < -60 or roe_pct > 200): penalties += 10
     if margin_pct and (margin_pct < -40 or margin_pct > 70): penalties += 10
     if dte and dte > 8: penalties += 10
     if dy and dy > 15: penalties += 12
@@ -348,6 +353,7 @@ class SmartValueScorer:
 
         # --- VALUATION ---
         val = 0.0
+        # PER — score complet si < pe_max, score partiel si PE eleve mais justifie par croissance
         if 1 < pe < self.th.pe_max:
             if pe < 12:
                 val += 100 * 0.50; why.append(f"PER très bas ({pe:.1f})")
@@ -355,9 +361,15 @@ class SmartValueScorer:
                 val += 80 * 0.50; why.append(f"PER raisonnable ({pe:.1f})")
             else:
                 val += 55 * 0.50
+        elif 1 < pe and rg_pct > 20:
+            # Entreprise croissance : PER eleve mais tolere si croissance forte
+            val += 25 * 0.50
         if 0 < pb < self.th.pb_max:
             val += clamp(100 * (self.th.pb_max - pb) / self.th.pb_max) * 0.30
             if pb < 2: why.append(f"P/B attractif ({pb:.2f})")
+        elif 0 < pb and rg_pct > 30:
+            # P/B eleve tolere si hyper-croissance
+            val += 10 * 0.30
         if 1 < ev < self.th.ev_ebitda_max:
             val += clamp(100 * (self.th.ev_ebitda_max - ev) / self.th.ev_ebitda_max) * 0.20
             if ev < 12: why.append(f"EV/EBITDA sain ({ev:.1f})")
@@ -365,14 +377,15 @@ class SmartValueScorer:
 
         # --- PROFITABILITY ---
         prof = 0.0
-        if roe_pct > 0:
-            if roe_pct > 25:
+        roe_capped = min(roe_pct, 60)  # cap pour eviter distorsion (NVDA ROE 101%)
+        if roe_capped > 0:
+            if roe_capped > 25:
                 prof += 100 * 0.50; why.append(f"ROE exceptionnel ({roe_pct:.1f}%)")
-            elif roe_pct > 18:
+            elif roe_capped > 18:
                 prof += 85 * 0.50; why.append(f"ROE très solide ({roe_pct:.1f}%)")
-            elif roe_pct > 12:
+            elif roe_capped > 12:
                 prof += 65 * 0.50
-            elif roe_pct > 8:
+            elif roe_capped > 8:
                 prof += 45 * 0.50
         if margin > self.th.margin_min:
             prof += clamp((margin - self.th.margin_min) * 350) * 0.50
