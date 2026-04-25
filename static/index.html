@@ -219,7 +219,15 @@ input[type=range]::-webkit-slider-runnable-track{background:var(--bg3);height:2p
         <input type="range" min="5" max="50" value="15" id="topn-slider" oninput="updateFilter('topn',this.value)">
       </div>
 
-      <button class="btn btn-primary" style="width:100%;margin-top:0.75rem;" onclick="applyRecommended()">✦ Réglages recommandés</button>
+      <div style="margin-top:0.75rem;">
+        <div style="font-size:0.58rem;color:#5A5F6B;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;">Profil investisseur</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;">
+          <button onclick="applyProfile('defensive')" id="btn-defensive" style="background:transparent;border:1px solid rgba(255,255,255,0.08);color:#7A7F8C;font-family:Syne,sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 0.25rem;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="if(!this.classList.contains('active'))this.style.borderColor='rgba(255,255,255,0.08)'">🛡 Défensif</button>
+          <button onclick="applyProfile('balanced')" id="btn-balanced" style="background:rgba(200,241,53,0.08);border:1px solid rgba(200,241,53,0.3);color:#C8F135;font-family:Syne,sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 0.25rem;cursor:pointer;transition:all 0.15s;">⚖ Équilibré</button>
+          <button onclick="applyProfile('growth')" id="btn-growth" style="background:transparent;border:1px solid rgba(255,255,255,0.08);color:#7A7F8C;font-family:Syne,sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 0.25rem;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="if(!this.classList.contains('active'))this.style.borderColor='rgba(255,255,255,0.08)'">🚀 Croissance</button>
+        </div>
+        <div id="profile-desc" style="font-size:0.65rem;color:#5A5F6B;margin-top:0.5rem;line-height:1.5;">Équilibre entre qualité, valorisation et croissance.</div>
+      </div>
     </div>
   </aside>
 
@@ -402,18 +410,66 @@ function updateFilter(type, val) {
   }
 }
 
-function applyRecommended() {
-  state.minScore = 45;
-  state.minConf = 70;
-  state.topN = 15;
-  document.getElementById('score-slider').value = 45;
-  document.getElementById('conf-slider').value = 70;
-  document.getElementById('topn-slider').value = 15;
-  document.getElementById('score-val').textContent = 45;
-  document.getElementById('conf-val').textContent = '70%';
-  document.getElementById('topn-val').textContent = 15;
-  showToast('Réglages recommandés appliqués ✓');
+const PROFILES = {
+  defensive: {
+    minScore: 40, minConf: 70, topN: 15,
+    desc: 'Entreprises solides, peu de dette, dividendes stables. Idéal pour préserver le capital.',
+    sectors: ['Finance US', 'Santé US', 'Conso US', 'Utilities', 'Finance Europe', 'Santé Europe', 'Energie Europe'],
+  },
+  balanced: {
+    minScore: 35, minConf: 60, topN: 15,
+    desc: 'Équilibre entre qualité, valorisation et croissance. Recommandé pour la plupart des investisseurs.',
+    sectors: null, // tous les secteurs
+  },
+  growth: {
+    minScore: 30, minConf: 50, topN: 20,
+    desc: 'Entreprises à forte croissance. PER élevé toléré si la croissance est au rendez-vous.',
+    sectors: ['Tech US', 'Tech Europe', 'Tech Asie', 'Santé US', 'Industriels US'],
+  },
+};
+
+function applyProfile(type) {
+  const p = PROFILES[type];
+  state.minScore = p.minScore;
+  state.minConf = p.minConf;
+  state.topN = p.topN;
+  document.getElementById('score-slider').value = p.minScore;
+  document.getElementById('conf-slider').value = p.minConf;
+  document.getElementById('topn-slider').value = p.topN;
+  document.getElementById('score-val').textContent = p.minScore;
+  document.getElementById('conf-val').textContent = p.minConf + '%';
+  document.getElementById('topn-val').textContent = p.topN;
+  document.getElementById('profile-desc').textContent = p.desc;
+
+  // Activer/désactiver les secteurs selon le profil
+  if (p.sectors) {
+    Object.keys(state.sectors).forEach(s => {
+      state.sectors[s] = p.sectors.includes(s);
+    });
+  } else {
+    Object.keys(state.sectors).forEach(s => { state.sectors[s] = true; });
+  }
+  renderSectors();
+  renderSbSectors();
+
+  // Style boutons actifs
+  ['defensive','balanced','growth'].forEach(t => {
+    const btn = document.getElementById('btn-' + t);
+    if (t === type) {
+      btn.style.background = 'rgba(200,241,53,0.08)';
+      btn.style.borderColor = 'rgba(200,241,53,0.3)';
+      btn.style.color = '#C8F135';
+    } else {
+      btn.style.background = 'transparent';
+      btn.style.borderColor = 'rgba(255,255,255,0.08)';
+      btn.style.color = '#7A7F8C';
+    }
+  });
+
+  showToast('Profil ' + type + ' appliqué ✓');
 }
+
+function applyRecommended() { applyProfile('balanced'); }
 
 // ── SCAN ──────────────────────────────────────────────────
 async function startScan() {
@@ -523,7 +579,7 @@ function renderCard(r, rank) {
     {l:'EV/EBITDA', v: r['EV/EBITDA'] ?? '—'},
     {l:'Dette/Eq.', v: r['Dette/Equity'] ?? '—'},
     {l:'Croiss.', v: r['Croissance CA %'] != null ? r['Croissance CA %']+'%' : '—'},
-    {l:'Div.', v: r['Div affichage'] ? r['Div affichage']+'%' : '—'},
+    {l:'Div.', v: r['Div affichage'] || '—'},
   ].map(m => `<div class="metric"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l}</div></div>`).join('');
 
   return `
