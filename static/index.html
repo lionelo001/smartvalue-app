@@ -297,35 +297,124 @@ function applyProfile(type) {
   showToast(type === 'defensive' ? 'Profil Défensif ✓' : type === 'balanced' ? 'Profil Universel ✓' : 'Profil Croissance ✓');
 }
 
-// ── AUTOCOMPLETE ──────────────────────────────────────────
-let acTimeout = null;
+// ── AUTOCOMPLETE LOCAL ────────────────────────────────────
+const TICKERS = [
+  // US Tech
+  {s:'AAPL',n:'Apple Inc.'},
+  {s:'MSFT',n:'Microsoft Corporation'},
+  {s:'GOOGL',n:'Alphabet Inc.'},
+  {s:'NVDA',n:'NVIDIA Corporation'},
+  {s:'META',n:'Meta Platforms'},
+  {s:'AMZN',n:'Amazon.com'},
+  {s:'TSLA',n:'Tesla Inc.'},
+  {s:'ADBE',n:'Adobe Inc.'},
+  {s:'CRM',n:'Salesforce'},
+  {s:'ORCL',n:'Oracle Corporation'},
+  {s:'INTC',n:'Intel Corporation'},
+  {s:'AMD',n:'Advanced Micro Devices'},
+  {s:'QCOM',n:'Qualcomm'},
+  {s:'AVGO',n:'Broadcom'},
+  {s:'TSM',n:'Taiwan Semiconductor'},
+  {s:'ASML',n:'ASML Holding'},
+  // US Finance
+  {s:'JPM',n:'JPMorgan Chase'},
+  {s:'BAC',n:'Bank of America'},
+  {s:'WFC',n:'Wells Fargo'},
+  {s:'GS',n:'Goldman Sachs'},
+  {s:'MS',n:'Morgan Stanley'},
+  {s:'V',n:'Visa Inc.'},
+  {s:'MA',n:'Mastercard'},
+  {s:'AXP',n:'American Express'},
+  {s:'BRK-B',n:'Berkshire Hathaway'},
+  {s:'PYPL',n:'PayPal'},
+  // US Santé
+  {s:'JNJ',n:'Johnson & Johnson'},
+  {s:'PFE',n:'Pfizer'},
+  {s:'UNH',n:'UnitedHealth Group'},
+  {s:'ABBV',n:'AbbVie'},
+  {s:'LLY',n:'Eli Lilly'},
+  {s:'MRK',n:'Merck & Co.'},
+  {s:'ABT',n:'Abbott Laboratories'},
+  {s:'TMO',n:'Thermo Fisher Scientific'},
+  {s:'BMY',n:'Bristol-Myers Squibb'},
+  // US Conso
+  {s:'PG',n:'Procter & Gamble'},
+  {s:'KO',n:'Coca-Cola Company'},
+  {s:'PEP',n:'PepsiCo'},
+  {s:'WMT',n:'Walmart'},
+  {s:'COST',n:'Costco'},
+  {s:'MCD',n:'McDonald's'},
+  {s:'NKE',n:'Nike'},
+  {s:'SBUX',n:'Starbucks'},
+  {s:'HD',n:'Home Depot'},
+  // US Energie
+  {s:'XOM',n:'ExxonMobil'},
+  {s:'CVX',n:'Chevron'},
+  {s:'COP',n:'ConocoPhillips'},
+  // US Industriels
+  {s:'CAT',n:'Caterpillar'},
+  {s:'HON',n:'Honeywell'},
+  {s:'GE',n:'General Electric'},
+  {s:'UPS',n:'United Parcel Service'},
+  {s:'BA',n:'Boeing'},
+  {s:'DE',n:'Deere & Company'},
+  // Europe France
+  {s:'MC.PA',n:'LVMH'},
+  {s:'OR.PA',n:'L'Oréal'},
+  {s:'TTE.PA',n:'TotalEnergies'},
+  {s:'BNP.PA',n:'BNP Paribas'},
+  {s:'SAN.PA',n:'Sanofi'},
+  {s:'AIR.PA',n:'Airbus'},
+  {s:'AXA.PA',n:'AXA'},
+  {s:'DG.PA',n:'Vinci'},
+  {s:'CAP.PA',n:'Capgemini'},
+  {s:'RMS.PA',n:'Hermès'},
+  {s:'CS.PA',n:'AXA'},
+  {s:'ENGI.PA',n:'Engie'},
+  // Europe autres
+  {s:'SAP.DE',n:'SAP SE'},
+  {s:'SIE.DE',n:'Siemens'},
+  {s:'DBK.DE',n:'Deutsche Bank'},
+  {s:'BAY.DE',n:'Bayer'},
+  {s:'NESN.SW',n:'Nestlé'},
+  {s:'ROG.SW',n:'Roche'},
+  {s:'NOVN.SW',n:'Novartis'},
+  {s:'ABB.SW',n:'ABB Ltd'},
+  {s:'HSBA.L',n:'HSBC Holdings'},
+  {s:'BARC.L',n:'Barclays'},
+  {s:'BP.L',n:'BP'},
+  {s:'SHEL.L',n:'Shell'},
+  {s:'AZN.L',n:'AstraZeneca'},
+  {s:'GSK.L',n:'GSK'},
+  {s:'UNILEVER.L',n:'Unilever'},
+  // Asie
+  {s:'9988.HK',n:'Alibaba Group'},
+  {s:'700.HK',n:'Tencent Holdings'},
+  {s:'939.HK',n:'China Construction Bank'},
+  {s:'005930.KS',n:'Samsung Electronics'},
+  {s:'SONY',n:'Sony Group'},
+  {s:'MUFG',n:'Mitsubishi UFJ'},
+  {s:'8306.T',n:'Mitsubishi UFJ Financial'},
+];
+
 let acSelected = -1;
 
-async function onSearchInput(val) {
-  clearTimeout(acTimeout);
+function onSearchInput(val) {
   const ac = document.getElementById('autocomplete');
-  if (!val || val.length < 2) { ac.classList.remove('open'); return; }
-  ac.innerHTML = '<div class="ac-loading">Recherche...</div>';
+  if (!val || val.length < 1) { ac.classList.remove('open'); return; }
+  const q = val.toLowerCase();
+  const matches = TICKERS.filter(t =>
+    t.s.toLowerCase().includes(q) || t.n.toLowerCase().includes(q)
+  ).slice(0, 7);
+  if (!matches.length) { ac.classList.remove('open'); return; }
+  acSelected = -1;
+  ac.innerHTML = matches.map((r,i) => `
+    <div class="ac-item" onclick="selectTicker('${r.s}')" data-idx="${i}">
+      <span class="ac-ticker">${r.s}</span>
+      <span class="ac-name">${r.n}</span>
+    </div>
+  `).join('');
   ac.classList.add('open');
-  acTimeout = setTimeout(async () => {
-    try {
-      const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(val)}`);
-      const data = await res.json();
-      if (!data.results || !data.results.length) {
-        ac.innerHTML = '<div class="ac-loading">Aucun résultat</div>';
-        return;
-      }
-      acSelected = -1;
-      ac.innerHTML = data.results.map((r,i) => `
-        <div class="ac-item" onclick="selectTicker('${r.symbol}')" data-idx="${i}">
-          <span class="ac-ticker">${r.symbol}</span>
-          <span class="ac-name">${r.name}</span>
-        </div>
-      `).join('');
-    } catch(e) {
-      ac.classList.remove('open');
-    }
-  }, 300);
 }
 
 function onSearchKey(e) {
