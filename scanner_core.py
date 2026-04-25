@@ -228,10 +228,7 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     """Fetch via yfinance (fonctionne depuis un serveur, gratuit, fiable)."""
     try:
         import yfinance as yf
-        # Creer une nouvelle session a chaque appel pour eviter le cache
-        session = requests.Session()
-        session.headers.update({"User-Agent": "Mozilla/5.0"})
-        t = yf.Ticker(ticker, session=session)
+        t = yf.Ticker(ticker)
         info = t.info
         if not info or len(info) < 5:
             return None
@@ -257,8 +254,9 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     revenue = safe_float(info.get("totalRevenue"), 0.0)
     ocf = safe_float(info.get("operatingCashflow"), 0.0)
 
-    # yfinance retourne dividendYield comme ratio (ex: 0.032 = 3.2%)
-    div_yield = safe_float(info.get("dividendYield") or info.get("trailingAnnualDividendYield"), 0.0)
+    # dividendYield yfinance = ratio (0.032 = 3.2%), cap a 0.15 (15%)
+    raw_yield = safe_float(info.get("dividendYield") or info.get("trailingAnnualDividendYield"), 0.0)
+    div_yield = raw_yield if 0 < raw_yield < 0.15 else 0.0
 
     return {
         "ticker": ticker,
