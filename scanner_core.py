@@ -180,20 +180,30 @@ class FMPClient:
             return data[0]
         return None
 
+    def get_quote(self, ticker: str) -> Optional[dict]:
+        """Endpoint gratuit FMP — prix, PE, volume."""
+        data = self._get(f"quote/{ticker}")
+        if data and isinstance(data, list):
+            return data[0]
+        return None
+
     def get_ratios(self, ticker: str) -> Optional[dict]:
-        data = self._get(f"ratios-ttm/{ticker}")
+        """Ratios annuels — gratuit sur FMP (pas TTM)."""
+        data = self._get(f"ratios/{ticker}", {"limit": 1})
         if data and isinstance(data, list):
             return data[0]
         return None
 
-    def get_key_metrics(self, ticker: str) -> Optional[dict]:
-        data = self._get(f"key-metrics-ttm/{ticker}")
+    def get_income(self, ticker: str) -> Optional[dict]:
+        """Income statement annuel — gratuit."""
+        data = self._get(f"income-statement/{ticker}", {"limit": 2})
         if data and isinstance(data, list):
-            return data[0]
+            return data
         return None
 
-    def get_income_growth(self, ticker: str) -> Optional[dict]:
-        data = self._get(f"financial-growth/{ticker}", {"limit": 1})
+    def get_balance(self, ticker: str) -> Optional[dict]:
+        """Balance sheet annuel — gratuit."""
+        data = self._get(f"balance-sheet-statement/{ticker}", {"limit": 1})
         if data and isinstance(data, list):
             return data[0]
         return None
@@ -217,33 +227,47 @@ def fetch_metrics(ticker: str, client: FMPClient) -> Optional[dict]:
     price = safe_float(profile.get("price"), 0.0)
     mcap = safe_float(profile.get("mktCap"), 0.0)
 
-    # Filtres de base
     if price <= 0:
         return None
-    if mcap < 200_000_000:  # < 200M — trop petite
+    if mcap < 200_000_000:
         return None
 
+    # Endpoints gratuits FMP
+    quote = client.get_quote(ticker) or {}
     ratios = client.get_ratios(ticker) or {}
-    metrics = client.get_key_metrics(ticker) or {}
-    growth = client.get_income_growth(ticker) or {}
+    incomes = client.get_income(ticker) or []
+    balance = client.get_balance(ticker) or {}
 
-    # PE : préférer TTM, fallback forward
-    pe = safe_float(ratios.get("peRatioTTM") or metrics.get("peRatioTTM"), 0.0)
-    pb = safe_float(ratios.get("priceToBookRatioTTM") or metrics.get("pbRatioTTM"), 0.0)
-    ev_ebitda = safe_float(ratios.get("enterpriseValueMultipleTTM") or metrics.get("evToEbitdaTTM"), 0.0)
-    roe = safe_float(ratios.get("returnOnEquityTTM"), 0.0)
-    margin = safe_float(ratios.get("netProfitMarginTTM"), 0.0)
-    dte = safe_float(ratios.get("debtEquityRatioTTM") or metrics.get("debtToEquityTTM"), 0.0)
-    rev_growth = safe_float(growth.get("revenueGrowth"), 0.0)
+    income = incomes[0] if incomes else {}
+    income_prev = incomes[1] if len(incomes) > 1 else {}
+
+    # PE — quote en premier (plus frais), fallback ratios
+    pe = safe_float(quote.get("pe") or ratios.get("priceEarningsRatio"), 0.0)
+    pb = safe_float(ratios.get("priceToBookRatio"), 0.0)
+    ev_ebitda = safe_float(ratios.get("enterpriseValueMultiple"), 0.0)
+    roe = safe_float(ratios.get("returnOnEquity"), 0.0)
+    margin = safe_float(ratios.get("netProfitMargin") or income.get("netIncomeRatio"), 0.0)
+
+    # Dette/Equity depuis balance sheet
+    total_debt = safe_float(balance.get("totalDebt") or balance.get("longTermDebt"), 0.0)
+    equity = safe_float(balance.get("totalStockholdersEquity"), 0.0)
+    dte = (total_debt / equity) if equity > 0 else 0.0
+
+    # Croissance CA
+    rev_curr = safe_float(income.get("revenue"), 0.0)
+    rev_prev = safe_float(income_prev.get("revenue"), 0.0)
+    rev_growth = ((rev_curr - rev_prev) / rev_prev) if rev_prev > 0 else 0.0
+
+    # Cashflow
+    ocf = safe_float(income.get("operatingIncome"), 0.0)
+    revenue = rev_curr
+
+    # Dividende
     div_yield = safe_float(profile.get("lastDiv"), 0.0)
-    # FMP donne lastDiv comme montant annuel, on calcule le yield
     if div_yield > 0 and price > 0:
         div_yield = div_yield / price
     else:
-        div_yield = safe_float(ratios.get("dividendYielTTM") or ratios.get("dividendYieldTTM"), 0.0)
-
-    ocf = safe_float(metrics.get("operatingCashFlowPerShareTTM"), 0.0) * safe_float(profile.get("volAvg"), 1.0)
-    revenue = safe_float(metrics.get("revenuePerShareTTM"), 0.0) * safe_float(profile.get("volAvg"), 1.0)
+        div_yield = safe_float(ratios.get("dividendYield"), 0.0)
 
     return {
         "ticker": ticker,
