@@ -13,6 +13,7 @@ from scanner_core import SmartValueScanner, DEFAULT_UNIVERSE
 app = FastAPI(title="SmartValue Scanner API")
 
 API_KEY = os.environ.get("FMP_API_KEY", "")
+print(f"[DEBUG] API_KEY present: {bool(API_KEY)}, length: {len(API_KEY)}, first4: {API_KEY[:4] if API_KEY else 'EMPTY'}")
 
 # ── Modèles ──────────────────────────────────────────────────
 class ScanRequest(BaseModel):
