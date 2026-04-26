@@ -148,7 +148,13 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 /* ── FOOTER ── */
 .footer{border-top:1px solid var(--border);padding:1.5rem 0;font-size:0.68rem;color:var(--muted);line-height:1.7;margin-top:2rem;}
 
-/* ── TOAST ── */
+/* ── TOOLTIP ── */
+.tooltip-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.tooltip-box{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:1.5rem;max-width:320px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.12);}
+.tooltip-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;margin-bottom:0.5rem;color:var(--text);}
+.tooltip-desc{font-size:0.82rem;color:var(--muted2);line-height:1.65;margin-bottom:1rem;}
+.tooltip-example{background:var(--bg3);border-radius:6px;padding:0.6rem 0.85rem;font-size:0.75rem;color:var(--muted2);line-height:1.6;margin-bottom:1rem;}
+.tooltip-close{width:100%;background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.55rem;border:none;cursor:pointer;border-radius:6px;}
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--accent);color:#fff;padding:0.65rem 1.1rem;font-size:0.75rem;transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:1000;border-radius:5px;}
 .toast.show{transform:translateY(0);opacity:1;}
 
@@ -482,7 +488,7 @@ function renderCard(r, rank) {
     {l:'Dette/Equity',v:r['Dette/Equity']??'—'},
     {l:'Croissance CA',v:r['Croissance CA %']!=null?r['Croissance CA %']+'%':'—'},
     {l:'Dividende',v:'🔄 Bientôt'},
-  ].map(m=>`<div class="metric-box"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l}</div></div>`).join('');
+  ].map(m=>`<div class="metric-box" onclick="showTooltip(event,'${m.l}')" title="Cliquez pour en savoir plus"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l} <span style="color:var(--blue);font-size:0.55rem;">?</span></div></div>`).join('');
 
   return `
   <div class="card" id="card-${rank}">
@@ -532,6 +538,33 @@ function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── TOOLTIPS MÉTRIQUES ────────────────────────────────────
+const METRIC_INFO = {
+  'Prix':{desc:"Le prix actuel de l'action sur le marché.",example:'Ex: 389.40 USD → l\'action vaut 389,40 dollars.'},
+  'PER':{desc:"Prix / Bénéfices. Indique combien les investisseurs paient pour 1€ de bénéfice. Un PER bas peut signifier une action sous-évaluée.",example:'PER < 15 = potentiellement bon marché · PER > 30 = croissance très attendue.'},
+  'P/B':{desc:"Prix / Valeur comptable. Compare le prix de l'action à la valeur des actifs nets.",example:"P/B < 1 = l'action vaut moins que ses actifs · P/B élevé = forte rentabilité attendue."},
+  'ROE':{desc:"Rentabilité des capitaux propres. Mesure combien l'entreprise génère de profit pour chaque euro investi par les actionnaires.",example:'ROE > 15% = très bonne rentabilité · ROE > 25% = exceptionnel.'},
+  'Marge nette':{desc:"Bénéfice net / Chiffre d'affaires. Part des revenus qui devient du profit après toutes les charges.",example:"Marge 10% = pour 100€ de ventes, 10€ de profit net."},
+  'EV/EBITDA':{desc:"Valeur d'entreprise / profit opérationnel. Mesure le coût de l'entreprise par rapport à sa capacité à générer des bénéfices.",example:'EV/EBITDA < 12 = valorisation attractive · > 20 = prix élevé.'},
+  'Dette/Equity':{desc:"Dette totale / capitaux propres. Mesure le niveau d'endettement de l'entreprise.",example:'< 0.5 = peu endettée · > 1.5 = endettement élevé, risque plus fort.'},
+  'Croissance CA':{desc:"Évolution du chiffre d'affaires sur la dernière année.",example:'15% = le CA a augmenté de 15% vs l\'année précédente.'},
+  'Dividende':{desc:"Rendement du dividende annuel. Pourcentage du prix versé chaque année aux actionnaires.",example:"Dividende 3% = pour une action à 100€, vous recevez 3€/an."},
+};
+
+function showTooltip(event, label) {
+  event.stopPropagation();
+  const info = METRIC_INFO[label];
+  if (!info) return;
+  const existing = document.getElementById('tooltip-overlay');
+  if (existing) existing.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'tooltip-overlay';
+  overlay.id = 'tooltip-overlay';
+  overlay.innerHTML = '<div class="tooltip-box"><div class="tooltip-title">'+label+'</div><div class="tooltip-desc">'+info.desc+'</div><div class="tooltip-example">'+info.example+'</div><button class="tooltip-close" onclick="document.getElementById(\'tooltip-overlay\').remove()">Compris ✓</button></div>';
+  overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
 }
 
 init();
