@@ -38,60 +38,34 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
         "CAT", "HON", "GE", "MMM", "UNP", "UPS", "FDX", "DE", "ETN",
     ],
 
-    # ── FRANCE ──────────────────────────────────────────────────
-    "France — Luxe & Conso": [
-        "MC.PA", "OR.PA", "RMS.PA", "CDI.PA", "KER.PA", "STLAP.PA",
+    # ── EUROPE ──────────────────────────────────────────────────
+    "Tech Europe": [
+        "ASML", "SAP", "CAP.PA", "STM.PA", "DSY.PA",
+        "ERIC-B.ST", "WKL.AS", "PHIA.AS",
     ],
-    "France — Finance": [
-        "BNP.PA", "AXA.PA", "SGO.PA", "GLE.PA", "CS.PA", "CNP.PA",
+    "Finance Europe": [
+        "BNP.PA", "AXA.PA", "GLE.PA", "DBK.DE", "ALV.DE", "MUV2.DE",
+        "HSBA.L", "BARC.L", "LLOY.L", "INGA.AS", "NN.AS",
+        "SAN.MC", "BBVA.MC", "UCG.MI", "ISP.MI",
+        "AGS.BR", "ACKB.BR", "ZURN.SW",
     ],
-    "France — Energie & Industrie": [
-        "TTE.PA", "ENGI.PA", "DG.PA", "AIR.PA", "SAF.PA", "ALO.PA",
+    "Santé Europe": [
+        "ROG.SW", "NOVN.SW", "NESN.SW", "AZN.L", "GSK.L",
+        "BAYN.DE", "SAN.PA", "UCB.BR", "ARGX.BR", "EL.PA", "LONN.SW",
     ],
-    "France — Tech & Santé": [
-        "CAP.PA", "DSY.PA", "SAN.PA", "EL.PA", "STM.PA",
+    "Energie Europe": [
+        "TTE.PA", "ENGI.PA", "SHEL.L", "BP.L", "ENI.MI",
+        "IBE.MC", "ENEL.MI", "NESTE.HE",
     ],
-
-    # ── BELGIQUE ────────────────────────────────────────────────
-    "Belgique": [
-        "UCB.BR", "ABI.BR", "SOLB.BR", "COLR.BR", "PROX.BR",
-        "AGS.BR", "ACKB.BR", "WDP.BR", "ARGX.BR",
+    "Conso Europe": [
+        "MC.PA", "OR.PA", "RMS.PA", "CDI.PA", "KER.PA",
+        "HEIA.AS", "DGE.L", "ULVR.L", "COLR.BR",
+        "ITX.MC", "CFR.SW",
     ],
-
-    # ── PAYS-BAS ────────────────────────────────────────────────
-    "Pays-Bas": [
-        "ASML", "HEIA.AS", "PHIA.AS", "INGA.AS", "NN.AS",
-        "RAND.AS", "WKL.AS", "AKZA.AS",
-    ],
-
-    # ── ALLEMAGNE ───────────────────────────────────────────────
-    "Allemagne": [
-        "SAP", "SIE.DE", "ALV.DE", "DBK.DE", "BMW.DE",
-        "VOW3.DE", "MRK.DE", "BAYN.DE", "DTE.DE", "MUV2.DE",
-    ],
-
-    # ── SUISSE ──────────────────────────────────────────────────
-    "Suisse": [
-        "NESN.SW", "ROG.SW", "NOVN.SW", "ABB.SW", "ZURN.SW",
-        "LONN.SW", "SIKA.SW", "CFR.SW",
-    ],
-
-    # ── ROYAUME-UNI ─────────────────────────────────────────────
-    "Royaume-Uni": [
-        "SHEL.L", "BP.L", "HSBA.L", "AZN.L", "GSK.L",
-        "BARC.L", "LLOY.L", "RIO.L", "DGE.L", "ULVR.L",
-    ],
-
-    # ── ESPAGNE & ITALIE ────────────────────────────────────────
-    "Espagne & Italie": [
-        "ITX.MC", "SAN.MC", "IBE.MC", "BBVA.MC",
-        "ENEL.MI", "ENI.MI", "UCG.MI", "ISP.MI",
-    ],
-
-    # ── SUÈDE & NORDIQUES ───────────────────────────────────────
-    "Nordiques": [
-        "VOLV-B.ST", "ERIC-B.ST", "ATCO-A.ST", "SAND.ST",
-        "NESTE.HE", "UPM.HE",
+    "Industriels Europe": [
+        "SIE.DE", "ABB.SW", "AIR.PA", "SAF.PA", "ALO.PA",
+        "DG.PA", "SGO.PA", "VOLV-B.ST", "RAND.AS",
+        "SIKA.SW", "AKZA.AS", "SOLB.BR", "WDP.BR",
     ],
 
     # ── ASIE / MONDE ────────────────────────────────────────────
