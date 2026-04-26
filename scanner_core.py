@@ -38,29 +38,65 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
         "CAT", "HON", "GE", "MMM", "UNP", "UPS", "FDX", "DE", "ETN",
     ],
 
-    # ── EUROPE ──────────────────────────────────────────────────
-    "Tech Europe": [
-        "ASML", "SAP", "DAST.DE", "CAP.PA", "STM.PA",
+    # ── FRANCE ──────────────────────────────────────────────────
+    "France — Luxe & Conso": [
+        "MC.PA", "OR.PA", "RMS.PA", "CDI.PA", "KER.PA", "STLAP.PA",
     ],
-    "Finance Europe": [
-        "BNP.PA", "SAN.PA", "AXA.PA", "CS.PA", "DBK.DE", "HSBA.L", "BARC.L",
+    "France — Finance": [
+        "BNP.PA", "AXA.PA", "SGO.PA", "GLE.PA", "CS.PA", "CNP.PA",
     ],
-    "Conso Europe": [
-        "MC.PA", "OR.PA", "RMS.PA", "NESN.SW", "UNILEVER.L", "AIR.PA",
+    "France — Energie & Industrie": [
+        "TTE.PA", "ENGI.PA", "DG.PA", "AIR.PA", "SAF.PA", "ALO.PA",
     ],
-    "Energie Europe": [
-        "TTE.PA", "BP.L", "SHEL.L", "ENEL.MI", "ENGI.PA",
+    "France — Tech & Santé": [
+        "CAP.PA", "DSY.PA", "SAN.PA", "EL.PA", "STM.PA",
     ],
-    "Santé Europe": [
-        "ROG.SW", "NOVN.SW", "SAN.PA", "AZN.L", "GSK.L", "BAY.DE",
+
+    # ── BELGIQUE ────────────────────────────────────────────────
+    "Belgique": [
+        "UCB.BR", "ABI.BR", "SOLB.BR", "COLR.BR", "PROX.BR",
+        "AGS.BR", "ACKB.BR", "WDP.BR", "ARGX.BR",
     ],
-    "Industriels Europe": [
-        "SIE.DE", "ABB.SW", "ALO.PA", "DG.PA", "MTX.DE",
+
+    # ── PAYS-BAS ────────────────────────────────────────────────
+    "Pays-Bas": [
+        "ASML", "HEIA.AS", "PHIA.AS", "INGA.AS", "NN.AS",
+        "RAND.AS", "WKL.AS", "AKZA.AS",
+    ],
+
+    # ── ALLEMAGNE ───────────────────────────────────────────────
+    "Allemagne": [
+        "SAP", "SIE.DE", "ALV.DE", "DBK.DE", "BMW.DE",
+        "VOW3.DE", "MRK.DE", "BAYN.DE", "DTE.DE", "MUV2.DE",
+    ],
+
+    # ── SUISSE ──────────────────────────────────────────────────
+    "Suisse": [
+        "NESN.SW", "ROG.SW", "NOVN.SW", "ABB.SW", "ZURN.SW",
+        "LONN.SW", "SIKA.SW", "CFR.SW",
+    ],
+
+    # ── ROYAUME-UNI ─────────────────────────────────────────────
+    "Royaume-Uni": [
+        "SHEL.L", "BP.L", "HSBA.L", "AZN.L", "GSK.L",
+        "BARC.L", "LLOY.L", "RIO.L", "DGE.L", "ULVR.L",
+    ],
+
+    # ── ESPAGNE & ITALIE ────────────────────────────────────────
+    "Espagne & Italie": [
+        "ITX.MC", "SAN.MC", "IBE.MC", "BBVA.MC",
+        "ENEL.MI", "ENI.MI", "UCG.MI", "ISP.MI",
+    ],
+
+    # ── SUÈDE & NORDIQUES ───────────────────────────────────────
+    "Nordiques": [
+        "VOLV-B.ST", "ERIC-B.ST", "ATCO-A.ST", "SAND.ST",
+        "NESTE.HE", "UPM.HE",
     ],
 
     # ── ASIE / MONDE ────────────────────────────────────────────
     "Tech Asie": [
-        "TSM", "SONY", "BABA", "9988.HK", "700.HK", "005930.KS",
+        "TSM", "SONY", "9988.HK", "700.HK", "005930.KS",
     ],
     "Finance Asie": [
         "MUFG", "8306.T", "939.HK",
