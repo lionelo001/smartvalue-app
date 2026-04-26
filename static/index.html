@@ -180,7 +180,12 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
     <div class="autocomplete" id="autocomplete"></div>
     <button class="nav-search-btn" onclick="searchTicker()">→</button>
   </div>
-  <div class="nav-badge"><span class="nav-badge-dot"></span>Live</div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="tour-btn" onclick="startTour()" id="tour-trigger" title="Guide interactif">
+      <span>?</span> Guide
+    </button>
+    <div class="nav-badge"><span class="nav-badge-dot"></span>Live</div>
+  </div>
 </nav>
 
 <div class="page">
@@ -216,6 +221,41 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
     </div>
   </div>
   <div class="sectors-grid" id="sectors-grid"></div>
+
+  <!-- SCREENER AVANCÉ -->
+  <button class="advanced-toggle" id="advanced-toggle" onclick="toggleAdvanced()">
+    <span class="advanced-toggle-icon">▼</span>
+    Filtres avancés
+  </button>
+  <div class="advanced-panel" id="advanced-panel">
+    <div class="advanced-grid">
+      <div class="advanced-field">
+        <div class="advanced-label">PER maximum <span id="adv-per-val">30</span></div>
+        <input type="range" class="advanced-input" id="adv-per" min="5" max="100" value="30" oninput="updateAdv('per',this.value)">
+      </div>
+      <div class="advanced-field">
+        <div class="advanced-label">ROE minimum (%) <span id="adv-roe-val">0</span></div>
+        <input type="range" class="advanced-input" id="adv-roe" min="0" max="50" value="0" oninput="updateAdv('roe',this.value)">
+      </div>
+      <div class="advanced-field">
+        <div class="advanced-label">Marge nette min (%) <span id="adv-margin-val">0</span></div>
+        <input type="range" class="advanced-input" id="adv-margin" min="0" max="40" value="0" oninput="updateAdv('margin',this.value)">
+      </div>
+      <div class="advanced-field">
+        <div class="advanced-label">Dette/Equity max <span id="adv-dte-val">Illimité</span></div>
+        <input type="range" class="advanced-input" id="adv-dte" min="0" max="5" step="0.1" value="5" oninput="updateAdv('dte',this.value)">
+      </div>
+      <div class="advanced-field">
+        <div class="advanced-label">Croissance CA min (%) <span id="adv-growth-val">0</span></div>
+        <input type="range" class="advanced-input" id="adv-growth" min="0" max="50" value="0" oninput="updateAdv('growth',this.value)">
+      </div>
+      <div class="advanced-field">
+        <div class="advanced-label">P/B maximum <span id="adv-pb-val">Illimité</span></div>
+        <input type="range" class="advanced-input" id="adv-pb" min="0" max="30" value="30" oninput="updateAdv('pb',this.value)">
+      </div>
+    </div>
+    <button class="advanced-reset" onclick="resetAdvanced()">Réinitialiser les filtres</button>
+  </div>
 
   <button class="scan-btn" id="scan-btn" onclick="startScan()">Lancer le scan</button>
 
@@ -473,8 +513,9 @@ async function startScan() {
     const res=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({sectors:active,min_score:state.minScore,min_confidence:state.minConf,top_n:state.topN})});
     const data=await res.json();
-    state.results=data.results;
-    renderResults(data.results,data.total);
+    const filtered = applyAdvancedFilters(data.results);
+    state.results=filtered;
+    renderResults(filtered, data.total);
   } catch(e){showToast('Erreur lors du scan');renderEmpty();}
   finally{clearInterval(iv);state.scanning=false;btn.disabled=false;btn.textContent='Lancer le scan';}
 }
@@ -593,6 +634,222 @@ function showTooltip(event, label) {
 }
 
 init();
+
+// ── SCREENER AVANCÉ ───────────────────────────────────────
+const advFilters = { per:30, roe:0, margin:0, dte:5, growth:0, pb:30 };
+
+function toggleAdvanced() {
+  const btn = document.getElementById('advanced-toggle');
+  const panel = document.getElementById('advanced-panel');
+  btn.classList.toggle('open');
+  panel.classList.toggle('open');
+}
+
+function updateAdv(key, val) {
+  val = parseFloat(val);
+  advFilters[key] = val;
+  const labels = {
+    per: () => document.getElementById('adv-per-val').textContent = val,
+    roe: () => document.getElementById('adv-roe-val').textContent = val + '%',
+    margin: () => document.getElementById('adv-margin-val').textContent = val + '%',
+    dte: () => document.getElementById('adv-dte-val').textContent = val >= 5 ? 'Illimité' : val,
+    growth: () => document.getElementById('adv-growth-val').textContent = val + '%',
+    pb: () => document.getElementById('adv-pb-val').textContent = val >= 30 ? 'Illimité' : val,
+  };
+  if (labels[key]) labels[key]();
+}
+
+function resetAdvanced() {
+  advFilters.per = 30; advFilters.roe = 0; advFilters.margin = 0;
+  advFilters.dte = 5; advFilters.growth = 0; advFilters.pb = 30;
+  document.getElementById('adv-per').value = 30;
+  document.getElementById('adv-roe').value = 0;
+  document.getElementById('adv-margin').value = 0;
+  document.getElementById('adv-dte').value = 5;
+  document.getElementById('adv-growth').value = 0;
+  document.getElementById('adv-pb').value = 30;
+  document.getElementById('adv-per-val').textContent = '30';
+  document.getElementById('adv-roe-val').textContent = '0%';
+  document.getElementById('adv-margin-val').textContent = '0%';
+  document.getElementById('adv-dte-val').textContent = 'Illimité';
+  document.getElementById('adv-growth-val').textContent = '0%';
+  document.getElementById('adv-pb-val').textContent = 'Illimité';
+  showToast('Filtres réinitialisés ✓');
+}
+
+function applyAdvancedFilters(results) {
+  return results.filter(r => {
+    if (advFilters.per < 30 && r.PER && r.PER > advFilters.per) return false;
+    if (advFilters.roe > 0 && (!r['ROE %'] || r['ROE %'] < advFilters.roe)) return false;
+    if (advFilters.margin > 0 && (!r['Marge %'] || r['Marge %'] < advFilters.margin)) return false;
+    if (advFilters.dte < 5 && r['Dette/Equity'] && r['Dette/Equity'] > advFilters.dte) return false;
+    if (advFilters.growth > 0 && (!r['Croissance CA %'] || r['Croissance CA %'] < advFilters.growth)) return false;
+    if (advFilters.pb < 30 && r['P/B'] && r['P/B'] > advFilters.pb) return false;
+    return true;
+  });
+}
+
+// ── GUIDE TOUR ────────────────────────────────────────────
+const TOUR_STEPS = [
+  {
+    target: '.profiles',
+    title: 'Choisissez votre profil',
+    desc: 'Sélectionnez votre stratégie d'investissement. Défensif pour la sécurité, Universel pour tout couvrir, Croissance pour les entreprises dynamiques.',
+    arrow: 'arrow-top', position: 'bottom',
+  },
+  {
+    target: '.sectors-header',
+    title: 'Sélectionnez vos secteurs',
+    desc: 'Cochez les marchés à analyser — US, Europe, Asie. Utilisez "Tout cocher" pour tout sélectionner ou "Tout décocher" pour repartir de zéro.',
+    arrow: 'arrow-top', position: 'bottom',
+  },
+  {
+    target: '#advanced-toggle',
+    title: 'Filtres avancés (optionnel)',
+    desc: 'Pour aller plus loin : définissez des critères précis comme un PER maximum, un ROE minimum ou une croissance minimum. Parfait pour le stock picking.',
+    arrow: 'arrow-top', position: 'bottom',
+  },
+  {
+    target: '#scan-btn',
+    title: 'Lancez le scan',
+    desc: 'Cliquez ici pour analyser toutes les entreprises sélectionnées selon vos critères. Le scan prend quelques secondes.',
+    arrow: 'arrow-top', position: 'bottom',
+  },
+  {
+    target: '#results-area',
+    title: 'Explorez les résultats',
+    desc: 'Chaque carte affiche une entreprise avec son score et ses tags. Cliquez sur une carte pour la déplier et voir tous les détails — métriques, score par bloc, analyse.',
+    arrow: 'arrow-top', position: 'bottom',
+    demo: true,
+  },
+  {
+    target: '#results-area',
+    title: 'Comprendre les métriques',
+    desc: 'Une fois la carte dépliée, cliquez sur n'importe quelle métrique (PER, ROE, Marge...) pour obtenir une explication claire en français.',
+    arrow: 'arrow-top', position: 'bottom',
+  },
+  {
+    target: '.nav-search-wrap',
+    title: 'Recherche rapide',
+    desc: 'Vous connaissez déjà une action ? Tapez son nom ou son ticker ici — Apple, LVMH, AAPL... Le résultat s'affiche instantanément.',
+    arrow: 'arrow-bottom', position: 'top',
+  },
+  {
+    target: '#tour-trigger',
+    title: 'Revoir ce guide',
+    desc: 'Pour revoir ces explications à tout moment, cliquez sur le bouton "? Guide" dans la barre de navigation en haut.',
+    arrow: 'arrow-bottom', position: 'top',
+    last: true,
+  },
+];
+
+let tourStep = 0;
+let tourActive = false;
+
+function startTour() {
+  tourStep = 0;
+  tourActive = true;
+  localStorage.setItem('sv_tour_done', '1');
+  showTourStep();
+}
+
+function showTourStep() {
+  clearTourUI();
+  if (tourStep >= TOUR_STEPS.length) { endTour(); return; }
+  const step = TOUR_STEPS[tourStep];
+
+  // Étapes 5-6 : si pas encore de résultats, on saute
+  if ((tourStep === 4 || tourStep === 5) && !state.results.length) {
+    tourStep++;
+    showTourStep();
+    return;
+  }
+
+  const el = document.querySelector(step.target);
+  if (!el) { tourStep++; showTourStep(); return; }
+
+  // Scroll vers l'élément d'abord
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+
+  setTimeout(() => {
+    const rect = el.getBoundingClientRect();
+    const pad = 8;
+
+    // Highlight
+    const hl = document.createElement('div');
+    hl.className = 'tour-highlight';
+    hl.id = 'tour-hl';
+    hl.style.cssText = `top:${rect.top-pad}px;left:${rect.left-pad}px;width:${rect.width+pad*2}px;height:${rect.height+pad*2}px;`;
+    document.body.appendChild(hl);
+
+    // Bubble
+    const bubble = document.createElement('div');
+    bubble.className = 'tour-bubble ' + step.arrow;
+    bubble.id = 'tour-bubble';
+
+    const dots = TOUR_STEPS.map((_,i) =>
+      `<div class="tour-dot ${i===tourStep?'active':''}"></div>`).join('');
+
+    const isLast = tourStep === TOUR_STEPS.length - 1;
+    const btnLabel = isLast ? 'Terminer ✓' : 'Suivant →';
+
+    bubble.innerHTML = `
+      <div class="tour-step-label">Étape ${tourStep+1} sur ${TOUR_STEPS.length}</div>
+      <div class="tour-title">${step.title}</div>
+      <div class="tour-desc">${step.desc}</div>
+      <div class="tour-actions">
+        <button class="tour-skip" onclick="endTour()">Passer</button>
+        <div class="tour-dots">${dots}</div>
+        <button class="tour-next" onclick="nextTourStep()">${btnLabel}</button>
+      </div>`;
+
+    document.body.appendChild(bubble);
+
+    // Positionner la bulle
+    setTimeout(() => {
+      const bH = bubble.offsetHeight;
+      let top, left;
+      if (step.position === 'bottom') {
+        top = rect.bottom + pad + 12;
+        left = rect.left + rect.width/2 - 140;
+      } else {
+        top = rect.top - bH - pad - 12;
+        left = rect.left + rect.width/2 - 140;
+      }
+      left = Math.max(16, Math.min(left, window.innerWidth - 296));
+      top = Math.max(70, top);
+      // Si la bulle sort en bas
+      if (top + bH > window.innerHeight - 16) {
+        top = rect.top - bH - pad - 12;
+        bubble.className = bubble.className.replace('arrow-top','arrow-bottom');
+      }
+      bubble.style.cssText = `position:fixed;top:${top}px;left:${left}px;max-width:280px;`;
+    }, 50);
+  }, 300);
+}
+
+function nextTourStep() {
+  tourStep++;
+  showTourStep();
+}
+
+function endTour() {
+  clearTourUI();
+  tourActive = false;
+  if (tourStep >= TOUR_STEPS.length) showToast('Tour terminé ! Bonne analyse 🎯');
+}
+
+function clearTourUI() {
+  document.getElementById('tour-hl')?.remove();
+  document.getElementById('tour-bubble')?.remove();
+}
+
+// Lancer le tour au premier chargement
+window.addEventListener('load', () => {
+  if (!localStorage.getItem('sv_tour_done')) {
+    setTimeout(startTour, 800);
+  }
+});
 </script>
 </body>
 </html>
