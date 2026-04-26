@@ -611,8 +611,8 @@ const METRIC_INFO = {
   'Prix':{desc:"Le prix actuel de l'action sur le marché.",example:'Ex: 389.40 USD → l\'action vaut 389,40 dollars.'},
   'PER':{desc:"Prix / Bénéfices. Indique combien les investisseurs paient pour 1€ de bénéfice. Un PER bas peut signifier une action sous-évaluée.",example:'PER < 15 = potentiellement bon marché · PER > 30 = croissance très attendue.'},
   'P/B':{desc:"Prix / Valeur comptable. Compare le prix de l'action à la valeur des actifs nets.",example:"P/B < 1 = l'action vaut moins que ses actifs · P/B élevé = forte rentabilité attendue."},
-  'ROE':{desc:"Rentabilité des capitaux propres. Mesure combien l'entreprise génère de profit pour chaque euro investi par les actionnaires.",example:'ROE > 15% = très bonne rentabilité · ROE > 25% = exceptionnel.'},
-  'Marge nette':{desc:"Bénéfice net / Chiffre d'affaires. Part des revenus qui devient du profit après toutes les charges.",example:"Marge 10% = pour 100€ de ventes, 10€ de profit net."},
+  'ROE':{desc:"Rentabilité des capitaux propres. Mesure le profit généré pour chaque euro investi par les actionnaires.",example:'ROE > 15% = très bonne rentabilité · ROE > 25% = exceptionnel.'},
+  'Marge nette':{desc:"Bénéfice net divisé par le chiffre affaires. Part des revenus qui devient du profit.",example:"Marge 10% = pour 100€ de ventes, 10€ de profit net."},
   'EV/EBITDA':{desc:"Valeur d'entreprise / profit opérationnel. Mesure le coût de l'entreprise par rapport à sa capacité à générer des bénéfices.",example:'EV/EBITDA < 12 = valorisation attractive · > 20 = prix élevé.'},
   'Dette/Equity':{desc:"Dette totale / capitaux propres. Mesure le niveau d'endettement de l'entreprise.",example:'< 0.5 = peu endettée · > 1.5 = endettement élevé, risque plus fort.'},
   'Croissance CA':{desc:"Évolution du chiffre d'affaires sur la dernière année.",example:'15% = le CA a augmenté de 15% vs l\'année précédente.'},
@@ -694,7 +694,7 @@ const TOUR_STEPS = [
   {
     target: '.profiles',
     title: 'Choisissez votre profil',
-    desc: 'Sélectionnez votre stratégie d'investissement. Défensif pour la sécurité, Universel pour tout couvrir, Croissance pour les entreprises dynamiques.',
+    desc: 'Sélectionnez votre stratégie. Défensif pour la sécurité, Universel pour tout couvrir, Croissance pour les entreprises dynamiques.',
     arrow: 'arrow-top', position: 'bottom',
   },
   {
@@ -725,13 +725,13 @@ const TOUR_STEPS = [
   {
     target: '#results-area',
     title: 'Comprendre les métriques',
-    desc: 'Une fois la carte dépliée, cliquez sur n'importe quelle métrique (PER, ROE, Marge...) pour obtenir une explication claire en français.',
+    desc: 'Une fois la carte dépliée, cliquez sur une métrique (PER, ROE, Marge...) pour obtenir une explication claire en français.',
     arrow: 'arrow-top', position: 'bottom',
   },
   {
     target: '.nav-search-wrap',
     title: 'Recherche rapide',
-    desc: 'Vous connaissez déjà une action ? Tapez son nom ou son ticker ici — Apple, LVMH, AAPL... Le résultat s'affiche instantanément.',
+    desc: 'Vous connaissez une action ? Tapez son nom ou ticker ici — Apple, LVMH, AAPL. Le résultat apparaît instantanément.',
     arrow: 'arrow-bottom', position: 'top',
   },
   {
