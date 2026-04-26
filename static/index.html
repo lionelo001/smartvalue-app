@@ -248,45 +248,29 @@ const PROFILES = {
   growth:{ minScore:30, minConf:50, topN:20, sectors:['Tech US','Tech Europe','Tech Asie','Santé US','Industriels US'] },
 };
 
-// Mapping ticker → domaine pour les logos
-const LOGO_DOMAINS = {
-  'AAPL':'apple.com','MSFT':'microsoft.com','GOOGL':'google.com','NVDA':'nvidia.com',
-  'META':'meta.com','AMZN':'amazon.com','TSLA':'tesla.com','ADBE':'adobe.com',
-  'CRM':'salesforce.com','ORCL':'oracle.com','INTC':'intel.com','AMD':'amd.com',
-  'QCOM':'qualcomm.com','AVGO':'broadcom.com','TSM':'tsmc.com','ASML':'asml.com',
-  'JPM':'jpmorgan.com','BAC':'bankofamerica.com','WFC':'wellsfargo.com','GS':'goldmansachs.com',
-  'MS':'morganstanley.com','V':'visa.com','MA':'mastercard.com','AXP':'americanexpress.com',
-  'PYPL':'paypal.com','JNJ':'jnj.com','PFE':'pfizer.com','UNH':'unitedhealthgroup.com',
-  'ABBV':'abbvie.com','LLY':'lilly.com','MRK':'merck.com','ABT':'abbott.com','TMO':'thermofisher.com',
-  'PG':'pg.com','KO':'coca-cola.com','PEP':'pepsico.com','WMT':'walmart.com','COST':'costco.com',
-  'MCD':'mcdonalds.com','NKE':'nike.com','SBUX':'starbucks.com','HD':'homedepot.com',
-  'XOM':'exxonmobil.com','CVX':'chevron.com','COP':'conocophillips.com',
-  'CAT':'caterpillar.com','HON':'honeywell.com','GE':'ge.com','BA':'boeing.com',
-  'MC.PA':'lvmh.com','OR.PA':'loreal.com','TTE.PA':'totalenergies.com',
-  'BNP.PA':'bnpparibas.com','SAN.PA':'sanofi.com','AIR.PA':'airbus.com','AXA.PA':'axa.com',
-  'SAP.DE':'sap.com','SIE.DE':'siemens.com','DBK.DE':'db.com','NESN.SW':'nestle.com',
-  'ROG.SW':'roche.com','NOVN.SW':'novartis.com','ABB.SW':'abb.com',
-  'HSBA.L':'hsbc.com','BARC.L':'barclays.com','BP.L':'bp.com','AZN.L':'astrazeneca.com',
-  'SONY':'sony.com','MUFG':'mufg.jp','005930.KS':'samsung.com',
-};
-
-function getLogoUrl(ticker) {
-  const domain = LOGO_DOMAINS[ticker];
-  if (domain) return `https://logo.clearbit.com/${domain}`;
-  return null;
-}
+// Avatars colorés avec initiales
+const AVATAR_COLORS = ['#2563EB','#16A34A','#9333EA','#EA580C','#DB2777','#0891B2','#65A30D','#DC2626','#7C3AED','#D97706'];
 
 function getInitials(name) {
-  return (name||'?').replace(/[^A-Za-z\s]/g,'').split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+  const clean = (name||'?').replace(/[^A-Za-z ]/g,'');
+  const words = clean.split(' ').filter(Boolean);
+  if (words.length >= 2) return (words[0][0]+words[1][0]).toUpperCase();
+  return clean.slice(0,2).toUpperCase();
 }
 
-function logoHtml(ticker, name, size=36, cls='card-logo', placeholderCls='card-logo-placeholder') {
-  const url = getLogoUrl(ticker);
-  const initials = getInitials(name || ticker);
-  if (url) {
-    return `<img class="${cls}" src="${url}" alt="${ticker}" onerror="this.outerHTML='<div class=\\"${placeholderCls}\\">${initials}</div>'" width="${size}" height="${size}">`;
-  }
-  return `<div class="${placeholderCls}">${initials}</div>`;
+function getAvatarColor(ticker) {
+  let hash = 0;
+  for (let i=0;i<(ticker||'').length;i++) hash = (hash*31+ticker.charCodeAt(i))&0xFFFF;
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+}
+
+function logoHtml(ticker, name, size, cls, placeholderCls) {
+  size = size||36;
+  placeholderCls = placeholderCls||'card-logo-placeholder';
+  const initials = getInitials(name||ticker);
+  const color = getAvatarColor(ticker);
+  const fs = size<=22 ? '0.5rem' : '0.72rem';
+  return '<div class="'+placeholderCls+'" style="background:'+color+';width:'+size+'px;height:'+size+'px;font-size:'+fs+';">'+initials+'</div>';
 }
 
 // ── INIT ──────────────────────────────────────────────────
