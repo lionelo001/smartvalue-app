@@ -488,7 +488,7 @@ function renderCard(r, rank) {
     {l:'Dette/Equity',v:r['Dette/Equity']??'—'},
     {l:'Croissance CA',v:r['Croissance CA %']!=null?r['Croissance CA %']+'%':'—'},
     {l:'Dividende',v:'🔄 Bientôt'},
-  ].map(m=>`<div class="metric-box" onclick="showTooltip(event,'${m.l}')" title="Cliquez pour en savoir plus"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l} <span style="color:var(--blue);font-size:0.55rem;">?</span></div></div>`).join('');
+  ].map(m=>`<div class="metric-box" onclick="showTooltip(event,'${m.l}')" style="cursor:pointer;"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l}</div></div>`).join('');
 
   return `
   <div class="card" id="card-${rank}">
