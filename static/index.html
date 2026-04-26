@@ -244,14 +244,20 @@ const BAR_COLORS = ['#2563EB','#16A34A','#9333EA','#EA580C','#DB2777'];
 
 const DEFAULT_SECTORS = [
   'Tech US','Finance US','Santé US','Energie US','Conso US','Industriels US',
-  'Tech Europe','Finance Europe','Conso Europe','Energie Europe','Santé Europe','Industriels Europe',
+  'France — Luxe & Conso','France — Finance','France — Energie & Industrie','France — Tech & Santé',
+  'Belgique','Pays-Bas','Allemagne','Suisse','Royaume-Uni',
+  'Espagne & Italie','Nordiques',
   'Tech Asie','Finance Asie','Energie Asie'
 ];
 
 const PROFILES = {
-  defensive:{ minScore:40, minConf:70, topN:15, sectors:['Finance US','Santé US','Conso US','Finance Europe','Santé Europe','Energie Europe','Energie US'] },
+  defensive:{ minScore:40, minConf:70, topN:15,
+    sectors:['Finance US','Santé US','Conso US','Energie US',
+             'France — Finance','Belgique','Pays-Bas','Allemagne','Suisse','Royaume-Uni','Espagne & Italie',
+             'France — Energie & Industrie'] },
   balanced:{ minScore:35, minConf:50, topN:15, sectors:null },
-  growth:{ minScore:30, minConf:50, topN:20, sectors:['Tech US','Tech Europe','Tech Asie','Santé US','Industriels US'] },
+  growth:{ minScore:30, minConf:50, topN:20,
+    sectors:['Tech US','Industriels US','France — Tech & Santé','Pays-Bas','Allemagne','Tech Asie','Nordiques'] },
 };
 
 // Avatars colorés avec initiales
@@ -381,6 +387,29 @@ const TICKERS = [
   {s:'HSBA.L',n:'HSBC Holdings'},{s:'BARC.L',n:'Barclays'},{s:'BP.L',n:'BP'},{s:'AZN.L',n:'AstraZeneca'},
   {s:'9988.HK',n:'Alibaba Group'},{s:'700.HK',n:'Tencent Holdings'},{s:'005930.KS',n:'Samsung Electronics'},
   {s:'SONY',n:'Sony Group'},{s:'MUFG',n:'Mitsubishi UFJ'},
+  // Belgique
+  {s:'UCB.BR',n:'UCB SA'},{s:'ABI.BR',n:'AB InBev'},{s:'SOLB.BR',n:'Solvay'},
+  {s:'COLR.BR',n:'Colruyt'},{s:'PROX.BR',n:'Proximus'},{s:'AGS.BR',n:'Ageas'},
+  {s:'ACKB.BR',n:'Ackermans & van Haaren'},{s:'WDP.BR',n:'Warehouses De Pauw'},{s:'ARGX.BR',n:'argenx'},
+  // Pays-Bas
+  {s:'HEIA.AS',n:'Heineken'},{s:'PHIA.AS',n:'Philips'},{s:'INGA.AS',n:'ING Groep'},
+  {s:'NN.AS',n:'NN Group'},{s:'RAND.AS',n:'Randstad'},{s:'WKL.AS',n:'Wolters Kluwer'},{s:'AKZA.AS',n:'Akzo Nobel'},
+  // Allemagne
+  {s:'ALV.DE',n:'Allianz'},{s:'BMW.DE',n:'BMW'},{s:'VOW3.DE',n:'Volkswagen'},
+  {s:'MRK.DE',n:'Merck KGaA'},{s:'BAYN.DE',n:'Bayer'},{s:'DTE.DE',n:'Deutsche Telekom'},{s:'MUV2.DE',n:'Munich Re'},
+  // Suisse
+  {s:'ZURN.SW',n:'Zurich Insurance'},{s:'LONN.SW',n:'Lonza'},{s:'SIKA.SW',n:'Sika'},{s:'CFR.SW',n:'Richemont'},
+  // Royaume-Uni
+  {s:'SHEL.L',n:'Shell'},{s:'LLOY.L',n:'Lloyds Banking'},{s:'RIO.L',n:'Rio Tinto'},
+  {s:'DGE.L',n:'Diageo'},{s:'ULVR.L',n:'Unilever'},
+  // Espagne & Italie
+  {s:'ITX.MC',n:'Inditex (Zara)'},{s:'SAN.MC',n:'Banco Santander'},{s:'IBE.MC',n:'Iberdrola'},{s:'BBVA.MC',n:'BBVA'},
+  {s:'ENEL.MI',n:'Enel'},{s:'ENI.MI',n:'ENI'},{s:'UCG.MI',n:'UniCredit'},{s:'ISP.MI',n:'Intesa Sanpaolo'},
+  // France supplémentaires
+  {s:'CDI.PA',n:'Christian Dior'},{s:'KER.PA',n:'Kering'},{s:'SGO.PA',n:'Saint-Gobain'},
+  {s:'GLE.PA',n:'Société Générale'},{s:'SAF.PA',n:'Safran'},{s:'DSY.PA',n:'Dassault Systemes'},{s:'EL.PA',n:'EssilorLuxottica'},
+  // Nordiques
+  {s:'VOLV-B.ST',n:'Volvo'},{s:'ERIC-B.ST',n:'Ericsson'},{s:'NESTE.HE',n:'Neste'},
 ];
 
 let acSelected = -1;
