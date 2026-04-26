@@ -175,14 +175,29 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .tour-dot{width:6px;height:6px;border-radius:50%;background:#DDE0E8;}
 .tour-dot.active{background:var(--blue);}
 .tour-next{background:#1E2330;color:#fff;font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.42rem 0.9rem;border:none;cursor:pointer;border-radius:5px;}
-.tour-btn{background:transparent;border:1px solid var(--border2);color:var(--muted2);font-size:0.72rem;padding:0.3rem 0.65rem;cursor:pointer;border-radius:4px;display:flex;align-items:center;gap:4px;transition:all 0.15s;}
+.tour-btn{background:transparent;border:1px solid var(--border2);color:var(--muted2);font-size:0.72rem;padding:0.3rem 0.65rem;cursor:pointer;border-radius:4px;display:flex;align-items:center;gap:4px;transition:all 0.15s;position:relative;}
 .tour-btn:hover{border-color:var(--blue);color:var(--blue);}
+.tour-btn.pulse-ring::before{content:'';position:absolute;inset:-4px;border-radius:7px;border:2px solid var(--blue);animation:ringPulse 1.2s ease-out infinite;pointer-events:none;}
+.tour-btn.pulse-ring::after{content:'Commencez ici →';position:absolute;top:calc(100% + 8px);right:0;background:#1E2330;color:#fff;font-size:0.65rem;padding:0.3rem 0.7rem;border-radius:5px;white-space:nowrap;font-family:'DM Sans',sans-serif;pointer-events:none;}
+@keyframes ringPulse{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.4);}}
+
+/* ── CARD DETAILS ── */
+.card-details-hint{display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;border-top:1px solid var(--border);margin-top:0.75rem;font-size:0.72rem;color:var(--muted);cursor:pointer;transition:color 0.15s;user-select:none;}
+.card-details-hint:hover{color:var(--blue);}
+.card-details-hint .hint-text{display:flex;align-items:center;gap:5px;}
+.card-details-hint .hint-arrow{font-size:0.65rem;transition:transform 0.2s;}
+.card.open .card-details-hint .hint-arrow{transform:rotate(180deg);}
+.card.open .card-details-hint{color:var(--blue);}
+@media(max-width:600px){
+  .card-details-hint{padding:0.75rem 0;font-size:0.78rem;color:var(--muted2);}
+  .card-details-hint .hint-text::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--blue);margin-right:2px;}
+}
 
 /* ── CARD HINT ── */
-.card-hint{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1E2330;color:#fff;font-size:0.7rem;padding:0.4rem 0.85rem;border-radius:6px;white-space:nowrap;pointer-events:none;animation:hintPulse 1.5s ease infinite;}
-.card-hint::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1E2330;}
-@keyframes hintPulse{0%,100%{opacity:1;transform:translateX(-50%) translateY(0);}50%{opacity:0.7;transform:translateX(-50%) translateY(-3px);}}
-.card-wrapper{position:relative;}
+.card-hint{display:inline-flex;align-items:center;gap:5px;background:#1E2330;color:#fff;font-size:0.68rem;padding:0.35rem 0.8rem;border-radius:5px;margin-top:0.6rem;animation:hintBounce 1.8s ease infinite;cursor:pointer;}
+@keyframes hintBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+
+
 
 /* ── FOOTER ── */
 .footer{border-top:1px solid var(--border);padding:1.5rem 0;font-size:0.68rem;color:var(--muted);line-height:1.7;margin-top:2rem;}
@@ -198,8 +213,12 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .toast.show{transform:translateY(0);opacity:1;}
 
 /* ── RESPONSIVE ── */
+.desktop-only{display:inline;}
+.mobile-only{display:none;}
 @media(max-width:600px){
   nav{padding:0.75rem 1rem;gap:0.5rem;}
+  .desktop-only{display:none;}
+  .mobile-only{display:inline;}
   .nav-search-wrap{max-width:none;flex:1;}
   .page{padding:1.25rem 1rem 3rem;}
   .profiles{gap:5px;}
@@ -608,8 +627,15 @@ function renderCard(r, rank) {
         <div class="score-label">Score</div>
         <div class="score-num ${scoreClass(score)}">${score}</div>
         <div class="conf-pill ${confClass(conf)}">${conf}%</div>
-        <div class="card-expand-icon">▼</div>
       </div>
+    </div>
+    <div class="card-details-hint">
+      <div class="hint-text">
+        <span class="hint-arrow">▼</span>
+        <span class="desktop-only">Voir les détails</span>
+        <span class="mobile-only">Détails</span>
+      </div>
+      <span style="font-size:0.62rem;opacity:0.6;">PER · ROE · Marge · Score détaillé</span>
     </div>
     <div class="card-body">
       <div class="card-why">${r['Résumé']||''} — ${r.Pourquoi||''}</div>
@@ -881,10 +907,19 @@ function clearTourUI() {
   document.getElementById('tour-bubble')?.remove();
 }
 
-// Lancer le tour au premier chargement
+// Anneau animé sur le bouton Guide au premier chargement
 window.addEventListener('load', () => {
-  if (!localStorage.getItem('sv_tour_done')) {
-    setTimeout(startTour, 800);
+  if (!localStorage.getItem('sv_welcome_done')) {
+    const btn = document.getElementById('tour-trigger');
+    if (!btn) return;
+    btn.classList.add('pulse-ring');
+    // Stopper l'anneau après 6 secondes ou au clic
+    const stopRing = () => {
+      btn.classList.remove('pulse-ring');
+      localStorage.setItem('sv_welcome_done','1');
+    };
+    setTimeout(stopRing, 6000);
+    btn.addEventListener('click', stopRing, {once:true});
   }
 });
 </script>
