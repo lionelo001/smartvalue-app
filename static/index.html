@@ -292,12 +292,37 @@ function avatarHtml(ticker, size, cls) {
 function logoHtml(ticker, name, size, cls, placeholderCls) {
   size = size||36;
   const domain = LOGO_DOMAINS[ticker];
+  const color = getAvatarColor(ticker);
+  const fs = size<=22 ? '0.5rem' : '0.72rem';
+  const avatarCls = size<=22 ? 'ac-logo-placeholder' : 'card-logo-placeholder';
+  // On affiche toujours l'avatar d'abord, puis on charge le logo via JS
+  const id = 'logo-'+ticker.replace(/[^A-Za-z0-9]/g,'_')+'-'+size;
   if (domain) {
-    const url = 'https://img.logo.dev/'+domain+'?token='+LOGO_TOKEN+'&size=40';
-    const av = avatarHtml(ticker, size, placeholderCls).replace(/"/g,'&quot;');
-    return '<img class="'+(size<=22?'ac-logo':'card-logo')+'" src="'+url+'" width="'+size+'" height="'+size+'" alt="'+ticker+'" onerror="this.outerHTML=decodeURIComponent(\''+encodeURIComponent(avatarHtml(ticker, size, placeholderCls))+'\');">';
+    return '<div id="'+id+'" class="'+avatarCls+'" style="background:'+color+';width:'+size+'px;height:'+size+'px;font-size:'+fs+';">'+getInitials(ticker)+'</div>';
   }
-  return avatarHtml(ticker, size, placeholderCls);
+  return '<div class="'+avatarCls+'" style="background:'+color+';width:'+size+'px;height:'+size+'px;font-size:'+fs+';">'+getInitials(ticker)+'</div>';
+}
+
+function loadLogos() {
+  Object.entries(LOGO_DOMAINS).forEach(([ticker, domain]) => {
+    const imgCls = 'card-logo';
+    ['36','22'].forEach(size => {
+      const id = 'logo-'+ticker.replace(/[^A-Za-z0-9]/g,'_')+'-'+size;
+      const el = document.getElementById(id);
+      if (!el) return;
+      const img = new Image();
+      img.onload = function() {
+        const s = parseInt(size);
+        const cls = s <= 22 ? 'ac-logo' : 'card-logo';
+        img.className = cls;
+        img.width = s;
+        img.height = s;
+        img.alt = ticker;
+        el.parentNode.replaceChild(img, el);
+      };
+      img.src = 'https://img.logo.dev/'+domain+'?token='+LOGO_TOKEN+'&size='+size;
+    });
+  });
 }
 
 // ── INIT ──────────────────────────────────────────────────
@@ -367,12 +392,11 @@ function onSearchInput(val) {
   if (!matches.length){ac.classList.remove('open');return;}
   acSelected=-1;
   ac.innerHTML = matches.map((r,i)=>{
-    const logoEl = LOGO_DOMAINS[r.s]
-      ? '<img class="ac-logo" src="https://img.logo.dev/'+LOGO_DOMAINS[r.s]+'?token='+LOGO_TOKEN+'&size=22" width="22" height="22" onerror="this.outerHTML=\''+avatarHtml(r.s,22,'ac-logo-placeholder').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\'">'
-      : avatarHtml(r.s, 22, 'ac-logo-placeholder');
+    const logoEl = logoHtml(r.s, r.n, 22, 'ac-logo', 'ac-logo-placeholder');
     return '<div class="ac-item" onclick="selectTicker(\''+r.s+'\')" data-idx="'+i+'">'+logoEl+'<span class="ac-ticker">'+r.s+'</span><span class="ac-name">'+r.n+'</span></div>';
   }).join('');
   ac.classList.add('open');
+  setTimeout(loadLogos, 50);
 }
 
 function onSearchKey(e) {
@@ -399,6 +423,7 @@ async function searchTicker() {
     if (res.status===404){showToast('Ticker introuvable : '+ticker);renderEmpty();return;}
     const r = await res.json();
     area.innerHTML = `<div class="results-meta"><div class="results-count">Résultat — ${ticker}</div></div>`+renderCard(r,1);
+    setTimeout(loadLogos, 50);
   } catch(e){showToast('Erreur lors de la recherche');renderEmpty();}
 }
 
@@ -434,6 +459,7 @@ function renderResults(results, total) {
   const header=`<div class="results-meta"><div class="results-count">${results.length} opportunités · ${total} analysées</div><button class="export-btn" onclick="exportCSV()">⬇ Exporter CSV</button></div>`;
   document.getElementById('results-area').innerHTML=header+results.map((r,i)=>renderCard(r,i+1)).join('');
   document.querySelectorAll('.card').forEach((c,i)=>{c.style.animationDelay=`${i*0.04}s`;});
+  setTimeout(loadLogos, 50);
 }
 
 function scoreClass(s){return s>=60?'score-high':s>=40?'score-mid':'score-low';}
