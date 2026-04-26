@@ -20,13 +20,13 @@ html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
 
 /* ── NAV ── */
-nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(242,244,247,0.96);backdrop-filter:blur(12px);z-index:100;}
+nav{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;padding:1rem 2.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(242,244,247,0.96);backdrop-filter:blur(12px);z-index:100;}
 .nav-logo{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-0.02em;text-decoration:none;color:var(--text);}
 .nav-logo span{color:var(--blue);}
-.nav-links{display:flex;align-items:center;gap:2rem;}
-.nav-link{font-size:0.82rem;color:var(--muted2);text-decoration:none;transition:color 0.15s;}
+.nav-links{display:flex;align-items:center;gap:1.5rem;}
+.nav-link{font-size:0.82rem;color:var(--muted2);text-decoration:none;transition:color 0.15s;white-space:nowrap;}
 .nav-link:hover{color:var(--text);}
-.btn-nav{background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 1.25rem;text-decoration:none;border-radius:5px;transition:opacity 0.15s;}
+.btn-nav{background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 1.25rem;text-decoration:none;border-radius:5px;transition:opacity 0.15s;white-space:nowrap;flex-shrink:0;}
 .btn-nav:hover{opacity:0.85;}
 
 /* ── HERO ── */
@@ -72,7 +72,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 
 /* ── APERÇU APP ── */
 .app-preview{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:2.5rem;box-shadow:0 4px 24px rgba(0,0,0,0.06);}
-.preview-bar{display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;background:var(--bg3);border-bottom:1px solid var(--border);}
+.preview-bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0.65rem 1rem;background:var(--bg3);border-bottom:1px solid var(--border);}
 .preview-dots{display:flex;gap:5px;}
 .pdot{width:10px;height:10px;border-radius:50%;}
 .preview-url{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);background:var(--bg2);padding:0.2rem 0.65rem;border:1px solid var(--border);border-radius:4px;}
@@ -162,8 +162,9 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;jus
   <div class="nav-links">
     <a href="#comment" class="nav-link">Comment ça marche</a>
     <a href="#profils" class="nav-link">Profils</a>
-    <a href="https://smartvaluescanner.com/app" class="btn-nav" target="_blank">Accéder gratuitement</a>
+    <a href="#waitlist" class="nav-link">Nouveautés</a>
   </div>
+  <a href="https://smartvaluescanner.com/app" class="btn-nav" target="_blank">Lancer le scanner →</a>
 </nav>
 
 <!-- HERO -->
@@ -243,13 +244,13 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;jus
   <!-- Aperçu app -->
   <div class="app-preview">
     <div class="preview-bar">
-      <div class="preview-dots">
+      <div style="display:flex;align-items:center;gap:8px;">
         <div class="pdot" style="background:#FF5F57;"></div>
         <div class="pdot" style="background:#FEBC2E;"></div>
         <div class="pdot" style="background:#28C840;"></div>
       </div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--muted2);font-weight:500;">Aperçu du scanner SmartValue</div>
       <div class="preview-url">smartvaluescanner.com/app</div>
-      <div style="width:60px;"></div>
     </div>
     <div class="preview-body">
       <div class="preview-profiles">
@@ -259,7 +260,7 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;jus
       </div>
       <div class="preview-cards">
         <div class="pc">
-          <div class="pc-avatar" style="background:#7C3AED;">TS</div>
+          <div class="pc-avatar" style="background:#2563EB;">TS</div>
           <div>
             <div class="pc-ticker">TSM <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Taiwan Semiconductor</span></div>
             <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">SÛR</span><span class="pc-tag">CROISSANCE</span></div>
@@ -267,7 +268,7 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;jus
           <div><div class="pc-score">74.8</div><div class="pc-conf">88.8%</div></div>
         </div>
         <div class="pc">
-          <div class="pc-avatar" style="background:#EA580C;">ME</div>
+          <div class="pc-avatar" style="background:#1E2330;">ME</div>
           <div>
             <div class="pc-ticker">META <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Meta Platforms</span></div>
             <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">CROISSANCE</span></div>
@@ -275,7 +276,7 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;jus
           <div><div class="pc-score">69.6</div><div class="pc-conf">92%</div></div>
         </div>
         <div class="pc">
-          <div class="pc-avatar" style="background:#2563EB;">AD</div>
+          <div class="pc-avatar" style="background:#6B7080;">AD</div>
           <div>
             <div class="pc-ticker">ADBE <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Adobe Inc.</span></div>
             <div class="pc-tags"><span class="pc-tag">VALUE</span><span class="pc-tag">QUALITÉ</span></div>
