@@ -295,33 +295,27 @@ function logoHtml(ticker, name, size, cls, placeholderCls) {
   const color = getAvatarColor(ticker);
   const fs = size<=22 ? '0.5rem' : '0.72rem';
   const avatarCls = size<=22 ? 'ac-logo-placeholder' : 'card-logo-placeholder';
-  // On affiche toujours l'avatar d'abord, puis on charge le logo via JS
-  const id = 'logo-'+ticker.replace(/[^A-Za-z0-9]/g,'_')+'-'+size;
-  if (domain) {
-    return '<div id="'+id+'" class="'+avatarCls+'" style="background:'+color+';width:'+size+'px;height:'+size+'px;font-size:'+fs+';">'+getInitials(ticker)+'</div>';
-  }
-  return '<div class="'+avatarCls+'" style="background:'+color+';width:'+size+'px;height:'+size+'px;font-size:'+fs+';">'+getInitials(ticker)+'</div>';
+  const dataAttr = domain ? ' data-logo-ticker="'+ticker+'" data-logo-size="'+size+'"' : '';
+  return '<div class="'+avatarCls+'"'+dataAttr+' style="background:'+color+';width:'+size+'px;height:'+size+'px;font-size:'+fs+';">'+getInitials(ticker)+'</div>';
 }
 
 function loadLogos() {
-  Object.entries(LOGO_DOMAINS).forEach(([ticker, domain]) => {
-    const imgCls = 'card-logo';
-    ['36','22'].forEach(size => {
-      const id = 'logo-'+ticker.replace(/[^A-Za-z0-9]/g,'_')+'-'+size;
-      const el = document.getElementById(id);
-      if (!el) return;
-      const img = new Image();
-      img.onload = function() {
-        const s = parseInt(size);
-        const cls = s <= 22 ? 'ac-logo' : 'card-logo';
-        img.className = cls;
-        img.width = s;
-        img.height = s;
-        img.alt = ticker;
-        el.parentNode.replaceChild(img, el);
-      };
-      img.src = 'https://img.logo.dev/'+domain+'?token='+LOGO_TOKEN+'&size='+size;
-    });
+  document.querySelectorAll('[data-logo-ticker]').forEach(el => {
+    const ticker = el.getAttribute('data-logo-ticker');
+    const domain = LOGO_DOMAINS[ticker];
+    if (!domain) return;
+    const size = parseInt(el.getAttribute('data-logo-size') || '36');
+    const cls = size <= 22 ? 'ac-logo' : 'card-logo';
+    const img = new Image();
+    img.onload = function() {
+      img.className = cls;
+      img.width = size;
+      img.height = size;
+      img.alt = ticker;
+      img.style.borderRadius = size <= 22 ? '4px' : '8px';
+      if (el.parentNode) el.parentNode.replaceChild(img, el);
+    };
+    img.src = 'https://img.logo.dev/'+domain+'?token='+LOGO_TOKEN+'&size='+(size*2);
   });
 }
 
@@ -424,6 +418,10 @@ async function searchTicker() {
     const r = await res.json();
     area.innerHTML = `<div class="results-meta"><div class="results-count">Résultat — ${ticker}</div></div>`+renderCard(r,1);
     setTimeout(loadLogos, 50);
+    // Scroll automatique vers le résultat
+    setTimeout(() => {
+      document.getElementById('results-area').scrollIntoView({behavior:'smooth', block:'start'});
+    }, 100);
   } catch(e){showToast('Erreur lors de la recherche');renderEmpty();}
 }
 
