@@ -3,199 +3,181 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SmartValue Scanner — Analysez les marchés mondiaux avec clarté</title>
+<title>SmartValue Scanner — Analyse fondamentale mondiale</title>
 <meta name="description" content="Scanner d'actions fondamental gratuit. Analysez les entreprises mondiales selon des critères clairs pour structurer vos décisions d'investissement long terme."/>
-<meta property="og:title" content="SmartValue Scanner — Analyse fondamentale mondiale"/>
-<meta property="og:description" content="Scanner d'actions gratuit. Univers mondial, données réelles, scoring transparent."/>
-<meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#07080A;--bg2:#0D0F12;--bg3:#131519;--bg4:#191C21;
-  --accent:#C8F135;--accent2:#8BDE0F;
-  --text:#E8EBF0;--muted:#4E535E;--muted2:#7A7F8C;
-  --border:rgba(255,255,255,0.055);--border2:rgba(255,255,255,0.1);
+  --bg:#F2F4F7;--bg2:#FFFFFF;--bg3:#E8EBF2;--bg4:#DDE0E8;
+  --accent:#1E2330;--blue:#2563EB;
+  --text:#1E2330;--muted:#9096A8;--muted2:#6B7080;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --green:#16A34A;
 }
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--bg4);}
 
 /* ── NAV ── */
-nav{display:flex;justify-content:space-between;align-items:center;padding:1.25rem 3rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(7,8,10,0.93);backdrop-filter:blur(12px);z-index:100;}
+nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(242,244,247,0.96);backdrop-filter:blur(12px);z-index:100;}
 .nav-logo{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-0.02em;text-decoration:none;color:var(--text);}
-.nav-logo span{color:var(--accent);}
-.nav-right{display:flex;align-items:center;gap:1rem;}
-.nav-link{font-size:0.78rem;color:var(--muted2);text-decoration:none;transition:color 0.15s;}
+.nav-logo span{color:var(--blue);}
+.nav-links{display:flex;align-items:center;gap:2rem;}
+.nav-link{font-size:0.82rem;color:var(--muted2);text-decoration:none;transition:color 0.15s;}
 .nav-link:hover{color:var(--text);}
-.btn-nav{background:var(--accent);color:#07080A;font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:0.05em;text-transform:uppercase;padding:0.45rem 1.1rem;text-decoration:none;transition:background 0.15s;}
-.btn-nav:hover{background:var(--accent2);}
+.btn-nav{background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 1.25rem;text-decoration:none;border-radius:5px;transition:opacity 0.15s;}
+.btn-nav:hover{opacity:0.85;}
 
 /* ── HERO ── */
-.hero{padding:7rem 3rem 5rem;max-width:1000px;margin:0 auto;position:relative;}
-.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(200,241,53,0.07);border:1px solid rgba(200,241,53,0.2);padding:0.35rem 0.9rem;font-size:0.68rem;font-family:'DM Mono',monospace;letter-spacing:0.08em;color:var(--accent);margin-bottom:2.5rem;}
-.badge-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+.hero{max-width:860px;margin:0 auto;padding:5rem 2rem 4rem;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border2);padding:0.3rem 0.85rem;font-size:0.68rem;font-family:'DM Mono',monospace;letter-spacing:0.06em;color:var(--muted2);margin-bottom:2rem;border-radius:20px;}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
-h1{font-family:'Syne',sans-serif;font-size:clamp(2.8rem,5.5vw,4.5rem);font-weight:800;line-height:1.0;letter-spacing:-0.035em;margin-bottom:1.8rem;max-width:800px;}
-h1 em{font-style:normal;color:var(--accent);}
-.hero-sub{font-size:1.05rem;color:var(--muted2);line-height:1.75;max-width:520px;font-weight:300;margin-bottom:3rem;}
-.hero-actions{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
-.btn-primary{background:var(--accent);color:#07080A;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.05em;text-transform:uppercase;padding:0.85rem 2rem;text-decoration:none;display:inline-block;transition:all 0.15s;}
-.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);}
-.btn-ghost{background:transparent;color:var(--text);font-family:'Syne',sans-serif;font-weight:500;font-size:0.82rem;letter-spacing:0.04em;padding:0.85rem 2rem;border:1px solid var(--border);text-decoration:none;display:inline-block;transition:border-color 0.15s;}
-.btn-ghost:hover{border-color:var(--border2);}
-
-/* Grid de fond */
-.hero-grid{position:absolute;top:0;left:0;right:0;bottom:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:0.4;pointer-events:none;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,4.5vw,3.2rem);font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:1.25rem;}
+.hero h1 span{color:var(--blue);}
+.hero-sub{font-size:1rem;color:var(--muted2);line-height:1.75;max-width:500px;margin:0 auto 2.5rem;font-weight:300;}
+.hero-btns{display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-primary{background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.8rem 1.75rem;text-decoration:none;border-radius:6px;transition:opacity 0.15s;display:inline-block;}
+.btn-primary:hover{opacity:0.85;}
+.btn-secondary{background:transparent;color:var(--text);font-family:'Syne',sans-serif;font-weight:600;font-size:0.82rem;padding:0.8rem 1.75rem;border:1px solid var(--border2);text-decoration:none;border-radius:6px;transition:all 0.15s;display:inline-block;}
+.btn-secondary:hover{background:var(--bg2);}
 
 /* ── STATS ── */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.stat{background:var(--bg);padding:1.5rem 2rem;text-align:center;}
-.stat-n{font-family:'DM Mono',monospace;font-size:1.8rem;font-weight:500;color:var(--accent);letter-spacing:-0.02em;}
-.stat-l{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;}
+.stat{background:var(--bg2);padding:1.5rem;text-align:center;}
+.stat-n{font-family:'DM Mono',monospace;font-size:1.6rem;font-weight:500;color:var(--blue);letter-spacing:-0.02em;}
+.stat-l{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;}
 
 /* ── SECTIONS ── */
-.section{padding:6rem 3rem;max-width:1000px;margin:0 auto;}
-.section-label{font-size:0.62rem;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:1rem;}
-h2{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1rem;}
-.section-sub{color:var(--muted2);font-size:1rem;line-height:1.75;max-width:480px;font-weight:300;}
+.section{padding:5rem 2rem;max-width:860px;margin:0 auto;}
+.section-label{font-size:0.6rem;color:var(--blue);letter-spacing:0.12em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:0.75rem;}
+.section h2{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.75rem;}
+.section-sub{color:var(--muted2);font-size:0.92rem;line-height:1.75;max-width:460px;font-weight:300;}
 
 /* ── PROBLÈME ── */
-.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);margin-top:3rem;}
-.problem-item{background:var(--bg);padding:2rem 2.5rem;transition:background 0.2s;}
-.problem-item:hover{background:var(--bg2);}
-.problem-num{font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--accent);letter-spacing:0.08em;margin-bottom:0.75rem;}
-.problem-item h3{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:0.5rem;}
-.problem-item p{font-size:0.85rem;color:var(--muted2);line-height:1.65;}
+.problems{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2.5rem;}
+.problem{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.5rem;}
+.problem-num{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--blue);letter-spacing:0.08em;margin-bottom:0.6rem;}
+.problem h3{font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;margin-bottom:0.4rem;}
+.problem p{font-size:0.8rem;color:var(--muted2);line-height:1.6;}
 
-/* ── COMMENT ── */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
-.step{background:var(--bg2);border:1px solid var(--border);padding:2rem;position:relative;transition:border-color 0.2s;}
-.step:hover{border-color:rgba(200,241,53,0.2);}
-.step-bar{width:2px;height:36px;background:var(--accent);position:absolute;top:0;left:2rem;}
-.step-n{font-family:'DM Mono',monospace;font-size:2.5rem;font-weight:500;color:rgba(200,241,53,0.1);line-height:1;margin-bottom:1rem;}
-.step h3{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:0.5rem;}
-.step p{font-size:0.82rem;color:var(--muted2);line-height:1.65;}
+/* ── ÉTAPES ── */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2.5rem;}
+.step{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.5rem;position:relative;}
+.step-num{font-family:'DM Mono',monospace;font-size:2rem;font-weight:500;color:rgba(37,99,235,0.12);line-height:1;margin-bottom:0.75rem;}
+.step h3{font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;margin-bottom:0.4rem;}
+.step p{font-size:0.78rem;color:var(--muted2);line-height:1.6;}
+.step-bar{width:2px;height:32px;background:var(--blue);position:absolute;top:0;left:1.5rem;border-radius:0 0 2px 2px;}
 
 /* ── APERÇU APP ── */
-.app-preview{background:var(--bg2);border:1px solid var(--border);margin-top:3rem;overflow:hidden;}
-.app-preview-bar{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);background:var(--bg3);}
-.app-preview-dots{display:flex;gap:6px;}
-.dot{width:10px;height:10px;border-radius:50%;}
-.dot-r{background:#FF5F57;}
-.dot-y{background:#FEBC2E;}
-.dot-g{background:#28C840;}
-.app-preview-url{font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);background:var(--bg);padding:0.25rem 0.75rem;border:1px solid var(--border);}
-.app-preview-content{padding:1.5rem;display:grid;grid-template-columns:200px 1fr;gap:1rem;}
-.preview-sidebar{background:var(--bg3);border:1px solid var(--border);padding:1rem;}
-.preview-logo{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:800;color:var(--text);margin-bottom:0.75rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
-.preview-logo span{color:var(--accent);}
-.preview-nav-item{font-size:0.72rem;color:var(--muted2);padding:0.35rem 0.5rem;margin-bottom:2px;}
-.preview-nav-item.active{color:var(--accent);background:rgba(200,241,53,0.07);}
-.preview-main{}
-.preview-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-bottom:1rem;}
-.preview-stat{background:var(--bg);padding:0.6rem 0.75rem;text-align:center;}
-.preview-stat-n{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:var(--accent);}
-.preview-stat-l{font-size:0.52rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
-.preview-card{background:var(--bg2);border:1px solid var(--border);padding:0.75rem 1rem;margin-bottom:6px;display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;}
-.preview-card-left{}
-.preview-ticker{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:800;margin-bottom:3px;}
-.preview-tags{display:flex;gap:3px;}
-.preview-tag{font-size:0.5rem;font-family:'DM Mono',monospace;padding:0.1rem 0.35rem;border:1px solid rgba(200,241,53,0.2);color:var(--accent);}
-.preview-score{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:500;color:var(--accent);}
+.app-preview{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:2.5rem;box-shadow:0 4px 24px rgba(0,0,0,0.06);}
+.preview-bar{display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;background:var(--bg3);border-bottom:1px solid var(--border);}
+.preview-dots{display:flex;gap:5px;}
+.pdot{width:10px;height:10px;border-radius:50%;}
+.preview-url{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);background:var(--bg2);padding:0.2rem 0.65rem;border:1px solid var(--border);border-radius:4px;}
+.preview-body{padding:1.25rem;}
+.preview-profiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:1rem;}
+.pp{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:0.6rem 0.5rem;text-align:center;}
+.pp.active{background:var(--accent);border-color:var(--accent);}
+.pp-name{font-family:'Syne',sans-serif;font-size:0.65rem;font-weight:700;color:var(--text);}
+.pp.active .pp-name{color:#fff;}
+.preview-cards{display:flex;flex-direction:column;gap:6px;}
+.pc{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:0.75rem;display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;}
+.pc-avatar{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:800;color:#fff;flex-shrink:0;}
+.pc-ticker{font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:800;}
+.pc-name{font-size:0.62rem;color:var(--muted2);}
+.pc-tags{display:flex;gap:3px;margin-top:3px;}
+.pc-tag{font-size:0.5rem;font-family:'DM Mono',monospace;padding:0.1rem 0.35rem;border:1px solid var(--border2);color:var(--muted2);border-radius:3px;}
+.pc-score{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:500;color:var(--green);text-align:right;white-space:nowrap;}
+.pc-conf{font-size:0.55rem;background:#DCFCE7;color:var(--green);padding:0.1rem 0.4rem;border-radius:10px;text-align:center;margin-top:2px;}
 
 /* ── PROFILS ── */
-.profiles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
-.profile-card{background:var(--bg2);border:1px solid var(--border);padding:2rem;transition:border-color 0.2s;}
-.profile-card:hover{border-color:rgba(200,241,53,0.2);}
-.profile-card.featured{border-color:rgba(200,241,53,0.3);background:rgba(200,241,53,0.03);}
-.profile-icon{font-size:1.5rem;margin-bottom:1rem;}
-.profile-card h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.5rem;}
-.profile-card p{font-size:0.82rem;color:var(--muted2);line-height:1.65;margin-bottom:1rem;}
+.profiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:2.5rem;}
+.profile{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.5rem;}
+.profile.featured{border-color:var(--blue);border-width:2px;}
+.profile-icon{font-size:1.2rem;margin-bottom:0.6rem;}
+.profile h3{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:0.4rem;}
+.profile p{font-size:0.78rem;color:var(--muted2);line-height:1.6;margin-bottom:0.75rem;}
 .profile-tags{display:flex;flex-wrap:wrap;gap:4px;}
-.profile-tag{font-size:0.62rem;font-family:'DM Mono',monospace;padding:0.2rem 0.5rem;border:1px solid var(--border);color:var(--muted2);}
-
-/* ── WAITLIST ── */
-.waitlist-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5rem 3rem;}
-.waitlist-inner{max-width:600px;margin:0 auto;text-align:center;}
-.waitlist-form{display:flex;gap:8px;margin-top:2rem;max-width:480px;margin-left:auto;margin-right:auto;}
-.waitlist-input{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;padding:0.75rem 1rem;outline:none;transition:border-color 0.15s;}
-.waitlist-input::placeholder{color:var(--muted);}
-.waitlist-input:focus{border-color:rgba(200,241,53,0.35);}
-.waitlist-note{font-size:0.72rem;color:var(--muted);margin-top:0.75rem;}
-.waitlist-success{display:none;background:rgba(200,241,53,0.07);border:1px solid rgba(200,241,53,0.2);padding:1rem 1.5rem;font-size:0.85rem;color:var(--accent);font-family:'DM Mono',monospace;margin-top:1rem;}
+.ptag{font-size:0.62rem;font-family:'DM Mono',monospace;padding:0.18rem 0.5rem;border:1px solid var(--border2);color:var(--muted2);border-radius:3px;}
 
 /* ── POUR QUI ── */
-.for-who{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5rem 3rem;}
-.for-who-inner{max-width:1000px;margin:0 auto;}
-.tags-cloud{display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:2.5rem;}
-.tag-item{background:var(--bg3);border:1px solid var(--border);padding:0.55rem 1.1rem;font-size:0.78rem;color:var(--text);font-family:'Syne',sans-serif;transition:all 0.15s;cursor:default;}
-.tag-item:hover{border-color:rgba(200,241,53,0.25);color:var(--accent);}
-.tag-item.accent{background:rgba(200,241,53,0.07);border-color:rgba(200,241,53,0.25);color:var(--accent);}
+.for-who{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5rem 2rem;}
+.for-who-inner{max-width:860px;margin:0 auto;}
+.tags-cloud{display:flex;flex-wrap:wrap;gap:8px;margin-top:2rem;}
+.cloud-tag{background:var(--bg3);border:1px solid var(--border);padding:0.5rem 1rem;font-size:0.78rem;color:var(--text);border-radius:5px;transition:all 0.15s;cursor:default;}
+.cloud-tag:hover{border-color:var(--blue);color:var(--blue);}
+.cloud-tag.hl{background:#EFF6FF;border-color:#BFDBFE;color:var(--blue);}
+
+/* ── WAITLIST ── */
+.waitlist{background:var(--accent);padding:5rem 2rem;text-align:center;}
+.waitlist h2{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3vw,2rem);font-weight:800;letter-spacing:-0.02em;color:#fff;margin-bottom:0.75rem;}
+.waitlist p{color:rgba(255,255,255,0.65);font-size:0.9rem;line-height:1.75;margin-bottom:2rem;}
+.waitlist-form{display:flex;gap:8px;max-width:420px;margin:0 auto;}
+.waitlist-input{flex:1;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;font-family:'DM Sans',sans-serif;font-size:0.88rem;padding:0.7rem 1rem;outline:none;border-radius:6px;transition:border-color 0.15s;}
+.waitlist-input::placeholder{color:rgba(255,255,255,0.45);}
+.waitlist-input:focus{border-color:rgba(255,255,255,0.5);}
+.btn-waitlist{background:#fff;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.7rem 1.25rem;border:none;cursor:pointer;border-radius:6px;white-space:nowrap;transition:opacity 0.15s;}
+.btn-waitlist:hover{opacity:0.9;}
+.waitlist-note{font-size:0.7rem;color:rgba(255,255,255,0.45);margin-top:0.75rem;}
+.waitlist-success{display:none;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:0.85rem 1.5rem;color:#fff;font-size:0.85rem;margin-top:1rem;max-width:420px;margin-left:auto;margin-right:auto;}
 
 /* ── CTA FINAL ── */
-.cta-section{padding:8rem 3rem;text-align:center;max-width:700px;margin:0 auto;}
-.cta-section h2{font-size:clamp(2rem,4.5vw,3.5rem);margin-bottom:1.25rem;}
-.cta-section p{color:var(--muted2);margin-bottom:2.5rem;font-size:0.95rem;line-height:1.75;}
+.cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto;}
+.cta h2{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3.5vw,2.5rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1rem;}
+.cta p{color:var(--muted2);font-size:0.92rem;line-height:1.75;margin-bottom:2rem;}
 
-/* ── DISCLAIMER ── */
-.disclaimer{max-width:1000px;margin:0 auto;padding:2rem 3rem;border-top:1px solid var(--border);}
-.disclaimer p{font-size:0.72rem;color:var(--muted);line-height:1.75;}
-
-/* ── FOOTER ── */
-footer{border-top:1px solid var(--border);padding:1.75rem 3rem;display:flex;justify-content:space-between;align-items:center;}
-.footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;color:var(--muted);}
-.footer-logo span{color:var(--accent);}
+/* ── DISCLAIMER + FOOTER ── */
+.disclaimer{max-width:860px;margin:0 auto;padding:1.5rem 2rem;border-top:1px solid var(--border);}
+.disclaimer p{font-size:0.7rem;color:var(--muted);line-height:1.7;}
+footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-items:center;}
+.footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;color:var(--muted2);}
+.footer-logo span{color:var(--blue);}
 .footer-right{font-size:0.72rem;color:var(--muted);}
 
 /* ── RESPONSIVE ── */
-@media(max-width:768px){
-  nav{padding:1rem 1.5rem;}
-  .hero{padding:4rem 1.5rem 3rem;}
-  h1{font-size:2.5rem;}
+@media(max-width:700px){
+  nav{padding:0.9rem 1.25rem;}
+  .nav-links .nav-link{display:none;}
+  .hero{padding:3.5rem 1.25rem 3rem;}
   .stats{grid-template-columns:1fr 1fr;}
-  .section{padding:4rem 1.5rem;}
-  .problem-grid{grid-template-columns:1fr;}
+  .section{padding:3.5rem 1.25rem;}
+  .problems{grid-template-columns:1fr;}
   .steps{grid-template-columns:1fr;}
-  .profiles-grid{grid-template-columns:1fr;}
-  .app-preview-content{grid-template-columns:1fr;}
-  .preview-sidebar{display:none;}
-  .waitlist-section,.for-who{padding:4rem 1.5rem;}
+  .profiles{grid-template-columns:1fr;}
+  .for-who{padding:3.5rem 1.25rem;}
+  .waitlist{padding:3.5rem 1.25rem;}
   .waitlist-form{flex-direction:column;}
-  .cta-section{padding:4rem 1.5rem;}
-  footer{flex-direction:column;gap:0.75rem;text-align:center;}
-  .nav-link{display:none;}
+  .cta{padding:4rem 1.25rem;}
+  footer{flex-direction:column;gap:0.5rem;text-align:center;padding:1.25rem;}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ NAV ══ -->
+<!-- NAV -->
 <nav>
-  <a href="#" class="nav-logo">Smart<span>Value</span></a>
-  <div class="nav-right">
+  <a href="/" class="nav-logo">Smart<span>Value</span></a>
+  <div class="nav-links">
     <a href="#comment" class="nav-link">Comment ça marche</a>
     <a href="#profils" class="nav-link">Profils</a>
     <a href="https://smartvaluescanner.com/app" class="btn-nav" target="_blank">Accéder gratuitement</a>
   </div>
 </nav>
 
-<!-- ══ HERO ══ -->
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-badge"><span class="badge-dot"></span>Accès gratuit · Univers mondial · Données live</div>
-  <h1>Investir avec <em>clarté,</em><br>pas avec bruit.</h1>
-  <p class="hero-sub">SmartValue Scanner analyse les entreprises mondiales selon des critères fondamentaux clairs — pour vous aider à structurer vos décisions d'investissement long terme.</p>
-  <div class="hero-actions">
+  <div class="hero-badge"><span class="badge-dot"></span>Gratuit · Univers mondial · Données live</div>
+  <h1>Investir avec <span>clarté,</span><br>pas avec bruit.</h1>
+  <p class="hero-sub">SmartValue Scanner analyse les entreprises mondiales selon des critères fondamentaux clairs — pour structurer vos décisions d'investissement long terme.</p>
+  <div class="hero-btns">
     <a href="https://smartvaluescanner.com/app" class="btn-primary" target="_blank">Lancer le scanner →</a>
-    <a href="#comment" class="btn-ghost">Comment ça fonctionne</a>
+    <a href="#comment" class="btn-secondary">Comment ça fonctionne</a>
   </div>
 </section>
 
-<!-- ══ STATS ══ -->
+<!-- STATS -->
 <div class="stats">
   <div class="stat"><div class="stat-n">100+</div><div class="stat-l">Actions analysables</div></div>
   <div class="stat"><div class="stat-n">15+</div><div class="stat-l">Marchés couverts</div></div>
@@ -203,209 +185,176 @@ footer{border-top:1px solid var(--border);padding:1.75rem 3rem;display:flex;just
   <div class="stat"><div class="stat-n">0€</div><div class="stat-l">Pour commencer</div></div>
 </div>
 
-<!-- ══ PROBLÈME ══ -->
+<!-- PROBLÈME -->
 <section class="section">
   <div class="section-label">Le problème</div>
   <h2>Investir est devenu<br>un sport de données.</h2>
-  <p class="section-sub">Des dizaines d'indicateurs, des heures de recherche, et au final — toujours autant d'incertitude.</p>
-  <div class="problem-grid">
-    <div class="problem-item">
+  <p class="section-sub">Des dizaines d'indicateurs, des heures de recherche, et au final toujours autant d'incertitude.</p>
+  <div class="problems">
+    <div class="problem">
       <div class="problem-num">01 —</div>
       <h3>Trop d'indicateurs</h3>
-      <p>PER, P/B, EV/EBITDA, ROE, dette nette... difficile de savoir lesquels comptent vraiment dans votre stratégie.</p>
+      <p>PER, P/B, EV/EBITDA, ROE, dette nette... difficile de savoir lesquels comptent vraiment.</p>
     </div>
-    <div class="problem-item">
+    <div class="problem">
       <div class="problem-num">02 —</div>
       <h3>Sources dispersées</h3>
-      <p>Les données sont partout, rarement cohérentes, souvent difficiles à comparer entre entreprises et marchés.</p>
+      <p>Les données sont partout, rarement cohérentes, difficiles à comparer entre marchés.</p>
     </div>
-    <div class="problem-item">
+    <div class="problem">
       <div class="problem-num">03 —</div>
       <h3>Temps limité</h3>
-      <p>Une analyse sérieuse prend des heures. La plupart des investisseurs particuliers n'ont pas ce luxe au quotidien.</p>
+      <p>Une analyse sérieuse prend des heures. La plupart des investisseurs particuliers n'ont pas ce luxe.</p>
     </div>
-    <div class="problem-item">
+    <div class="problem">
       <div class="problem-num">04 —</div>
       <h3>Manque de recul</h3>
-      <p>Sans cadre structuré, on oscille entre sur-analyser et agir trop vite — rarement au bon moment.</p>
+      <p>Sans cadre structuré, on oscille entre sur-analyser et agir trop vite.</p>
     </div>
   </div>
 </section>
 
-<!-- ══ COMMENT ══ -->
-<section class="section" id="comment">
+<!-- COMMENT -->
+<section class="section" id="comment" style="padding-top:0;">
   <div class="section-label">Comment ça fonctionne</div>
   <h2>Trois étapes.<br>Une décision plus claire.</h2>
-  <p class="section-sub">SmartValue ne remplace pas votre jugement — il le structure et le rend plus efficace.</p>
+  <p class="section-sub">SmartValue ne remplace pas votre jugement — il le structure.</p>
   <div class="steps">
     <div class="step">
       <div class="step-bar"></div>
-      <div class="step-n">01</div>
+      <div class="step-num">01</div>
       <h3>Choisissez votre profil</h3>
-      <p>Défensif, équilibré ou croissance — chaque profil adapte automatiquement les secteurs et les filtres à votre stratégie.</p>
+      <p>Défensif, Universel ou Croissance — les secteurs et filtres s'adaptent automatiquement.</p>
     </div>
     <div class="step">
       <div class="step-bar"></div>
-      <div class="step-n">02</div>
+      <div class="step-num">02</div>
       <h3>Lancez le scan</h3>
-      <p>Le scanner analyse les entreprises de l'univers sélectionné selon 5 blocs : valorisation, rentabilité, santé, croissance, dividende.</p>
+      <p>Le scanner analyse les entreprises selon 5 blocs : valorisation, rentabilité, santé, croissance, dividende.</p>
     </div>
     <div class="step">
       <div class="step-bar"></div>
-      <div class="step-n">03</div>
+      <div class="step-num">03</div>
       <h3>Analysez les résultats</h3>
-      <p>Chaque entreprise reçoit un score global et un détail par bloc — prêt pour approfondir votre due diligence.</p>
+      <p>Chaque entreprise reçoit un score détaillé — prêt pour approfondir votre analyse.</p>
     </div>
   </div>
 
   <!-- Aperçu app -->
   <div class="app-preview">
-    <div class="app-preview-bar">
-      <div class="app-preview-dots">
-        <div class="dot dot-r"></div>
-        <div class="dot dot-y"></div>
-        <div class="dot dot-g"></div>
+    <div class="preview-bar">
+      <div class="preview-dots">
+        <div class="pdot" style="background:#FF5F57;"></div>
+        <div class="pdot" style="background:#FEBC2E;"></div>
+        <div class="pdot" style="background:#28C840;"></div>
       </div>
-      <div class="app-preview-url">smartvalue-app-production.up.railway.app</div>
+      <div class="preview-url">smartvaluescanner.com/app</div>
       <div style="width:60px;"></div>
     </div>
-    <div class="app-preview-content">
-      <div class="preview-sidebar">
-        <div class="preview-logo">Smart<span>Value</span></div>
-        <div class="preview-nav-item active">● Scanner univers</div>
-        <div class="preview-nav-item">● Recherche ticker</div>
-        <div style="margin-top:1rem;font-size:0.6rem;color:#4E535E;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Filtres</div>
-        <div style="background:#131519;height:2px;margin-bottom:6px;position:relative;"><div style="background:#C8F135;height:2px;width:45%;"></div></div>
-        <div style="background:#131519;height:2px;margin-bottom:6px;position:relative;"><div style="background:#C8F135;height:2px;width:70%;"></div></div>
+    <div class="preview-body">
+      <div class="preview-profiles">
+        <div class="pp"><div class="pp-name">🛡 Défensif</div></div>
+        <div class="pp active"><div class="pp-name">⚖ Universel</div></div>
+        <div class="pp"><div class="pp-name">🚀 Croissance</div></div>
       </div>
-      <div class="preview-main">
-        <div class="preview-stats">
-          <div class="preview-stat"><div class="preview-stat-n">12</div><div class="preview-stat-l">Opportunités</div></div>
-          <div class="preview-stat"><div class="preview-stat-n">64.2</div><div class="preview-stat-l">Score moyen</div></div>
-          <div class="preview-stat"><div class="preview-stat-n">74.8</div><div class="preview-stat-l">Meilleur</div></div>
-          <div class="preview-stat"><div class="preview-stat-n">89%</div><div class="preview-stat-l">Confiance</div></div>
-        </div>
-        <div class="preview-card">
-          <div class="preview-card-left">
-            <div class="preview-ticker">🔥 TSM — Taiwan Semiconductor</div>
-            <div class="preview-tags">
-              <span class="preview-tag">QUALITÉ</span>
-              <span class="preview-tag">SÛR</span>
-              <span class="preview-tag">CROISSANCE</span>
-            </div>
+      <div class="preview-cards">
+        <div class="pc">
+          <div class="pc-avatar" style="background:#7C3AED;">TS</div>
+          <div>
+            <div class="pc-ticker">TSM <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Taiwan Semiconductor</span></div>
+            <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">SÛR</span><span class="pc-tag">CROISSANCE</span></div>
           </div>
-          <div class="preview-score">74.8</div>
+          <div><div class="pc-score">74.8</div><div class="pc-conf">88.8%</div></div>
         </div>
-        <div class="preview-card">
-          <div class="preview-card-left">
-            <div class="preview-ticker">✅ META — Meta Platforms</div>
-            <div class="preview-tags">
-              <span class="preview-tag">QUALITÉ</span>
-              <span class="preview-tag">CROISSANCE</span>
-            </div>
+        <div class="pc">
+          <div class="pc-avatar" style="background:#EA580C;">ME</div>
+          <div>
+            <div class="pc-ticker">META <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Meta Platforms</span></div>
+            <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">CROISSANCE</span></div>
           </div>
-          <div class="preview-score">69.6</div>
+          <div><div class="pc-score">69.6</div><div class="pc-conf">92%</div></div>
         </div>
-        <div class="preview-card">
-          <div class="preview-card-left">
-            <div class="preview-ticker">✅ ADBE — Adobe Inc.</div>
-            <div class="preview-tags">
-              <span class="preview-tag">VALUE</span>
-              <span class="preview-tag">QUALITÉ</span>
-            </div>
+        <div class="pc">
+          <div class="pc-avatar" style="background:#2563EB;">AD</div>
+          <div>
+            <div class="pc-ticker">ADBE <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Adobe Inc.</span></div>
+            <div class="pc-tags"><span class="pc-tag">VALUE</span><span class="pc-tag">QUALITÉ</span></div>
           </div>
-          <div class="preview-score">69.0</div>
+          <div><div class="pc-score">69.0</div><div class="pc-conf">92%</div></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ PROFILS ══ -->
+<!-- PROFILS -->
 <section class="section" id="profils" style="padding-top:0;">
   <div class="section-label">Profils investisseur</div>
-  <h2>Adapté à<br>votre stratégie.</h2>
-  <p class="section-sub">Trois profils préconfigurés — chacun adapte automatiquement les secteurs, les filtres et les critères.</p>
-  <div class="profiles-grid">
-    <div class="profile-card">
+  <h2>Adapté à votre stratégie.</h2>
+  <p class="section-sub">Trois profils préconfigurés — chacun adapte automatiquement les secteurs et les critères.</p>
+  <div class="profiles">
+    <div class="profile">
       <div class="profile-icon">🛡</div>
       <h3>Défensif</h3>
-      <p>Entreprises solides, peu endettées, avec des dividendes stables. Priorité à la préservation du capital.</p>
-      <div class="profile-tags">
-        <span class="profile-tag">Finance</span>
-        <span class="profile-tag">Santé</span>
-        <span class="profile-tag">Conso. stable</span>
-        <span class="profile-tag">Faible dette</span>
-      </div>
+      <p>Entreprises solides, peu endettées, dividendes stables. Idéal pour préserver le capital.</p>
+      <div class="profile-tags"><span class="ptag">Finance</span><span class="ptag">Santé</span><span class="ptag">Conso.</span></div>
     </div>
-    <div class="profile-card featured">
+    <div class="profile featured">
       <div class="profile-icon">⚖</div>
-      <h3>Équilibré</h3>
-      <p>Le meilleur des deux mondes — qualité, valorisation raisonnable et croissance modérée. Recommandé pour la plupart des investisseurs.</p>
-      <div class="profile-tags">
-        <span class="profile-tag">Tous secteurs</span>
-        <span class="profile-tag">Score ≥ 35</span>
-        <span class="profile-tag">Confiance ≥ 60%</span>
-      </div>
+      <h3>Universel</h3>
+      <p>Couverture large, tous secteurs, critères équilibrés. Recommandé pour la plupart des investisseurs.</p>
+      <div class="profile-tags"><span class="ptag">Tous secteurs</span><span class="ptag">Score ≥ 35</span></div>
     </div>
-    <div class="profile-card">
+    <div class="profile">
       <div class="profile-icon">🚀</div>
       <h3>Croissance</h3>
-      <p>Entreprises à forte croissance de chiffre d'affaires. PER élevé toléré si la croissance le justifie.</p>
-      <div class="profile-tags">
-        <span class="profile-tag">Tech</span>
-        <span class="profile-tag">Santé</span>
-        <span class="profile-tag">Croissance CA &gt; 10%</span>
-      </div>
+      <p>Entreprises à forte croissance, tech et innovation. PER élevé toléré si la croissance le justifie.</p>
+      <div class="profile-tags"><span class="ptag">Tech</span><span class="ptag">Santé</span><span class="ptag">CA &gt;10%</span></div>
     </div>
   </div>
 </section>
 
-<!-- ══ POUR QUI ══ -->
+<!-- POUR QUI -->
 <section class="for-who">
   <div class="for-who-inner">
     <div class="section-label">Pour qui ?</div>
     <h2>Pensé pour l'investisseur long terme.</h2>
-    <p class="section-sub" style="max-width:500px;">Pas un outil de trading. Pas de signaux automatiques. Une aide à la réflexion fondamentale, rigoureuse et sobre.</p>
+    <p class="section-sub">Pas un outil de trading. Une aide à la réflexion fondamentale, rigoureuse et sobre.</p>
     <div class="tags-cloud">
-      <div class="tag-item accent">Investisseurs particuliers</div>
-      <div class="tag-item">Approche value</div>
-      <div class="tag-item">Investissement long terme</div>
-      <div class="tag-item accent">Débutants sérieux</div>
-      <div class="tag-item">Stock pickers</div>
-      <div class="tag-item">Analyse fondamentale</div>
-      <div class="tag-item accent">Sans abonnement</div>
-      <div class="tag-item">Marchés mondiaux</div>
-      <div class="tag-item">Europe & US & Asie</div>
+      <div class="cloud-tag hl">Investisseurs particuliers</div>
+      <div class="cloud-tag">Approche value</div>
+      <div class="cloud-tag">Investissement long terme</div>
+      <div class="cloud-tag hl">Débutants sérieux</div>
+      <div class="cloud-tag">Stock pickers</div>
+      <div class="cloud-tag">Analyse fondamentale</div>
+      <div class="cloud-tag hl">Accès gratuit</div>
+      <div class="cloud-tag">US · Europe · Asie</div>
     </div>
   </div>
 </section>
 
-<!-- ══ WAITLIST ══ -->
-<section class="waitlist-section" id="waitlist">
-  <div class="waitlist-inner">
-    <div class="section-label" style="text-align:center;">Restez informé</div>
-    <h2 style="font-size:clamp(1.8rem,3.5vw,2.5rem);margin-bottom:1rem;">Nouvelles fonctionnalités<br>en cours de développement.</h2>
-    <p style="color:var(--muted2);font-size:0.9rem;line-height:1.75;">Données premium, alertes personnalisées, historique des scans — laissez votre email pour être notifié en premier.</p>
-    <div class="waitlist-form">
-      <input class="waitlist-input" id="email-input" type="email" placeholder="votre@email.com">
-      <button class="btn-primary" onclick="submitWaitlist()" style="white-space:nowrap;">M'inscrire →</button>
-    </div>
-    <div class="waitlist-success" id="waitlist-success">✓ Vous êtes sur la liste — on vous contacte en premier !</div>
-    <p class="waitlist-note">Aucun spam. Désabonnement en 1 clic.</p>
+<!-- WAITLIST -->
+<section class="waitlist">
+  <h2>Nouvelles fonctionnalités<br>en cours de développement.</h2>
+  <p>Alertes personnalisées, données premium, historique des scans — soyez notifié en premier.</p>
+  <div class="waitlist-form">
+    <input class="waitlist-input" id="email-input" type="email" placeholder="votre@email.com">
+    <button class="btn-waitlist" onclick="submitWaitlist()">M'inscrire →</button>
   </div>
+  <div class="waitlist-success" id="waitlist-success">✓ Vous êtes sur la liste — on vous contacte en premier !</div>
+  <p class="waitlist-note">Aucun spam. Désabonnement en 1 clic.</p>
 </section>
 
-<!-- ══ CTA FINAL ══ -->
-<section class="cta-section">
-  <div class="section-label">Commencer maintenant</div>
+<!-- CTA FINAL -->
+<section class="cta">
+  <div class="section-label" style="text-align:center;">Commencer maintenant</div>
   <h2>Votre prochaine analyse<br>vous attend.</h2>
   <p>Accès gratuit. Aucune inscription requise.<br>Lancez votre premier scan en moins de 2 minutes.</p>
   <a href="https://smartvaluescanner.com/app" class="btn-primary" target="_blank">Accéder au scanner gratuitement →</a>
 </section>
 
 <div class="disclaimer">
-  <p>SmartValue Scanner est un outil d'aide à l'analyse fondamentale. Il ne fournit pas de conseils financiers personnalisés. Toute décision d'investissement reste sous la responsabilité exclusive de l'utilisateur. Les performances passées ne préjugent pas des performances futures. Les données affichées sont fournies à titre indicatif et peuvent présenter des délais ou inexactitudes.</p>
+  <p>SmartValue Scanner est un outil d'aide à l'analyse fondamentale. Il ne fournit pas de conseils financiers personnalisés. Toute décision d'investissement reste sous la responsabilité exclusive de l'utilisateur. Les performances passées ne préjugent pas des performances futures.</p>
 </div>
 
 <footer>
@@ -417,20 +366,16 @@ footer{border-top:1px solid var(--border);padding:1.75rem 3rem;display:flex;just
 function submitWaitlist() {
   const email = document.getElementById('email-input').value.trim();
   if (!email || !email.includes('@')) {
-    document.getElementById('email-input').style.borderColor = 'rgba(255,80,80,0.5)';
+    document.getElementById('email-input').style.borderColor = 'rgba(255,100,100,0.6)';
     return;
   }
-  document.getElementById('email-input').style.borderColor = 'rgba(200,241,53,0.35)';
+  document.getElementById('email-input').style.borderColor = 'rgba(255,255,255,0.5)';
   document.querySelector('.waitlist-form').style.display = 'none';
   document.getElementById('waitlist-success').style.display = 'block';
-  // Ici on pourrait envoyer à un service comme Mailchimp ou Airtable
-  console.log('Email inscrit:', email);
 }
-
-document.getElementById('email-input').addEventListener('keydown', function(e) {
+document.getElementById('email-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') submitWaitlist();
 });
 </script>
-
 </body>
 </html>
