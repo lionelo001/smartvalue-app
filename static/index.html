@@ -9,11 +9,12 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#07080A;--bg2:#0D0F12;--bg3:#131519;--bg4:#191C21;
-  --accent:#C8F135;--accent2:#8BDE0F;
-  --text:#E8EBF0;--muted:#4E535E;--muted2:#7A7F8C;
-  --border:rgba(255,255,255,0.055);--border2:rgba(255,255,255,0.1);
-  --green:#6EE7B7;--blue:#93C5FD;--yellow:#FCD34D;--pink:#F9A8D4;
+  --bg:#F2F4F7;--bg2:#FFFFFF;--bg3:#E8EBF2;--bg4:#DDE0E8;
+  --accent:#1E2330;--accent-soft:rgba(30,35,48,0.08);
+  --text:#1E2330;--muted:#9096A8;--muted2:#6B7080;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --green:#16A34A;--orange:#EA580C;--blue:#2563EB;
+  --score-high:#16A34A;--score-mid:#EA580C;--score-low:#9096A8;
 }
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
@@ -22,133 +23,145 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 ::-webkit-scrollbar-thumb{background:var(--bg4);}
 
 /* ── NAV ── */
-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:0.9rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(7,8,10,0.95);backdrop-filter:blur(12px);z-index:100;}
+nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:0.85rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(242,244,247,0.96);backdrop-filter:blur(12px);z-index:100;}
 .nav-logo{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-0.02em;text-decoration:none;color:var(--text);flex-shrink:0;}
-.nav-logo span{color:var(--accent);}
-.nav-badge{font-size:0.58rem;font-family:'DM Mono',monospace;letter-spacing:0.06em;padding:0.2rem 0.55rem;border:1px solid rgba(200,241,53,0.25);color:var(--accent);background:rgba(200,241,53,0.07);flex-shrink:0;}
-.nav-badge::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-right:5px;animation:pulse 2s infinite;vertical-align:middle;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
-.nav-search-wrap{position:relative;display:flex;flex:1;max-width:380px;}
-.nav-search-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-right:none;color:var(--text);font-family:'DM Mono',monospace;font-size:0.78rem;padding:0.45rem 0.85rem;outline:none;transition:border-color 0.15s;min-width:0;}
+.nav-logo span{color:var(--blue);}
+.nav-search-wrap{position:relative;display:flex;flex:1;max-width:360px;}
+.nav-search-input{flex:1;background:var(--bg2);border:1px solid var(--border2);border-right:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.82rem;padding:0.42rem 0.85rem;outline:none;transition:border-color 0.15s;min-width:0;}
 .nav-search-input::placeholder{color:var(--muted);}
-.nav-search-input:focus{border-color:rgba(200,241,53,0.35);}
-.nav-search-btn{background:var(--bg3);border:1px solid var(--border);border-left:none;color:var(--accent);font-size:1rem;padding:0 0.75rem;cursor:pointer;transition:background 0.15s;flex-shrink:0;}
-.nav-search-btn:hover{background:var(--bg4);}
+.nav-search-input:focus{border-color:var(--blue);}
+.nav-search-btn{background:var(--accent);border:none;color:#fff;font-size:0.8rem;padding:0 0.85rem;cursor:pointer;transition:opacity 0.15s;flex-shrink:0;}
+.nav-search-btn:hover{opacity:0.85;}
+.nav-badge{font-size:0.58rem;font-family:'DM Mono',monospace;letter-spacing:0.06em;padding:0.2rem 0.6rem;border:1px solid var(--border2);color:var(--muted2);flex-shrink:0;display:flex;align-items:center;gap:5px;}
+.nav-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 
-/* ── MAIN ── */
-.page{max-width:860px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+/* ── AUTOCOMPLETE ── */
+.autocomplete{position:absolute;top:100%;left:0;right:36px;background:var(--bg2);border:1px solid var(--border2);border-top:none;z-index:200;max-height:240px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.1);}
+.autocomplete.open{display:block;}
+.ac-item{padding:0.6rem 1rem;cursor:pointer;display:flex;align-items:center;gap:0.75rem;border-bottom:1px solid var(--border);transition:background 0.1s;}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover,.ac-item.selected{background:var(--bg3);}
+.ac-logo{width:22px;height:22px;border-radius:4px;object-fit:contain;background:var(--bg3);flex-shrink:0;}
+.ac-logo-placeholder{width:22px;height:22px;border-radius:4px;background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-size:0.55rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ac-ticker{font-family:'DM Mono',monospace;font-size:0.78rem;font-weight:500;color:var(--text);min-width:60px;}
+.ac-name{font-size:0.72rem;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ── PAGE ── */
+.page{max-width:820px;margin:0 auto;padding:2rem 1.5rem 4rem;}
 
 /* ── HERO ── */
-.hero{text-align:center;padding:3rem 0 2.5rem;}
-.hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;letter-spacing:-0.03em;margin-bottom:0.75rem;}
-.hero h1 span{color:var(--accent);}
-.hero p{font-size:0.9rem;color:var(--muted2);line-height:1.7;max-width:480px;margin:0 auto;}
+.hero{text-align:center;padding:2.5rem 0 2rem;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;letter-spacing:-0.03em;margin-bottom:0.6rem;color:var(--text);}
+.hero h1 span{color:var(--blue);}
+.hero p{font-size:0.88rem;color:var(--muted2);line-height:1.7;max-width:440px;margin:0 auto;}
 
 /* ── SECTION LABEL ── */
-.sec-label{font-size:0.6rem;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:0.75rem;}
+.sec-label{font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:0.6rem;}
 
 /* ── PROFILS ── */
-.profiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:2rem;}
-.profile-btn{background:var(--bg2);border:1px solid var(--border);padding:1rem;cursor:pointer;transition:all 0.15s;text-align:left;}
-.profile-btn:hover{border-color:rgba(200,241,53,0.2);}
-.profile-btn.active{background:rgba(200,241,53,0.07);border-color:rgba(200,241,53,0.35);}
-.profile-icon{font-size:1.2rem;margin-bottom:0.5rem;}
-.profile-name{font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;color:var(--text);margin-bottom:0.3rem;}
-.profile-desc{font-size:0.7rem;color:var(--muted2);line-height:1.5;}
-.profile-btn.active .profile-name{color:var(--accent);}
+.profiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.75rem;}
+.profile-btn{background:var(--bg2);border:1px solid var(--border);padding:0.9rem 0.75rem;cursor:pointer;transition:all 0.15s;text-align:left;border-radius:6px;}
+.profile-btn:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.profile-btn.active{background:var(--accent);border-color:var(--accent);}
+.profile-icon{font-size:1.1rem;margin-bottom:0.4rem;}
+.profile-name{font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;}
+.profile-desc{font-size:0.68rem;color:var(--muted2);line-height:1.4;}
+.profile-btn.active .profile-name{color:#fff;}
+.profile-btn.active .profile-desc{color:rgba(255,255,255,0.6);}
 
 /* ── SECTEURS ── */
-.sectors-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;}
+.sectors-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;}
 .sector-actions{display:flex;gap:6px;}
-.sector-action-btn{background:transparent;border:1px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.3rem 0.75rem;cursor:pointer;transition:all 0.15s;}
-.sector-action-btn:hover{border-color:var(--border2);color:var(--text);}
-.sectors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;margin-bottom:2rem;}
-.sector-item{display:flex;align-items:center;gap:7px;padding:0.55rem 0.75rem;background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:all 0.15s;user-select:none;font-size:0.75rem;color:var(--muted2);}
+.sector-action-btn{background:transparent;border:1px solid var(--border2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:0.7rem;padding:0.28rem 0.65rem;cursor:pointer;border-radius:4px;transition:all 0.15s;}
+.sector-action-btn:hover{background:var(--bg3);color:var(--text);}
+.sectors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:5px;margin-bottom:1.75rem;}
+.sector-item{display:flex;align-items:center;gap:6px;padding:0.5rem 0.65rem;background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:0.73rem;color:var(--muted2);border-radius:5px;user-select:none;}
 .sector-item:hover{border-color:var(--border2);color:var(--text);}
-.sector-item.active{background:rgba(200,241,53,0.07);border-color:rgba(200,241,53,0.2);color:var(--accent);}
-.sector-check{width:13px;height:13px;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;}
-
-/* ── RECHERCHE TICKER ── */
-.search-wrap{position:relative;margin-bottom:0.5rem;}
-.search-input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:0.88rem;padding:0.75rem 1rem;outline:none;transition:border-color 0.15s;}
-.search-input::placeholder{color:var(--muted);}
-.search-input:focus{border-color:rgba(200,241,53,0.35);}
-.autocomplete{position:absolute;top:100%;left:0;right:36px;background:var(--bg3);border:1px solid var(--border);border-top:none;z-index:200;max-height:220px;overflow-y:auto;display:none;}
-.autocomplete.open{display:block;}
-.ac-item{padding:0.6rem 1rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.1s;}
-.ac-item:hover{background:var(--bg4);}
-.ac-ticker{font-family:'DM Mono',monospace;font-size:0.8rem;font-weight:500;color:var(--accent);}
-.ac-name{font-size:0.72rem;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;}
-.ac-loading{padding:0.75rem 1rem;font-size:0.72rem;color:var(--muted);font-family:'DM Mono',monospace;}
+.sector-item.active{background:var(--accent-soft);border-color:rgba(30,35,48,0.25);color:var(--text);font-weight:500;}
+.sector-check{width:13px;height:13px;border:1.5px solid currentColor;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;}
 
 /* ── BOUTON SCAN ── */
-.scan-btn{width:100%;background:var(--accent);color:#07080A;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;text-transform:uppercase;padding:0.9rem;border:none;cursor:pointer;transition:all 0.15s;margin-bottom:2rem;}
-.scan-btn:hover{background:var(--accent2);}
+.scan-btn{width:100%;background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.9rem;border:none;cursor:pointer;transition:opacity 0.15s;border-radius:6px;margin-bottom:2rem;}
+.scan-btn:hover{opacity:0.88;}
 .scan-btn:disabled{background:var(--bg4);color:var(--muted);cursor:not-allowed;}
 
-/* ── DIVIDER ── */
-.divider{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
-
 /* ── EMPTY / LOADING ── */
-.empty{text-align:center;padding:3.5rem 1rem;color:var(--muted);}
-.empty-icon{font-family:'DM Mono',monospace;font-size:2rem;color:rgba(200,241,53,0.1);margin-bottom:1rem;}
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty-icon{font-size:2rem;margin-bottom:0.75rem;opacity:0.3;}
 .empty-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:var(--muted2);margin-bottom:0.4rem;}
-.empty-sub{font-size:0.8rem;line-height:1.6;}
-.loader{width:40px;height:2px;background:var(--bg4);position:relative;margin:0 auto 1.5rem;overflow:hidden;}
-.loader::after{content:'';position:absolute;left:-40px;width:40px;height:2px;background:var(--accent);animation:load 1.2s ease infinite;}
-@keyframes load{0%{left:-40px;}100%{left:40px;}}
-.loading-text{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--muted2);}
+.empty-sub{font-size:0.78rem;line-height:1.6;color:var(--muted);}
+.loader{width:36px;height:2px;background:var(--bg4);position:relative;margin:0 auto 1.25rem;overflow:hidden;border-radius:2px;}
+.loader::after{content:'';position:absolute;left:-36px;width:36px;height:2px;background:var(--accent);animation:load 1.2s ease infinite;}
+@keyframes load{0%{left:-36px;}100%{left:36px;}}
+.loading-text{font-size:0.78rem;color:var(--muted2);}
 
-/* ── RÉSULTATS HEADER ── */
-.results-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
-.results-count{font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;font-family:'DM Mono',monospace;}
-.export-btn{background:transparent;border:1px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:0.35rem 0.75rem;cursor:pointer;transition:all 0.15s;}
-.export-btn:hover{border-color:var(--border2);color:var(--text);}
+/* ── RÉSULTATS ── */
+.results-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.9rem;}
+.results-count{font-size:0.62rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.export-btn{background:transparent;border:1px solid var(--border2);color:var(--muted2);font-size:0.68rem;padding:0.3rem 0.7rem;cursor:pointer;border-radius:4px;transition:all 0.15s;}
+.export-btn:hover{background:var(--bg3);color:var(--text);}
 
 /* ── CARD ── */
-.card{background:var(--bg2);border:1px solid var(--border);padding:1.25rem;margin-bottom:8px;transition:border-color 0.15s;animation:fadeIn 0.3s ease both;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
-.card:hover{border-color:rgba(200,241,53,0.12);}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.6rem;}
-.card-left{}
-.card-ticker{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:3px;}
-.card-name{font-size:0.72rem;color:var(--muted);margin-bottom:5px;}
-.card-tags{display:flex;gap:4px;flex-wrap:wrap;}
-.tag{font-size:0.58rem;font-family:'DM Mono',monospace;letter-spacing:0.05em;padding:0.15rem 0.45rem;border:1px solid rgba(200,241,53,0.2);color:var(--accent);}
-.card-right{text-align:right;flex-shrink:0;margin-left:1rem;}
-.score-big{font-family:'DM Mono',monospace;font-size:2rem;font-weight:500;color:var(--accent);line-height:1;}
-.score-sub{font-size:0.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;}
-.score-bars{margin-top:8px;}
-.bar-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
-.bar-lbl{font-size:0.55rem;color:var(--muted);text-align:right;width:26px;flex-shrink:0;}
-.bar-track{flex:1;height:2px;background:rgba(255,255,255,0.04);}
-.bar-fill{height:2px;transition:width 0.6s ease;}
-.conf-badge{font-size:0.58rem;color:var(--muted);font-family:'DM Mono',monospace;margin-top:5px;}
-.card-why{font-size:0.72rem;color:#6A7080;line-height:1.55;border-left:2px solid rgba(200,241,53,0.15);padding-left:8px;margin:0.6rem 0;}
-.card-metrics{display:flex;gap:14px;flex-wrap:wrap;}
-.metric-v{font-family:'DM Mono',monospace;font-size:0.75rem;font-weight:500;color:var(--text);}
-.metric-l{font-size:0.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:1px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden;transition:box-shadow 0.15s;animation:fadeIn 0.3s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08);}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--bg3);border:1px solid var(--border);padding:0.7rem 1.1rem;font-size:0.75rem;color:var(--text);transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:1000;font-family:'DM Mono',monospace;}
-.toast.show{transform:translateY(0);opacity:1;}
+/* En-tête de card */
+.card-header{display:flex;align-items:center;gap:0.85rem;padding:0.9rem 1rem;cursor:pointer;user-select:none;}
+.card-logo{width:36px;height:36px;border-radius:8px;object-fit:contain;background:var(--bg3);flex-shrink:0;border:1px solid var(--border);}
+.card-logo-placeholder{width:36px;height:36px;border-radius:8px;background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.card-info{flex:1;min-width:0;}
+.card-ticker{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;letter-spacing:-0.01em;}
+.card-name{font-size:0.7rem;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+.card-tags-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
+.tag{font-size:0.56rem;font-family:'DM Mono',monospace;letter-spacing:0.04em;padding:0.12rem 0.4rem;border:1px solid var(--border2);color:var(--muted2);border-radius:3px;background:var(--bg3);}
+.card-right{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;}
+.score-num{font-family:'DM Mono',monospace;font-size:1.6rem;font-weight:500;line-height:1;}
+.score-high{color:var(--score-high);}
+.score-mid{color:var(--score-mid);}
+.score-low{color:var(--score-low);}
+.score-label{font-size:0.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;}
+.conf-pill{font-size:0.58rem;font-family:'DM Mono',monospace;padding:0.12rem 0.5rem;border-radius:20px;margin-top:4px;}
+.conf-high{background:#DCFCE7;color:#16A34A;}
+.conf-mid{background:#FEF9C3;color:#CA8A04;}
+.conf-low{background:#FEE2E2;color:#DC2626;}
+.card-expand-icon{font-size:0.7rem;color:var(--muted);margin-top:4px;transition:transform 0.2s;}
+.card.open .card-expand-icon{transform:rotate(180deg);}
+
+/* Corps déployé */
+.card-body{display:none;padding:0 1rem 1rem;border-top:1px solid var(--border);}
+.card.open .card-body{display:block;}
+.card-why{font-size:0.75rem;color:var(--muted2);line-height:1.6;padding:0.75rem 0;border-bottom:1px solid var(--border);margin-bottom:0.85rem;}
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:0.85rem;}
+.metric-box{background:var(--bg3);border-radius:5px;padding:0.55rem 0.65rem;}
+.metric-v{font-family:'DM Mono',monospace;font-size:0.88rem;font-weight:500;color:var(--text);}
+.metric-l{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+.score-bars-label{font-size:0.6rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem;}
+.score-bars{}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.bar-lbl{font-size:0.62rem;color:var(--muted2);width:60px;flex-shrink:0;}
+.bar-track{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.bar-fill{height:4px;border-radius:2px;}
+.bar-val{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);width:28px;text-align:right;flex-shrink:0;}
 
 /* ── FOOTER ── */
-.footer{border-top:1px solid var(--border);padding:1.5rem 0;font-size:0.68rem;color:var(--muted);line-height:1.7;margin-top:3rem;}
+.footer{border-top:1px solid var(--border);padding:1.5rem 0;font-size:0.68rem;color:var(--muted);line-height:1.7;margin-top:2rem;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--accent);color:#fff;padding:0.65rem 1.1rem;font-size:0.75rem;transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:1000;border-radius:5px;}
+.toast.show{transform:translateY(0);opacity:1;}
 
 /* ── RESPONSIVE ── */
 @media(max-width:600px){
   nav{padding:0.75rem 1rem;gap:0.5rem;}
   .nav-search-wrap{max-width:none;flex:1;}
-  .nav-search-input{font-size:0.72rem;padding:0.4rem 0.6rem;}
-  .nav-search-input::placeholder{font-size:0.65rem;}
-  .page{padding:1.5rem 1rem 4rem;}
-  .profiles{grid-template-columns:1fr 1fr 1fr;gap:6px;}
-  .profile-btn{padding:0.75rem 0.5rem;}
+  .page{padding:1.25rem 1rem 3rem;}
+  .profiles{gap:5px;}
   .profile-desc{display:none;}
-  .sectors-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}
-  .card-metrics{gap:10px;}
-  .score-big{font-size:1.6rem;}
+  .sectors-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));}
+  .metrics-grid{grid-template-columns:repeat(3,1fr);}
+  .score-num{font-size:1.3rem;}
 }
 </style>
 </head>
@@ -157,22 +170,19 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 <nav>
   <a href="/" class="nav-logo">Smart<span>Value</span></a>
   <div class="nav-search-wrap">
-    <input class="nav-search-input" id="ticker-input" placeholder="Ticker ou nom — AAPL, Apple…" autocomplete="off" autocapitalize="characters" spellcheck="false" oninput="onSearchInput(this.value)" onkeydown="onSearchKey(event)">
+    <input class="nav-search-input" id="ticker-input" placeholder="Apple, AAPL, LVMH…" autocomplete="off" autocapitalize="characters" spellcheck="false" oninput="onSearchInput(this.value)" onkeydown="onSearchKey(event)">
     <div class="autocomplete" id="autocomplete"></div>
     <button class="nav-search-btn" onclick="searchTicker()">→</button>
   </div>
-  <span class="nav-badge">Live</span>
+  <div class="nav-badge"><span class="nav-badge-dot"></span>Live</div>
 </nav>
 
 <div class="page">
-
-  <!-- HERO -->
   <div class="hero">
     <h1>Scanner d'actions <span>fondamental</span></h1>
     <p>Analysez les entreprises mondiales selon des critères clairs pour structurer vos décisions d'investissement long terme.</p>
   </div>
 
-  <!-- PROFILS -->
   <div class="sec-label">Profil investisseur</div>
   <div class="profiles">
     <button class="profile-btn" id="btn-defensive" onclick="applyProfile('defensive')">
@@ -192,7 +202,6 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
     </button>
   </div>
 
-  <!-- SECTEURS -->
   <div class="sectors-header">
     <div class="sec-label" style="margin-bottom:0;">Secteurs</div>
     <div class="sector-actions">
@@ -202,22 +211,18 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
   </div>
   <div class="sectors-grid" id="sectors-grid"></div>
 
-  <hr class="divider">
+  <button class="scan-btn" id="scan-btn" onclick="startScan()">Lancer le scan</button>
 
-  <!-- BOUTON SCAN -->
-  <button class="scan-btn" id="scan-btn" onclick="startScan()">🚀 Lancer le scan</button>
-
-  <!-- RÉSULTATS -->
   <div id="results-area">
     <div class="empty" id="empty-state">
-      <div class="empty-icon">{ }</div>
+      <div class="empty-icon">◎</div>
       <div class="empty-title">Lancez un scan pour voir les opportunités</div>
       <div class="empty-sub">Choisissez votre profil, sélectionnez vos secteurs et cliquez sur Lancer le scan.</div>
     </div>
   </div>
 
   <div class="footer">
-    SmartValue Scanner est un outil d'aide à l'analyse fondamentale. Il ne fournit pas de conseils financiers personnalisés. Toute décision d'investissement reste sous la responsabilité exclusive de l'utilisateur.
+    SmartValue Scanner est un outil d'aide à l'analyse fondamentale. Il ne fournit pas de conseils financiers personnalisés. Toute décision d'investissement reste sous la responsabilité exclusive de l'utilisateur. Les performances passées ne préjugent pas des performances futures.
   </div>
 </div>
 
@@ -225,38 +230,66 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 
 <script>
 // ── STATE ──────────────────────────────────────────────────
-const state = {
-  sectors: {},
-  minScore: 35,
-  minConf: 50,
-  topN: 15,
-  results: [],
-  scanning: false,
-};
+const state = { sectors:{}, minScore:35, minConf:50, topN:15, results:[], scanning:false };
 
-const BAR_LABELS = ['Val.','Rent.','Santé','Crois.','Div.'];
-const BAR_KEYS = ['Bloc valuation','Bloc rentabilité','Bloc santé','Bloc croissance','Bloc dividende'];
-const BAR_COLORS = ['#C8F135','#6EE7B7','#93C5FD','#FCD34D','#F9A8D4'];
+const BAR_LABELS = ['Valorisation','Rentabilité','Santé financière','Croissance','Dividende'];
+const BAR_KEYS   = ['Bloc valuation','Bloc rentabilité','Bloc santé','Bloc croissance','Bloc dividende'];
+const BAR_COLORS = ['#2563EB','#16A34A','#9333EA','#EA580C','#DB2777'];
 
-const PROFILES = {
-  defensive: {
-    minScore:40, minConf:70, topN:15,
-    sectors:['Finance US','Santé US','Conso US','Finance Europe','Santé Europe','Energie Europe','Energie US'],
-  },
-  balanced: { minScore:35, minConf:50, topN:15, sectors:null },
-  growth: {
-    minScore:30, minConf:50, topN:20,
-    sectors:['Tech US','Tech Europe','Tech Asie','Santé US','Industriels US'],
-  },
-};
-
-// ── INIT ──────────────────────────────────────────────────
 const DEFAULT_SECTORS = [
   'Tech US','Finance US','Santé US','Energie US','Conso US','Industriels US',
   'Tech Europe','Finance Europe','Conso Europe','Energie Europe','Santé Europe','Industriels Europe',
   'Tech Asie','Finance Asie','Energie Asie'
 ];
 
+const PROFILES = {
+  defensive:{ minScore:40, minConf:70, topN:15, sectors:['Finance US','Santé US','Conso US','Finance Europe','Santé Europe','Energie Europe','Energie US'] },
+  balanced:{ minScore:35, minConf:50, topN:15, sectors:null },
+  growth:{ minScore:30, minConf:50, topN:20, sectors:['Tech US','Tech Europe','Tech Asie','Santé US','Industriels US'] },
+};
+
+// Mapping ticker → domaine pour les logos
+const LOGO_DOMAINS = {
+  'AAPL':'apple.com','MSFT':'microsoft.com','GOOGL':'google.com','NVDA':'nvidia.com',
+  'META':'meta.com','AMZN':'amazon.com','TSLA':'tesla.com','ADBE':'adobe.com',
+  'CRM':'salesforce.com','ORCL':'oracle.com','INTC':'intel.com','AMD':'amd.com',
+  'QCOM':'qualcomm.com','AVGO':'broadcom.com','TSM':'tsmc.com','ASML':'asml.com',
+  'JPM':'jpmorgan.com','BAC':'bankofamerica.com','WFC':'wellsfargo.com','GS':'goldmansachs.com',
+  'MS':'morganstanley.com','V':'visa.com','MA':'mastercard.com','AXP':'americanexpress.com',
+  'PYPL':'paypal.com','JNJ':'jnj.com','PFE':'pfizer.com','UNH':'unitedhealthgroup.com',
+  'ABBV':'abbvie.com','LLY':'lilly.com','MRK':'merck.com','ABT':'abbott.com','TMO':'thermofisher.com',
+  'PG':'pg.com','KO':'coca-cola.com','PEP':'pepsico.com','WMT':'walmart.com','COST':'costco.com',
+  'MCD':'mcdonalds.com','NKE':'nike.com','SBUX':'starbucks.com','HD':'homedepot.com',
+  'XOM':'exxonmobil.com','CVX':'chevron.com','COP':'conocophillips.com',
+  'CAT':'caterpillar.com','HON':'honeywell.com','GE':'ge.com','BA':'boeing.com',
+  'MC.PA':'lvmh.com','OR.PA':'loreal.com','TTE.PA':'totalenergies.com',
+  'BNP.PA':'bnpparibas.com','SAN.PA':'sanofi.com','AIR.PA':'airbus.com','AXA.PA':'axa.com',
+  'SAP.DE':'sap.com','SIE.DE':'siemens.com','DBK.DE':'db.com','NESN.SW':'nestle.com',
+  'ROG.SW':'roche.com','NOVN.SW':'novartis.com','ABB.SW':'abb.com',
+  'HSBA.L':'hsbc.com','BARC.L':'barclays.com','BP.L':'bp.com','AZN.L':'astrazeneca.com',
+  'SONY':'sony.com','MUFG':'mufg.jp','005930.KS':'samsung.com',
+};
+
+function getLogoUrl(ticker) {
+  const domain = LOGO_DOMAINS[ticker];
+  if (domain) return `https://logo.clearbit.com/${domain}`;
+  return null;
+}
+
+function getInitials(name) {
+  return (name||'?').replace(/[^A-Za-z\s]/g,'').split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+}
+
+function logoHtml(ticker, name, size=36, cls='card-logo', placeholderCls='card-logo-placeholder') {
+  const url = getLogoUrl(ticker);
+  const initials = getInitials(name || ticker);
+  if (url) {
+    return `<img class="${cls}" src="${url}" alt="${ticker}" onerror="this.outerHTML='<div class=\\"${placeholderCls}\\">${initials}</div>'" width="${size}" height="${size}">`;
+  }
+  return `<div class="${placeholderCls}">${initials}</div>`;
+}
+
+// ── INIT ──────────────────────────────────────────────────
 function init() {
   DEFAULT_SECTORS.forEach(s => { state.sectors[s] = true; });
   renderSectors();
@@ -264,339 +297,206 @@ function init() {
 
 // ── SECTEURS ──────────────────────────────────────────────
 function renderSectors() {
-  const grid = document.getElementById('sectors-grid');
-  grid.innerHTML = Object.keys(state.sectors).map(s => `
+  document.getElementById('sectors-grid').innerHTML = Object.keys(state.sectors).map(s => `
     <div class="sector-item ${state.sectors[s]?'active':''}" onclick="toggleSector('${s}')">
       <div class="sector-check">${state.sectors[s]?'✓':''}</div>
       <span>${s}</span>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function toggleSector(s) {
-  state.sectors[s] = !state.sectors[s];
-  renderSectors();
-}
-
-function toggleAllSectors(val) {
-  Object.keys(state.sectors).forEach(s => state.sectors[s] = val);
-}
+function toggleSector(s) { state.sectors[s]=!state.sectors[s]; renderSectors(); }
+function toggleAllSectors(v) { Object.keys(state.sectors).forEach(s=>state.sectors[s]=v); }
 
 // ── PROFILS ──────────────────────────────────────────────
 function applyProfile(type) {
   const p = PROFILES[type];
-  state.minScore = p.minScore;
-  state.minConf = p.minConf;
-  state.topN = p.topN;
-  if (p.sectors) {
-    Object.keys(state.sectors).forEach(s => { state.sectors[s] = p.sectors.includes(s); });
-  } else {
-    Object.keys(state.sectors).forEach(s => { state.sectors[s] = true; });
-  }
+  state.minScore=p.minScore; state.minConf=p.minConf; state.topN=p.topN;
+  if (p.sectors) { Object.keys(state.sectors).forEach(s=>state.sectors[s]=p.sectors.includes(s)); }
+  else { Object.keys(state.sectors).forEach(s=>state.sectors[s]=true); }
   renderSectors();
-  ['defensive','balanced','growth'].forEach(t => {
-    const btn = document.getElementById('btn-' + t);
-    btn.classList.toggle('active', t === type);
-  });
-  showToast(type === 'defensive' ? 'Profil Défensif ✓' : type === 'balanced' ? 'Profil Universel ✓' : 'Profil Croissance ✓');
+  ['defensive','balanced','growth'].forEach(t => document.getElementById('btn-'+t).classList.toggle('active',t===type));
+  showToast({defensive:'Profil Défensif activé',balanced:'Profil Universel activé',growth:'Profil Croissance activé'}[type]);
 }
 
-// ── AUTOCOMPLETE LOCAL ────────────────────────────────────
+// ── AUTOCOMPLETE ──────────────────────────────────────────
 const TICKERS = [
-  // US Tech
-  {s:'AAPL',n:'Apple Inc.'},
-  {s:'MSFT',n:'Microsoft Corporation'},
-  {s:'GOOGL',n:'Alphabet Inc.'},
-  {s:'NVDA',n:'NVIDIA Corporation'},
-  {s:'META',n:'Meta Platforms'},
-  {s:'AMZN',n:'Amazon.com'},
-  {s:'TSLA',n:'Tesla Inc.'},
-  {s:'ADBE',n:'Adobe Inc.'},
-  {s:'CRM',n:'Salesforce'},
-  {s:'ORCL',n:'Oracle Corporation'},
-  {s:'INTC',n:'Intel Corporation'},
-  {s:'AMD',n:'Advanced Micro Devices'},
-  {s:'QCOM',n:'Qualcomm'},
-  {s:'AVGO',n:'Broadcom'},
-  {s:'TSM',n:'Taiwan Semiconductor'},
-  {s:'ASML',n:'ASML Holding'},
-  // US Finance
-  {s:'JPM',n:'JPMorgan Chase'},
-  {s:'BAC',n:'Bank of America'},
-  {s:'WFC',n:'Wells Fargo'},
-  {s:'GS',n:'Goldman Sachs'},
-  {s:'MS',n:'Morgan Stanley'},
-  {s:'V',n:'Visa Inc.'},
-  {s:'MA',n:'Mastercard'},
-  {s:'AXP',n:'American Express'},
-  {s:'BRK-B',n:'Berkshire Hathaway'},
-  {s:'PYPL',n:'PayPal'},
-  // US Santé
-  {s:'JNJ',n:'Johnson & Johnson'},
-  {s:'PFE',n:'Pfizer'},
-  {s:'UNH',n:'UnitedHealth Group'},
-  {s:'ABBV',n:'AbbVie'},
-  {s:'LLY',n:'Eli Lilly'},
-  {s:'MRK',n:'Merck & Co.'},
-  {s:'ABT',n:'Abbott Laboratories'},
-  {s:'TMO',n:'Thermo Fisher Scientific'},
-  {s:'BMY',n:'Bristol-Myers Squibb'},
-  // US Conso
-  {s:'PG',n:'Procter & Gamble'},
-  {s:'KO',n:'Coca-Cola Company'},
-  {s:'PEP',n:'PepsiCo'},
-  {s:'WMT',n:'Walmart'},
-  {s:'COST',n:'Costco'},
-  {s:'MCD',n:'McDonalds'},
-  {s:'NKE',n:'Nike'},
-  {s:'SBUX',n:'Starbucks'},
-  {s:'HD',n:'Home Depot'},
-  // US Energie
-  {s:'XOM',n:'ExxonMobil'},
-  {s:'CVX',n:'Chevron'},
-  {s:'COP',n:'ConocoPhillips'},
-  // US Industriels
-  {s:'CAT',n:'Caterpillar'},
-  {s:'HON',n:'Honeywell'},
-  {s:'GE',n:'General Electric'},
-  {s:'UPS',n:'United Parcel Service'},
-  {s:'BA',n:'Boeing'},
-  {s:'DE',n:'Deere & Company'},
-  // Europe France
-  {s:'MC.PA',n:'LVMH'},
-  {s:'OR.PA',n:'LOreal'},
-  {s:'TTE.PA',n:'TotalEnergies'},
-  {s:'BNP.PA',n:'BNP Paribas'},
-  {s:'SAN.PA',n:'Sanofi'},
-  {s:'AIR.PA',n:'Airbus'},
-  {s:'AXA.PA',n:'AXA'},
-  {s:'DG.PA',n:'Vinci'},
-  {s:'CAP.PA',n:'Capgemini'},
-  {s:'RMS.PA',n:'Hermès'},
-  {s:'CS.PA',n:'AXA'},
-  {s:'ENGI.PA',n:'Engie'},
-  // Europe autres
-  {s:'SAP.DE',n:'SAP SE'},
-  {s:'SIE.DE',n:'Siemens'},
-  {s:'DBK.DE',n:'Deutsche Bank'},
-  {s:'BAY.DE',n:'Bayer'},
-  {s:'NESN.SW',n:'Nestlé'},
-  {s:'ROG.SW',n:'Roche'},
-  {s:'NOVN.SW',n:'Novartis'},
-  {s:'ABB.SW',n:'ABB Ltd'},
-  {s:'HSBA.L',n:'HSBC Holdings'},
-  {s:'BARC.L',n:'Barclays'},
-  {s:'BP.L',n:'BP'},
-  {s:'SHEL.L',n:'Shell'},
-  {s:'AZN.L',n:'AstraZeneca'},
-  {s:'GSK.L',n:'GSK'},
-  {s:'UNILEVER.L',n:'Unilever'},
-  // Asie
-  {s:'9988.HK',n:'Alibaba Group'},
-  {s:'700.HK',n:'Tencent Holdings'},
-  {s:'939.HK',n:'China Construction Bank'},
-  {s:'005930.KS',n:'Samsung Electronics'},
-  {s:'SONY',n:'Sony Group'},
-  {s:'MUFG',n:'Mitsubishi UFJ'},
-  {s:'8306.T',n:'Mitsubishi UFJ Financial'},
+  {s:'AAPL',n:'Apple Inc.'},{s:'MSFT',n:'Microsoft Corporation'},{s:'GOOGL',n:'Alphabet Inc.'},
+  {s:'NVDA',n:'NVIDIA Corporation'},{s:'META',n:'Meta Platforms'},{s:'AMZN',n:'Amazon.com'},
+  {s:'TSLA',n:'Tesla Inc.'},{s:'ADBE',n:'Adobe Inc.'},{s:'CRM',n:'Salesforce'},
+  {s:'ORCL',n:'Oracle Corporation'},{s:'INTC',n:'Intel Corporation'},{s:'AMD',n:'Advanced Micro Devices'},
+  {s:'QCOM',n:'Qualcomm'},{s:'AVGO',n:'Broadcom'},{s:'TSM',n:'Taiwan Semiconductor'},{s:'ASML',n:'ASML Holding'},
+  {s:'JPM',n:'JPMorgan Chase'},{s:'BAC',n:'Bank of America'},{s:'WFC',n:'Wells Fargo'},
+  {s:'GS',n:'Goldman Sachs'},{s:'MS',n:'Morgan Stanley'},{s:'V',n:'Visa Inc.'},
+  {s:'MA',n:'Mastercard'},{s:'AXP',n:'American Express'},{s:'BRK-B',n:'Berkshire Hathaway'},
+  {s:'JNJ',n:'Johnson & Johnson'},{s:'PFE',n:'Pfizer'},{s:'UNH',n:'UnitedHealth Group'},
+  {s:'ABBV',n:'AbbVie'},{s:'LLY',n:'Eli Lilly'},{s:'MRK',n:'Merck & Co.'},
+  {s:'ABT',n:'Abbott Laboratories'},{s:'TMO',n:'Thermo Fisher Scientific'},
+  {s:'PG',n:'Procter & Gamble'},{s:'KO',n:'Coca-Cola Company'},{s:'PEP',n:'PepsiCo'},
+  {s:'WMT',n:'Walmart'},{s:'COST',n:'Costco'},{s:'MCD',n:'McDonalds'},
+  {s:'NKE',n:'Nike'},{s:'SBUX',n:'Starbucks'},{s:'HD',n:'Home Depot'},
+  {s:'XOM',n:'ExxonMobil'},{s:'CVX',n:'Chevron'},{s:'COP',n:'ConocoPhillips'},
+  {s:'CAT',n:'Caterpillar'},{s:'HON',n:'Honeywell'},{s:'GE',n:'General Electric'},
+  {s:'BA',n:'Boeing'},{s:'UPS',n:'United Parcel Service'},
+  {s:'MC.PA',n:'LVMH'},{s:'OR.PA',n:'LOreal'},{s:'TTE.PA',n:'TotalEnergies'},
+  {s:'BNP.PA',n:'BNP Paribas'},{s:'SAN.PA',n:'Sanofi'},{s:'AIR.PA',n:'Airbus'},
+  {s:'AXA.PA',n:'AXA'},{s:'DG.PA',n:'Vinci'},{s:'CAP.PA',n:'Capgemini'},{s:'RMS.PA',n:'Hermes'},
+  {s:'SAP.DE',n:'SAP SE'},{s:'SIE.DE',n:'Siemens'},{s:'DBK.DE',n:'Deutsche Bank'},
+  {s:'NESN.SW',n:'Nestle'},{s:'ROG.SW',n:'Roche'},{s:'NOVN.SW',n:'Novartis'},{s:'ABB.SW',n:'ABB Ltd'},
+  {s:'HSBA.L',n:'HSBC Holdings'},{s:'BARC.L',n:'Barclays'},{s:'BP.L',n:'BP'},{s:'AZN.L',n:'AstraZeneca'},
+  {s:'9988.HK',n:'Alibaba Group'},{s:'700.HK',n:'Tencent Holdings'},{s:'005930.KS',n:'Samsung Electronics'},
+  {s:'SONY',n:'Sony Group'},{s:'MUFG',n:'Mitsubishi UFJ'},
 ];
 
 let acSelected = -1;
-
 function onSearchInput(val) {
   const ac = document.getElementById('autocomplete');
-  if (!val || val.length < 1) { ac.classList.remove('open'); return; }
+  if (!val||val.length<1){ac.classList.remove('open');return;}
   const q = val.toLowerCase();
-  const matches = TICKERS.filter(t =>
-    t.s.toLowerCase().includes(q) || t.n.toLowerCase().includes(q)
-  ).slice(0, 7);
-  if (!matches.length) { ac.classList.remove('open'); return; }
-  acSelected = -1;
-  ac.innerHTML = matches.map((r,i) => `
+  const matches = TICKERS.filter(t=>t.s.toLowerCase().includes(q)||t.n.toLowerCase().includes(q)).slice(0,7);
+  if (!matches.length){ac.classList.remove('open');return;}
+  acSelected=-1;
+  ac.innerHTML = matches.map((r,i)=>`
     <div class="ac-item" onclick="selectTicker('${r.s}')" data-idx="${i}">
+      ${logoHtml(r.s, r.n, 22, 'ac-logo', 'ac-logo-placeholder')}
       <span class="ac-ticker">${r.s}</span>
       <span class="ac-name">${r.n}</span>
-    </div>
-  `).join('');
+    </div>`).join('');
   ac.classList.add('open');
 }
 
 function onSearchKey(e) {
   const ac = document.getElementById('autocomplete');
   const items = ac.querySelectorAll('.ac-item');
-  if (e.key === 'ArrowDown') {
-    acSelected = Math.min(acSelected + 1, items.length - 1);
-    items.forEach((el,i) => el.style.background = i === acSelected ? 'var(--bg4)' : '');
-    e.preventDefault();
-  } else if (e.key === 'ArrowUp') {
-    acSelected = Math.max(acSelected - 1, -1);
-    items.forEach((el,i) => el.style.background = i === acSelected ? 'var(--bg4)' : '');
-    e.preventDefault();
-  } else if (e.key === 'Enter') {
-    if (acSelected >= 0 && items[acSelected]) {
-      items[acSelected].click();
-    } else {
-      searchTicker();
-    }
-    ac.classList.remove('open');
-  } else if (e.key === 'Escape') {
-    ac.classList.remove('open');
-  }
+  if (e.key==='ArrowDown'){acSelected=Math.min(acSelected+1,items.length-1);items.forEach((el,i)=>el.classList.toggle('selected',i===acSelected));e.preventDefault();}
+  else if (e.key==='ArrowUp'){acSelected=Math.max(acSelected-1,-1);items.forEach((el,i)=>el.classList.toggle('selected',i===acSelected));e.preventDefault();}
+  else if (e.key==='Enter'){if(acSelected>=0&&items[acSelected])items[acSelected].click();else searchTicker();ac.classList.remove('open');}
+  else if (e.key==='Escape'){ac.classList.remove('open');}
 }
 
-function selectTicker(symbol) {
-  document.getElementById('ticker-input').value = symbol;
-  document.getElementById('autocomplete').classList.remove('open');
-  searchTicker();
-}
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('.search-wrap')) {
-    document.getElementById('autocomplete').classList.remove('open');
-  }
-});
+function selectTicker(s){document.getElementById('ticker-input').value=s;document.getElementById('autocomplete').classList.remove('open');searchTicker();}
+document.addEventListener('click',e=>{if(!e.target.closest('.nav-search-wrap'))document.getElementById('autocomplete').classList.remove('open');});
 
 // ── SEARCH ────────────────────────────────────────────────
 async function searchTicker() {
   const ticker = document.getElementById('ticker-input').value.trim().toUpperCase();
   if (!ticker) return;
   document.getElementById('autocomplete').classList.remove('open');
-
   const area = document.getElementById('results-area');
-  area.innerHTML = `<div class="empty"><div class="loader"></div><div class="loading-text">Analyse de ${ticker}...</div></div>`;
-
+  area.innerHTML = `<div class="empty"><div class="loader"></div><div class="loading-text">Analyse de ${ticker}…</div></div>`;
   try {
-    const res = await fetch('/api/search', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ticker})
-    });
-    if (res.status === 404) { showToast(`Ticker introuvable : ${ticker}`); renderEmpty(); return; }
+    const res = await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticker})});
+    if (res.status===404){showToast('Ticker introuvable : '+ticker);renderEmpty();return;}
     const r = await res.json();
-    area.innerHTML = `<div class="results-meta"><div class="results-count">Résultat — ${ticker}</div></div>` + renderCard(r, 1);
-  } catch(e) {
-    showToast('Erreur lors de la recherche');
-    renderEmpty();
-  }
+    area.innerHTML = `<div class="results-meta"><div class="results-count">Résultat — ${ticker}</div></div>`+renderCard(r,1);
+  } catch(e){showToast('Erreur lors de la recherche');renderEmpty();}
 }
 
 // ── SCAN ──────────────────────────────────────────────────
 async function startScan() {
   if (state.scanning) return;
-  const active = Object.keys(state.sectors).filter(s => state.sectors[s]);
-  if (!active.length) { showToast('Sélectionne au moins un secteur'); return; }
-
-  state.scanning = true;
-  const btn = document.getElementById('scan-btn');
-  btn.disabled = true; btn.textContent = '⟳ Analyse en cours…';
-
-  const area = document.getElementById('results-area');
-  area.innerHTML = `<div class="empty"><div class="loader"></div><div class="loading-text" id="loading-text">Démarrage de l'analyse…</div></div>`;
-
-  let i = 0;
-  const msgs = ['Récupération des données…','Calcul des scores…','Tri des résultats…','Presque terminé…'];
-  const interval = setInterval(() => { document.getElementById('loading-text').textContent = msgs[i++ % msgs.length]; }, 1800);
-
+  const active = Object.keys(state.sectors).filter(s=>state.sectors[s]);
+  if (!active.length){showToast('Sélectionne au moins un secteur');return;}
+  state.scanning=true;
+  const btn=document.getElementById('scan-btn');
+  btn.disabled=true;btn.textContent='Analyse en cours…';
+  const area=document.getElementById('results-area');
+  area.innerHTML=`<div class="empty"><div class="loader"></div><div class="loading-text" id="loading-text">Démarrage…</div></div>`;
+  let i=0;
+  const msgs=['Récupération des données…','Calcul des scores…','Tri des résultats…','Presque terminé…'];
+  const iv=setInterval(()=>{const el=document.getElementById('loading-text');if(el)el.textContent=msgs[i++%msgs.length];},1800);
   try {
-    const res = await fetch('/api/scan', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({sectors:active, min_score:state.minScore, min_confidence:state.minConf, top_n:state.topN})
-    });
-    const data = await res.json();
-    state.results = data.results;
-    renderResults(data.results, data.total);
-  } catch(e) {
-    showToast('Erreur lors du scan');
-    renderEmpty();
-  } finally {
-    clearInterval(interval);
-    state.scanning = false;
-    btn.disabled = false;
-    btn.textContent = '🚀 Lancer le scan';
-  }
+    const res=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sectors:active,min_score:state.minScore,min_confidence:state.minConf,top_n:state.topN})});
+    const data=await res.json();
+    state.results=data.results;
+    renderResults(data.results,data.total);
+  } catch(e){showToast('Erreur lors du scan');renderEmpty();}
+  finally{clearInterval(iv);state.scanning=false;btn.disabled=false;btn.textContent='Lancer le scan';}
 }
 
 // ── RENDER ────────────────────────────────────────────────
 function renderResults(results, total) {
-  if (!results.length) {
-    document.getElementById('results-area').innerHTML = `
-      <div class="empty">
-        <div class="empty-title">Aucun résultat</div>
-        <div class="empty-sub">Essayez de sélectionner plus de secteurs ou choisissez le profil Universel.</div>
-      </div>`;
+  if (!results.length){
+    document.getElementById('results-area').innerHTML=`<div class="empty"><div class="empty-title">Aucun résultat</div><div class="empty-sub">Essayez de sélectionner plus de secteurs ou le profil Universel.</div></div>`;
     return;
   }
-  const exportBtn = `<button class="export-btn" onclick="exportCSV()">⬇ CSV</button>`;
-  const header = `<div class="results-meta"><div class="results-count">${results.length} opportunités · ${total} analysées · trié par score</div>${exportBtn}</div>`;
-  document.getElementById('results-area').innerHTML = header + results.map((r,i) => renderCard(r,i+1)).join('');
-  document.querySelectorAll('.card').forEach((c,i) => { c.style.animationDelay = `${i*0.04}s`; });
+  const header=`<div class="results-meta"><div class="results-count">${results.length} opportunités · ${total} analysées</div><button class="export-btn" onclick="exportCSV()">⬇ Exporter CSV</button></div>`;
+  document.getElementById('results-area').innerHTML=header+results.map((r,i)=>renderCard(r,i+1)).join('');
+  document.querySelectorAll('.card').forEach((c,i)=>{c.style.animationDelay=`${i*0.04}s`;});
 }
 
-function renderEmpty() {
-  document.getElementById('results-area').innerHTML = `
-    <div class="empty">
-      <div class="empty-icon">{ }</div>
-      <div class="empty-title">Lancez un scan pour voir les opportunités</div>
-      <div class="empty-sub">Choisissez votre profil, sélectionnez vos secteurs et cliquez sur Lancer le scan.</div>
-    </div>`;
-}
+function scoreClass(s){return s>=60?'score-high':s>=40?'score-mid':'score-low';}
+function confClass(c){return c>=75?'conf-high':c>=55?'conf-mid':'conf-low';}
 
 function renderCard(r, rank) {
-  const tags = (r.Tags||'').split(',').filter(t=>t.trim()).map(t=>`<span class="tag">${t.trim()}</span>`).join('');
-  const bars = BAR_LABELS.map((lbl,i) => {
-    const val = r[BAR_KEYS[i]]||0;
-    const w = Math.min(Math.round(val),100);
-    return `<div class="bar-row"><div class="bar-lbl">${lbl}</div><div class="bar-track"><div class="bar-fill" style="background:${BAR_COLORS[i]};width:${w}%"></div></div></div>`;
+  const score=r.Score||0;
+  const conf=r['Confiance %']||0;
+  const tags=(r.Tags||'').split(',').filter(t=>t.trim()).map(t=>`<span class="tag">${t.trim()}</span>`).join('');
+  const bars=BAR_LABELS.map((lbl,i)=>{
+    const val=r[BAR_KEYS[i]]||0;
+    const w=Math.min(Math.round(val),100);
+    return `<div class="bar-row"><div class="bar-lbl">${lbl}</div><div class="bar-track"><div class="bar-fill" style="background:${BAR_COLORS[i]};width:${w}%"></div></div><div class="bar-val">${val.toFixed(0)}</div></div>`;
   }).join('');
-  const metrics = [
-    {l:'Prix', v:`${r.Prix||'—'} ${r.Devise||''}`},
-    {l:'PER', v:r.PER??'—'},
-    {l:'P/B', v:r['P/B']??'—'},
-    {l:'ROE', v:r['ROE %']!=null?r['ROE %']+'%':'—'},
-    {l:'Marge', v:r['Marge %']!=null?r['Marge %']+'%':'—'},
-    {l:'EV/EBITDA', v:r['EV/EBITDA']??'—'},
-    {l:'Dette/Eq.', v:r['Dette/Equity']??'—'},
-    {l:'Croiss.', v:r['Croissance CA %']!=null?r['Croissance CA %']+'%':'—'},
-    {l:'Div.', v:'🔄'},
-  ].map(m=>`<div class="metric"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l}</div></div>`).join('');
+  const metrics=[
+    {l:'Prix',v:`${r.Prix||'—'} ${r.Devise||''}`},
+    {l:'PER',v:r.PER??'—'},
+    {l:'P/B',v:r['P/B']??'—'},
+    {l:'ROE',v:r['ROE %']!=null?r['ROE %']+'%':'—'},
+    {l:'Marge nette',v:r['Marge %']!=null?r['Marge %']+'%':'—'},
+    {l:'EV/EBITDA',v:r['EV/EBITDA']??'—'},
+    {l:'Dette/Equity',v:r['Dette/Equity']??'—'},
+    {l:'Croissance CA',v:r['Croissance CA %']!=null?r['Croissance CA %']+'%':'—'},
+    {l:'Dividende',v:'🔄 Bientôt'},
+  ].map(m=>`<div class="metric-box"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l}</div></div>`).join('');
 
   return `
-  <div class="card">
-    <div class="card-top">
-      <div class="card-left">
-        <div class="card-ticker">${r['Score badge']||''} ${r.Ticker||''}</div>
-        <div class="card-name">${r['Société']||''} · ${r.Pays||''} · ${r.Secteur||''}</div>
-        <div class="card-tags">${tags}</div>
+  <div class="card" id="card-${rank}">
+    <div class="card-header" onclick="toggleCard(${rank})">
+      ${logoHtml(r.Ticker||'', r['Société']||r.Ticker||'')}
+      <div class="card-info">
+        <div class="card-ticker">${r.Ticker||''} <span style="font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:400;color:var(--muted2);">— ${r['Société']||''}</span></div>
+        <div class="card-name">${r.Pays||''} · ${r.Secteur||''}</div>
+        <div class="card-tags-row">${tags}</div>
       </div>
       <div class="card-right">
-        <div class="score-big">${r.Score}</div>
-        <div class="score-sub">/100</div>
-        <div class="score-bars">${bars}</div>
-        <div class="conf-badge">${r['Confiance badge']||''} ${r['Confiance %']}%</div>
+        <div class="score-label">Score</div>
+        <div class="score-num ${scoreClass(score)}">${score}</div>
+        <div class="conf-pill ${confClass(conf)}">${conf}%</div>
+        <div class="card-expand-icon">▼</div>
       </div>
     </div>
-    <div class="card-why">${r['Résumé']||''} — ${r.Pourquoi||''}</div>
-    <div class="card-metrics">${metrics}</div>
+    <div class="card-body">
+      <div class="card-why">${r['Résumé']||''} — ${r.Pourquoi||''}</div>
+      <div class="metrics-grid">${metrics}</div>
+      <div class="score-bars-label">Détail du score</div>
+      <div class="score-bars">${bars}</div>
+    </div>
   </div>`;
 }
 
-// ── EXPORT ────────────────────────────────────────────────
+function toggleCard(rank) {
+  const card=document.getElementById('card-'+rank);
+  card.classList.toggle('open');
+}
+
+function renderEmpty() {
+  document.getElementById('results-area').innerHTML=`<div class="empty"><div class="empty-icon">◎</div><div class="empty-title">Lancez un scan pour voir les opportunités</div><div class="empty-sub">Choisissez votre profil, sélectionnez vos secteurs et cliquez sur Lancer le scan.</div></div>`;
+}
+
 function exportCSV() {
   if (!state.results.length) return;
-  const keys = Object.keys(state.results[0]);
-  const csv = [keys.join(','), ...state.results.map(r => keys.map(k => JSON.stringify(r[k]??'')).join(','))].join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'smartvalue_results.csv';
-  a.click();
+  const keys=Object.keys(state.results[0]);
+  const csv=[keys.join(','),...state.results.map(r=>keys.map(k=>JSON.stringify(r[k]??'')).join(','))].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='smartvalue_results.csv';a.click();
   showToast('Export CSV téléchargé ✓');
 }
 
-// ── TOAST ─────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 
 init();
