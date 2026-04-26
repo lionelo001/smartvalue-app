@@ -355,12 +355,15 @@ function onSearchInput(val) {
   const matches = TICKERS.filter(t=>t.s.toLowerCase().includes(q)||t.n.toLowerCase().includes(q)).slice(0,7);
   if (!matches.length){ac.classList.remove('open');return;}
   acSelected=-1;
-  ac.innerHTML = matches.map((r,i)=>`
-    <div class="ac-item" onclick="selectTicker('${r.s}')" data-idx="${i}">
-      ${logoHtml(r.s, r.n, 22, 'ac-logo', 'ac-logo-placeholder')}
+  ac.innerHTML = matches.map((r,i)=>{
+    const color = getAvatarColor(r.s);
+    const initials = getInitials(r.n || r.s);
+    return `<div class="ac-item" onclick="selectTicker('${r.s}')" data-idx="${i}">
+      <div class="ac-logo-placeholder" style="background:${color};width:22px;height:22px;font-size:0.5rem;">${initials}</div>
       <span class="ac-ticker">${r.s}</span>
       <span class="ac-name">${r.n}</span>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   ac.classList.add('open');
 }
 
