@@ -249,13 +249,31 @@ const PROFILES = {
 };
 
 // Avatars colorés avec initiales
+const LOGO_TOKEN = 'pk_d0v73aCKSMKCMnN3C_gu9A';
+const LOGO_DOMAINS = {
+  'AAPL':'apple.com','MSFT':'microsoft.com','GOOGL':'google.com','NVDA':'nvidia.com',
+  'META':'meta.com','AMZN':'amazon.com','TSLA':'tesla.com','ADBE':'adobe.com',
+  'CRM':'salesforce.com','ORCL':'oracle.com','INTC':'intel.com','AMD':'amd.com',
+  'QCOM':'qualcomm.com','AVGO':'broadcom.com','TSM':'tsmc.com','ASML':'asml.com',
+  'JPM':'jpmorgan.com','BAC':'bankofamerica.com','WFC':'wellsfargo.com','GS':'goldmansachs.com',
+  'MS':'morganstanley.com','V':'visa.com','MA':'mastercard.com','AXP':'americanexpress.com',
+  'JNJ':'jnj.com','PFE':'pfizer.com','UNH':'unitedhealthgroup.com','ABBV':'abbvie.com',
+  'LLY':'lilly.com','MRK':'merck.com','ABT':'abbott.com','TMO':'thermofisher.com',
+  'PG':'pg.com','KO':'coca-cola.com','PEP':'pepsico.com','WMT':'walmart.com',
+  'COST':'costco.com','MCD':'mcdonalds.com','NKE':'nike.com','SBUX':'starbucks.com','HD':'homedepot.com',
+  'XOM':'exxonmobil.com','CVX':'chevron.com','COP':'conocophillips.com',
+  'CAT':'caterpillar.com','HON':'honeywell.com','GE':'ge.com','BA':'boeing.com',
+  'MC.PA':'lvmh.com','OR.PA':'loreal.com','TTE.PA':'totalenergies.com',
+  'BNP.PA':'bnpparibas.com','SAN.PA':'sanofi.com','AIR.PA':'airbus.com','AXA.PA':'axa.com',
+  'SAP.DE':'sap.com','SIE.DE':'siemens.com','NESN.SW':'nestle.com',
+  'ROG.SW':'roche.com','NOVN.SW':'novartis.com','ABB.SW':'abb.com',
+  'HSBA.L':'hsbc.com','BARC.L':'barclays.com','BP.L':'bp.com','AZN.L':'astrazeneca.com',
+  'SONY':'sony.com','005930.KS':'samsung.com',
+};
 const AVATAR_COLORS = ['#2563EB','#16A34A','#9333EA','#EA580C','#DB2777','#0891B2','#65A30D','#DC2626','#7C3AED','#D97706'];
 
-function getInitials(name) {
-  const clean = (name||'?').replace(/[^A-Za-z ]/g,'');
-  const words = clean.split(' ').filter(Boolean);
-  if (words.length >= 2) return (words[0][0]+words[1][0]).toUpperCase();
-  return clean.slice(0,2).toUpperCase();
+function getInitials(ticker) {
+  return (ticker||'??').replace(/[^A-Z]/g,'').slice(0,2)||'??';
 }
 
 function getAvatarColor(ticker) {
@@ -264,13 +282,22 @@ function getAvatarColor(ticker) {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
-function logoHtml(ticker, name, size, cls, placeholderCls) {
-  size = size||36;
-  placeholderCls = placeholderCls||'card-logo-placeholder';
-  const initials = getInitials(name||ticker);
+function avatarHtml(ticker, size, cls) {
+  cls = cls||'card-logo-placeholder';
   const color = getAvatarColor(ticker);
   const fs = size<=22 ? '0.5rem' : '0.72rem';
-  return '<div class="'+placeholderCls+'" style="background:'+color+';width:'+size+'px;height:'+size+'px;font-size:'+fs+';">'+initials+'</div>';
+  return '<div class="'+cls+'" style="background:'+color+';width:'+size+'px;height:'+size+'px;font-size:'+fs+';">'+getInitials(ticker)+'</div>';
+}
+
+function logoHtml(ticker, name, size, cls, placeholderCls) {
+  size = size||36;
+  const domain = LOGO_DOMAINS[ticker];
+  if (domain) {
+    const url = 'https://img.logo.dev/'+domain+'?token='+LOGO_TOKEN+'&size=40';
+    const av = avatarHtml(ticker, size, placeholderCls).replace(/"/g,'&quot;');
+    return '<img class="'+(size<=22?'ac-logo':'card-logo')+'" src="'+url+'" width="'+size+'" height="'+size+'" alt="'+ticker+'" onerror="this.outerHTML=decodeURIComponent(\''+encodeURIComponent(avatarHtml(ticker, size, placeholderCls))+'\');">';
+  }
+  return avatarHtml(ticker, size, placeholderCls);
 }
 
 // ── INIT ──────────────────────────────────────────────────
@@ -340,13 +367,10 @@ function onSearchInput(val) {
   if (!matches.length){ac.classList.remove('open');return;}
   acSelected=-1;
   ac.innerHTML = matches.map((r,i)=>{
-    const color = getAvatarColor(r.s);
-    const initials = getInitials(r.n || r.s);
-    return `<div class="ac-item" onclick="selectTicker('${r.s}')" data-idx="${i}">
-      <div class="ac-logo-placeholder" style="background:${color};width:22px;height:22px;font-size:0.5rem;">${initials}</div>
-      <span class="ac-ticker">${r.s}</span>
-      <span class="ac-name">${r.n}</span>
-    </div>`;
+    const logoEl = LOGO_DOMAINS[r.s]
+      ? '<img class="ac-logo" src="https://img.logo.dev/'+LOGO_DOMAINS[r.s]+'?token='+LOGO_TOKEN+'&size=22" width="22" height="22" onerror="this.outerHTML=\''+avatarHtml(r.s,22,'ac-logo-placeholder').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\'">'
+      : avatarHtml(r.s, 22, 'ac-logo-placeholder');
+    return '<div class="ac-item" onclick="selectTicker(\''+r.s+'\')" data-idx="'+i+'">'+logoEl+'<span class="ac-ticker">'+r.s+'</span><span class="ac-name">'+r.n+'</span></div>';
   }).join('');
   ac.classList.add('open');
 }
@@ -439,7 +463,7 @@ function renderCard(r, rank) {
   return `
   <div class="card" id="card-${rank}">
     <div class="card-header" onclick="toggleCard(${rank})">
-      ${logoHtml(r.Ticker||'', r['Société']||r.Ticker||'')}
+      ${logoHtml(r.Ticker||'', r.Ticker||'')}
       <div class="card-info">
         <div class="card-ticker">${r.Ticker||''} <span style="font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:400;color:var(--muted2);">— ${r['Société']||''}</span></div>
         <div class="card-name">${r.Pays||''} · ${r.Secteur||''}</div>
