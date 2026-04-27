@@ -629,7 +629,7 @@ function renderCard(r, rank) {
         <div class="conf-pill ${confClass(conf)}">${conf}%</div>
       </div>
     </div>
-    <div class="card-details-hint">
+    <div class="card-details-hint" onclick="toggleCard(${rank})">
       <div class="hint-text">
         <span class="hint-arrow">▼</span>
         <span class="desktop-only">Voir les détails</span>
