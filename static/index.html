@@ -199,6 +199,26 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 
 
 
+/* ── BANNIÈRE PREMIÈRE VISITE ── */
+.first-visit-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#EFF6FF;border-bottom:1px solid #BFDBFE;padding:0.55rem 2rem;font-size:0.78rem;color:#1E40AF;}
+.first-visit-banner a{color:#2563EB;font-weight:600;cursor:pointer;text-decoration:none;}
+.first-visit-banner a:hover{text-decoration:underline;}
+.first-visit-close{background:none;border:none;color:#93C5FD;cursor:pointer;font-size:1rem;padding:0;line-height:1;flex-shrink:0;}
+.first-visit-close:hover{color:#1E40AF;}
+
+/* ── TOUR DEMO CARD ── */
+.tour-demo{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:0.75rem;margin-bottom:0.75rem;font-size:0.72rem;}
+.tour-demo-row{display:flex;align-items:center;justify-content:space-between;}
+.tour-demo-ticker{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:800;color:#1E2330;}
+.tour-demo-score{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;color:#16A34A;}
+.tour-demo-hint{display:flex;align-items:center;gap:4px;color:#2563EB;font-size:0.68rem;margin-top:0.5rem;border-top:1px solid #E2E8F0;padding-top:0.5rem;font-weight:500;}
+.tour-demo-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:0.5rem;}
+.tour-demo-metric{background:#fff;border:1px solid #E2E8F0;border-radius:4px;padding:0.3rem 0.4rem;text-align:center;}
+.tour-demo-metric.highlight{background:#EFF6FF;border-color:#93C5FD;}
+.tour-demo-mv{font-family:'DM Mono',monospace;font-size:0.72rem;font-weight:500;color:#1E2330;}
+.tour-demo-ml{font-size:0.55rem;color:#9096A8;text-transform:uppercase;letter-spacing:0.05em;}
+.tour-demo-tooltip{background:#1E2330;color:#fff;border-radius:5px;padding:0.4rem 0.65rem;font-size:0.65rem;margin-top:0.5rem;line-height:1.5;}
+
 /* ── FOOTER ── */
 .footer{border-top:1px solid var(--border);padding:1.5rem 0;font-size:0.68rem;color:var(--muted);line-height:1.7;margin-top:2rem;}
 
@@ -245,6 +265,12 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
     <div class="nav-badge"><span class="nav-badge-dot"></span>Live</div>
   </div>
 </nav>
+
+<!-- BANNIÈRE PREMIÈRE VISITE -->
+<div class="first-visit-banner" id="first-visit-banner" style="display:none;">
+  <span>👋 Première visite ? <a onclick="closeBannerAndStartTour()">Cliquez sur <strong>? Guide</strong></a> dans la barre de navigation pour découvrir le scanner en 2 minutes.</span>
+  <button class="first-visit-close" onclick="closeBanner()" title="Fermer">✕</button>
+</div>
 
 <div class="page">
   <div class="hero">
@@ -856,10 +882,29 @@ function showTourStep() {
       '<div class="tour-dot' + (i===tourStep?' active':'') + '"></div>').join('');
     const isLast = tourStep === TOUR_STEPS.length - 1;
 
+    let demoHtml = '';
+    if (step.demo === 'card') {
+      demoHtml = '<div class="tour-demo">' +
+        '<div class="tour-demo-row"><span class="tour-demo-ticker">META — Meta Platforms</span><span class="tour-demo-score">69.6</span></div>' +
+        '<div style="display:flex;gap:3px;margin-top:4px;"><span style="font-size:0.55rem;padding:0.1rem 0.35rem;border:1px solid #E2E8F0;border-radius:3px;color:#6B7080;">QUALITÉ</span><span style="font-size:0.55rem;padding:0.1rem 0.35rem;border:1px solid #E2E8F0;border-radius:3px;color:#6B7080;">CROISSANCE</span></div>' +
+        '<div class="tour-demo-hint">▼ Voir les détails · PER · ROE · Marge · Score détaillé</div>' +
+      '</div>';
+    } else if (step.demo === 'metrics') {
+      demoHtml = '<div class="tour-demo">' +
+        '<div class="tour-demo-metrics">' +
+          '<div class="tour-demo-metric"><div class="tour-demo-mv">28.7</div><div class="tour-demo-ml">PER</div></div>' +
+          '<div class="tour-demo-metric highlight"><div class="tour-demo-mv">30.2%</div><div class="tour-demo-ml">ROE 👆</div></div>' +
+          '<div class="tour-demo-metric"><div class="tour-demo-mv">27.3%</div><div class="tour-demo-ml">Marge</div></div>' +
+        '</div>' +
+        '<div class="tour-demo-tooltip">ROE : Rentabilité des capitaux propres. Mesure le profit généré pour chaque euro investi. &gt;15% = très bien.</div>' +
+      '</div>';
+    }
+
     bubble.innerHTML =
       '<div class="tour-step-label">Étape ' + (tourStep+1) + ' sur ' + TOUR_STEPS.length + '</div>' +
       '<div class="tour-title">' + step.title + '</div>' +
       '<div class="tour-desc">' + step.desc + '</div>' +
+      demoHtml +
       '<div class="tour-actions">' +
         '<button class="tour-skip" onclick="endTour()">Passer</button>' +
         '<div class="tour-dots">' + dots + '</div>' +
@@ -907,19 +952,35 @@ function clearTourUI() {
   document.getElementById('tour-bubble')?.remove();
 }
 
-// Anneau animé sur le bouton Guide au premier chargement
+function closeBanner() {
+  const b = document.getElementById('first-visit-banner');
+  if (b) b.style.display = 'none';
+  localStorage.setItem('sv_welcome_done','1');
+  const btn = document.getElementById('tour-trigger');
+  if (btn) btn.classList.remove('pulse-ring');
+}
+
+function closeBannerAndStartTour() {
+  closeBanner();
+}
+
+// Bannière + anneau au premier chargement
 window.addEventListener('load', () => {
   if (!localStorage.getItem('sv_welcome_done')) {
+    // Bannière
+    const banner = document.getElementById('first-visit-banner');
+    if (banner) banner.style.display = 'flex';
+    // Anneau sur le bouton Guide
     const btn = document.getElementById('tour-trigger');
-    if (!btn) return;
-    btn.classList.add('pulse-ring');
-    // Stopper l'anneau après 6 secondes ou au clic
-    const stopRing = () => {
-      btn.classList.remove('pulse-ring');
-      localStorage.setItem('sv_welcome_done','1');
-    };
-    setTimeout(stopRing, 6000);
-    btn.addEventListener('click', stopRing, {once:true});
+    if (btn) {
+      btn.classList.add('pulse-ring');
+      btn.addEventListener('click', () => {
+        btn.classList.remove('pulse-ring');
+        localStorage.setItem('sv_welcome_done','1');
+        const b = document.getElementById('first-visit-banner');
+        if (b) b.style.display = 'none';
+      }, {once:true});
+    }
   }
 });
 </script>
