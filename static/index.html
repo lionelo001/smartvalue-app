@@ -1375,6 +1375,16 @@ function switchTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
   document.getElementById('tab-' + tab + '-content').classList.add('active');
   window.scrollTo({top:0, behavior:'smooth'});
+  // Cacher/montrer la recherche et le guide selon l'onglet
+  const navRight = document.querySelector('nav > div:last-child');
+  const searchWrap = document.querySelector('.nav-search-wrap');
+  if (tab === 'about') {
+    if (searchWrap) searchWrap.style.display = 'none';
+    if (navRight) navRight.style.display = 'none';
+  } else {
+    if (searchWrap) searchWrap.style.display = 'flex';
+    if (navRight) navRight.style.display = 'flex';
+  }
 }
 </script>
 </body>
