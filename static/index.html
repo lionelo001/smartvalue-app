@@ -16,8 +16,8 @@
   --green:#16A34A;--orange:#EA580C;--blue:#2563EB;
   --score-high:#16A34A;--score-mid:#EA580C;--score-low:#9096A8;
 }
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+html{scroll-behavior:smooth;overflow-x:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--bg4);}
@@ -236,10 +236,13 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .desktop-only{display:inline;}
 .mobile-only{display:none;}
 @media(max-width:600px){
-  nav{padding:0.75rem 1rem;gap:0.5rem;}
+  nav{padding:0.75rem 1rem;gap:0.5rem;width:100%;box-sizing:border-box;}
   .desktop-only{display:none;}
   .mobile-only{display:inline;}
-  .nav-search-wrap{max-width:none;flex:1;}
+  .nav-search-wrap{max-width:none;flex:1;min-width:0;}
+  .nav-search-input{font-size:0.72rem;padding:0.4rem 0.6rem;min-width:0;}
+  .nav-badge{font-size:0.55rem;padding:0.15rem 0.45rem;white-space:nowrap;flex-shrink:0;}
+  .tour-btn{font-size:0.65rem;padding:0.25rem 0.5rem;flex-shrink:0;}
   .page{padding:1.25rem 1rem 3rem;}
   .profiles{gap:5px;}
   .profile-desc{display:none;}
@@ -665,6 +668,9 @@ function renderCard(r, rank) {
     </div>
     <div class="card-body">
       <div class="card-why">${r['Résumé']||''} — ${r.Pourquoi||''}</div>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:0.5rem;display:flex;align-items:center;gap:4px;">
+        <span>ℹ</span> Cliquez sur une métrique pour l'expliquer
+      </div>
       <div class="metrics-grid">${metrics}</div>
       <div class="score-bars-label">Détail du score</div>
       <div class="score-bars">${bars}</div>
