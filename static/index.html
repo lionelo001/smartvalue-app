@@ -780,57 +780,71 @@ function applyAdvancedFilters(results) {
   });
 }
 
-// ── GUIDE TOUR ────────────────────────────────────────────
+// ── GUIDE TOUR INTERACTIF ─────────────────────────────────
 const TOUR_STEPS = [
   {
-    target: '.profiles',
+    target: '#btn-balanced',
     title: 'Choisissez votre profil',
-    desc: 'Sélectionnez votre stratégie. Défensif pour la sécurité, Universel pour tout couvrir, Croissance pour les entreprises dynamiques.',
-    arrow: 'arrow-top', position: 'bottom',
+    desc: 'Commencez par choisir votre stratégie. Cliquez sur <strong>Universel</strong> pour continuer.',
+    action: 'click:#btn-balanced',
+    hint: 'Cliquez sur Universel →',
+    position: 'bottom',
   },
   {
     target: '.sectors-header',
     title: 'Sélectionnez vos secteurs',
-    desc: 'Cochez les marchés à analyser — US, Europe, Asie. Utilisez "Tout cocher" pour tout sélectionner ou "Tout décocher" pour repartir de zéro.',
-    arrow: 'arrow-top', position: 'bottom',
+    desc: 'Cochez les marchés à analyser. Cliquez sur <strong>Tout cocher</strong> pour sélectionner tous les secteurs.',
+    action: 'click:.sector-action-btn',
+    hint: 'Cliquez sur Tout cocher →',
+    position: 'bottom',
   },
   {
     target: '#advanced-toggle',
     title: 'Filtres avancés (optionnel)',
-    desc: 'Pour aller plus loin : définissez des critères précis comme un PER maximum, un ROE minimum ou une croissance minimum. Parfait pour le stock picking.',
-    arrow: 'arrow-top', position: 'bottom',
+    desc: 'Des critères précis pour le stock picking. Cliquez pour voir les filtres disponibles.',
+    action: 'click:#advanced-toggle',
+    hint: 'Cliquez pour ouvrir →',
+    position: 'bottom',
   },
   {
     target: '#scan-btn',
-    title: 'Lancez le scan',
-    desc: 'Cliquez ici pour analyser toutes les entreprises sélectionnées selon vos critères. Le scan prend quelques secondes.',
-    arrow: 'arrow-top', position: 'bottom',
+    title: 'Lancez votre premier scan !',
+    desc: 'Tout est prêt. Cliquez sur <strong>Lancer le scan</strong> pour analyser les entreprises.',
+    action: 'click:#scan-btn',
+    hint: 'Cliquez pour lancer le scan →',
+    waitScan: true,
+    position: 'bottom',
   },
   {
     target: '#results-area',
-    title: 'Explorez les résultats',
-    desc: 'Chaque carte affiche une entreprise avec son score et ses tags. Cliquez sur une carte pour la déplier et voir tous les détails — métriques, score par bloc, analyse.',
-    arrow: 'arrow-top', position: 'bottom',
-    demo: true,
+    title: 'Vos résultats sont là !',
+    desc: 'Chaque carte est une entreprise analysée. Cliquez sur <strong>Voir les détails</strong> de la première carte.',
+    action: 'click:.card-details-hint',
+    hint: 'Cliquez sur Voir les détails →',
+    position: 'top',
   },
   {
-    target: '#results-area',
-    title: 'Comprendre les métriques',
-    desc: 'Une fois la carte dépliée, cliquez sur une métrique (PER, ROE, Marge...) pour obtenir une explication claire en français.',
-    arrow: 'arrow-top', position: 'bottom',
+    target: '.card.open',
+    title: 'Comprenez les métriques',
+    desc: 'Cliquez sur une métrique — <strong>PER, ROE, Marge</strong>... — pour obtenir son explication en français.',
+    action: 'click:.metric-box',
+    hint: 'Cliquez sur une métrique →',
+    position: 'top',
   },
   {
     target: '.nav-search-wrap',
     title: 'Recherche rapide',
-    desc: 'Vous connaissez une action ? Tapez son nom ou ticker ici — Apple, LVMH, AAPL. Le résultat apparaît instantanément.',
-    arrow: 'arrow-bottom', position: 'top',
+    desc: 'Tapez <strong>AAPL</strong> dans la barre et appuyez sur Entrée pour analyser une action précise.',
+    action: 'search',
+    hint: 'Tapez AAPL et appuyez sur Entrée →',
+    position: 'bottom',
   },
   {
     target: '#tour-trigger',
-    title: 'Revoir ce guide',
-    desc: 'Pour revoir ces explications à tout moment, cliquez sur le bouton "? Guide" dans la barre de navigation en haut.',
-    arrow: 'arrow-bottom', position: 'top',
-    last: true,
+    title: 'Vous êtes prêt !',
+    desc: 'Bravo ! Vous connaissez maintenant toutes les fonctionnalités. Ce guide est disponible à tout moment en cliquant ici.',
+    action: 'finish',
+    position: 'bottom',
   },
 ];
 
@@ -840,7 +854,7 @@ let tourActive = false;
 function startTour() {
   tourStep = 0;
   tourActive = true;
-  localStorage.setItem('sv_tour_done', '1');
+  localStorage.setItem('sv_tour_done','1');
   showTourStep();
 }
 
@@ -849,7 +863,7 @@ function showTourStep() {
   if (tourStep >= TOUR_STEPS.length) { endTour(); return; }
   const step = TOUR_STEPS[tourStep];
 
-  // Étapes 5-6 : skip si pas de résultats
+  // Étapes 4/5 nécessitent des résultats — skip si pas encore de scan
   if ((tourStep === 4 || tourStep === 5) && !state.results.length) {
     tourStep++; showTourStep(); return;
   }
@@ -880,60 +894,89 @@ function showTourStep() {
 
     const dots = TOUR_STEPS.map((_,i) =>
       '<div class="tour-dot' + (i===tourStep?' active':'') + '"></div>').join('');
-    const isLast = tourStep === TOUR_STEPS.length - 1;
 
-    let demoHtml = '';
-    if (step.demo === 'card') {
-      demoHtml = '<div class="tour-demo">' +
-        '<div class="tour-demo-row"><span class="tour-demo-ticker">META — Meta Platforms</span><span class="tour-demo-score">69.6</span></div>' +
-        '<div style="display:flex;gap:3px;margin-top:4px;"><span style="font-size:0.55rem;padding:0.1rem 0.35rem;border:1px solid #E2E8F0;border-radius:3px;color:#6B7080;">QUALITÉ</span><span style="font-size:0.55rem;padding:0.1rem 0.35rem;border:1px solid #E2E8F0;border-radius:3px;color:#6B7080;">CROISSANCE</span></div>' +
-        '<div class="tour-demo-hint">▼ Voir les détails · PER · ROE · Marge · Score détaillé</div>' +
-      '</div>';
-    } else if (step.demo === 'metrics') {
-      demoHtml = '<div class="tour-demo">' +
-        '<div class="tour-demo-metrics">' +
-          '<div class="tour-demo-metric"><div class="tour-demo-mv">28.7</div><div class="tour-demo-ml">PER</div></div>' +
-          '<div class="tour-demo-metric highlight"><div class="tour-demo-mv">30.2%</div><div class="tour-demo-ml">ROE 👆</div></div>' +
-          '<div class="tour-demo-metric"><div class="tour-demo-mv">27.3%</div><div class="tour-demo-ml">Marge</div></div>' +
-        '</div>' +
-        '<div class="tour-demo-tooltip">ROE : Rentabilité des capitaux propres. Mesure le profit généré pour chaque euro investi. &gt;15% = très bien.</div>' +
-      '</div>';
-    }
+    const isFinish = step.action === 'finish';
+    const actionArea = isFinish
+      ? '<button class="tour-next" onclick="endTour()">Terminer ✓</button>'
+      : step.hint
+        ? '<div style="font-size:0.7rem;color:var(--blue);font-weight:600;animation:hintBounce 1.5s ease infinite;">' + step.hint + '</div>'
+        : '<button class="tour-next" onclick="nextTourStep()">Suivant →</button>';
 
     bubble.innerHTML =
       '<div class="tour-step-label">Étape ' + (tourStep+1) + ' sur ' + TOUR_STEPS.length + '</div>' +
       '<div class="tour-title">' + step.title + '</div>' +
       '<div class="tour-desc">' + step.desc + '</div>' +
-      demoHtml +
       '<div class="tour-actions">' +
         '<button class="tour-skip" onclick="endTour()">Passer</button>' +
         '<div class="tour-dots">' + dots + '</div>' +
-        '<button class="tour-next" onclick="nextTourStep()">' + (isLast ? 'Terminer ✓' : 'Suivant →') + '</button>' +
+        actionArea +
       '</div>';
 
     document.body.appendChild(bubble);
 
-    // Position bulle
-    const bW = 280, bH = bubble.offsetHeight || 160;
-    let top, left;
-
-    if (step.position === 'bottom') {
-      top = rect.bottom + pad + 12;
-      if (top + bH > window.innerHeight - 20) {
+    // Positionner la bulle
+    setTimeout(() => {
+      const bH = bubble.offsetHeight || 180;
+      const bW = 280;
+      let top, left;
+      const pos = step.position || 'bottom';
+      if (pos === 'bottom') {
+        top = rect.bottom + pad + 12;
+        if (top + bH > window.innerHeight - 20) top = rect.top - bH - pad - 12;
+      } else {
         top = rect.top - bH - pad - 12;
+        if (top < 70) top = rect.bottom + pad + 12;
       }
-    } else {
-      top = rect.top - bH - pad - 12;
-      if (top < 70) top = rect.bottom + pad + 12;
-    }
+      left = rect.left + rect.width/2 - bW/2;
+      left = Math.max(16, Math.min(left, window.innerWidth - bW - 16));
+      top = Math.max(70, top);
+      bubble.style.top = top + 'px';
+      bubble.style.left = left + 'px';
+    }, 50);
 
-    left = rect.left + rect.width/2 - bW/2;
-    left = Math.max(16, Math.min(left, window.innerWidth - bW - 16));
-    top = Math.max(70, top);
+    // Écouter l'action de l'utilisateur
+    if (!isFinish) listenForAction(step);
 
-    bubble.style.top = top + 'px';
-    bubble.style.left = left + 'px';
   }, 400);
+}
+
+function listenForAction(step) {
+  if (!step.action) return;
+
+  if (step.action.startsWith('click:')) {
+    const selector = step.action.replace('click:', '');
+    const targets = document.querySelectorAll(selector);
+    if (!targets.length) return;
+    const handler = () => {
+      targets.forEach(t => t.removeEventListener('click', handler));
+      if (step.waitScan) {
+        // Attendre fin du scan
+        const check = setInterval(() => {
+          if (!state.scanning && state.results.length > 0) {
+            clearInterval(check);
+            setTimeout(() => { tourStep++; showTourStep(); }, 800);
+          }
+        }, 500);
+      } else {
+        setTimeout(() => { tourStep++; showTourStep(); }, 350);
+      }
+    };
+    targets.forEach(t => t.addEventListener('click', handler, {once:true}));
+
+  } else if (step.action === 'search') {
+    const input = document.getElementById('ticker-input');
+    if (!input) return;
+    input.focus();
+    input.placeholder = 'Tapez AAPL...';
+    const handler = (e) => {
+      if (e.key === 'Enter' && input.value.trim()) {
+        input.removeEventListener('keydown', handler);
+        input.placeholder = 'Apple, AAPL, LVMH…';
+        setTimeout(() => { tourStep++; showTourStep(); }, 1500);
+      }
+    };
+    input.addEventListener('keydown', handler);
+  }
 }
 
 function nextTourStep() {
