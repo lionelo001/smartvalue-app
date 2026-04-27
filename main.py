@@ -78,3 +78,8 @@ def root():
 @app.get("/app")
 def scanner_app():
     return FileResponse("static/index.html")
+
+# Preview image pour les réseaux sociaux
+@app.get("/preview.png")
+def preview_image():
+    return FileResponse("preview.png", media_type="image/png")
