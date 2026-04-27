@@ -82,4 +82,8 @@ def scanner_app():
 # Preview image pour les réseaux sociaux
 @app.get("/preview.png")
 def preview_image():
-    return FileResponse("preview.png", media_type="image/png")
+    import os
+    path = os.path.join(os.path.dirname(__file__), "preview.png")
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="Preview not found")
+    return FileResponse(path, media_type="image/png")
