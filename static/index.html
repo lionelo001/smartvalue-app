@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SmartValue Scanner</title>
+<title>SmartValue — Scanner d'actions fondamental</title>
+<meta name="description" content="Analysez les actions mondiales avec des critères fondamentaux clairs. Gratuit, simple, en français."/>
+<meta property="og:title" content="SmartValue — Scanner d'actions fondamental"/>
+<meta property="og:description" content="Analysez les actions mondiales — US, Europe, Asie — selon des critères fondamentaux clairs. Gratuit et en français."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://smartvaluescanner.com/app"/>
+<meta property="og:image" content="https://smartvaluescanner.com/preview.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:locale" content="fr_FR"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="SmartValue — Scanner d'actions fondamental"/>
+<meta name="twitter:description" content="Analysez les actions mondiales gratuitement. Simple, en français."/>
+<meta name="twitter:image" content="https://smartvaluescanner.com/preview.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -26,6 +39,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:0.85rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(242,244,247,0.96);backdrop-filter:blur(12px);z-index:100;}
 .nav-logo{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-0.02em;text-decoration:none;color:var(--text);flex-shrink:0;}
 .nav-logo span{color:var(--blue);}
+.nav-logo-desktop{display:flex;}
 .nav-search-wrap{position:relative;display:flex;flex:1;max-width:360px;}
 .nav-search-input{flex:1;background:var(--bg2);border:1px solid var(--border2);border-right:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.82rem;padding:0.42rem 0.85rem;outline:none;transition:border-color 0.15s;min-width:0;}
 .nav-search-input::placeholder{color:var(--muted);}
@@ -199,6 +213,14 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 
 
 
+/* ── ONGLETS ── */
+.app-tabs{display:flex;border-bottom:2px solid var(--border);background:var(--bg2);}
+.app-tab{background:transparent;border:none;padding:0.75rem 1.5rem;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:var(--muted2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;letter-spacing:0.02em;}
+.app-tab:hover{color:var(--text);}
+.app-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
 /* ── BANNIÈRE PREMIÈRE VISITE ── */
 .first-visit-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#EFF6FF;border-bottom:1px solid #BFDBFE;padding:0.55rem 2rem;font-size:0.78rem;color:#1E40AF;}
 .first-visit-banner a{color:#2563EB;font-weight:600;cursor:pointer;text-decoration:none;}
@@ -236,14 +258,18 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .desktop-only{display:inline;}
 .mobile-only{display:none;}
 @media(max-width:600px){
-  nav{padding:0.75rem 1rem;gap:0.5rem;width:100%;box-sizing:border-box;}
+  nav{padding:0.65rem 1rem;gap:6px;width:100%;box-sizing:border-box;}
+  .nav-logo-desktop{display:none !important;}
   .desktop-only{display:none;}
   .mobile-only{display:inline;}
   .nav-search-wrap{max-width:none;flex:1;min-width:0;}
-  .nav-search-input{font-size:0.72rem;padding:0.4rem 0.6rem;min-width:0;}
+  .nav-search-input{font-size:0.78rem;padding:0.45rem 0.7rem;min-width:0;}
+  .nav-search-btn{padding:0 0.65rem;}
   .nav-badge{font-size:0.55rem;padding:0.15rem 0.45rem;white-space:nowrap;flex-shrink:0;}
-  .tour-btn{font-size:0.65rem;padding:0.25rem 0.5rem;flex-shrink:0;}
+  .tour-btn{font-size:0.65rem;padding:0.28rem 0.55rem;flex-shrink:0;white-space:nowrap;}
   .page{padding:1.25rem 1rem 3rem;}
+  .hero{padding:1.5rem 0 1.5rem;}
+  .hero h1{font-size:2rem;}
   .profiles{gap:5px;}
   .profile-desc{display:none;}
   .sectors-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));}
@@ -255,13 +281,13 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 <body>
 
 <nav>
-  <a href="/" class="nav-logo">Smart<span>Value</span></a>
+  <a href="/" class="nav-logo nav-logo-desktop">Smart<span>Value</span></a>
   <div class="nav-search-wrap">
     <input class="nav-search-input" id="ticker-input" placeholder="Apple, AAPL, LVMH…" autocomplete="off" autocapitalize="characters" spellcheck="false" oninput="onSearchInput(this.value)" onkeydown="onSearchKey(event)">
     <div class="autocomplete" id="autocomplete"></div>
     <button class="nav-search-btn" onclick="searchTicker()">→</button>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
     <button class="tour-btn" onclick="startTour()" id="tour-trigger" title="Guide interactif">
       <span>?</span> Guide
     </button>
@@ -269,15 +295,23 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
   </div>
 </nav>
 
+<!-- ONGLETS APP -->
+<div class="app-tabs">
+  <button class="app-tab active" id="tab-scanner" onclick="switchTab('scanner')">Scanner</button>
+  <button class="app-tab" id="tab-about" onclick="switchTab('about')">En savoir plus</button>
+</div>
+
 <!-- BANNIÈRE PREMIÈRE VISITE -->
 <div class="first-visit-banner" id="first-visit-banner" style="display:none;">
   <span>👋 Première visite ? <a onclick="closeBannerAndStartTour()">Cliquez sur <strong>? Guide</strong></a> dans la barre de navigation pour découvrir le scanner en 2 minutes.</span>
   <button class="first-visit-close" onclick="closeBanner()" title="Fermer">✕</button>
 </div>
 
+<div class="tab-content active" id="tab-scanner-content">
 <div class="page">
   <div class="hero">
-    <h1>Scanner d'actions <span>fondamental</span></h1>
+    <h1><span>SmartValue</span></h1>
+    <div style="font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:400;color:var(--muted2);margin-bottom:0.5rem;letter-spacing:0;">Scanner d'actions</div>
     <p>Analysez les entreprises mondiales selon des critères clairs pour structurer vos décisions d'investissement long terme.</p>
   </div>
 
@@ -358,6 +392,53 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
     SmartValue Scanner est un outil d'aide à l'analyse fondamentale. Il ne fournit pas de conseils financiers personnalisés. Toute décision d'investissement reste sous la responsabilité exclusive de l'utilisateur. Les performances passées ne préjugent pas des performances futures.
   </div>
 </div>
+</div><!-- fin tab-scanner-content -->
+
+<!-- PAGE EN SAVOIR PLUS -->
+<div class="tab-content" id="tab-about-content">
+<div class="page" style="max-width:700px;">
+  <div class="hero" style="text-align:left;padding:2.5rem 0 1.5rem;">
+    <h1><span>SmartValue</span></h1>
+    <div style="font-size:1rem;color:var(--muted2);margin-bottom:0.5rem;">Scanner d'actions fondamental</div>
+    <p style="text-align:left;">Un outil gratuit pour analyser les entreprises mondiales selon des critères fondamentaux clairs — conçu pour les investisseurs particuliers francophones.</p>
+  </div>
+
+  <div class="sec-label">Comment ça fonctionne</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:2rem;">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.25rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:1.5rem;color:rgba(37,99,235,0.15);margin-bottom:0.5rem;">01</div>
+      <div style="font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;margin-bottom:0.35rem;">Choisissez un profil</div>
+      <div style="font-size:0.75rem;color:var(--muted2);line-height:1.6;">Défensif, Universel ou Croissance — adapté à votre stratégie.</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.25rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:1.5rem;color:rgba(37,99,235,0.15);margin-bottom:0.5rem;">02</div>
+      <div style="font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;margin-bottom:0.35rem;">Lancez le scan</div>
+      <div style="font-size:0.75rem;color:var(--muted2);line-height:1.6;">Le scanner analyse 100+ entreprises mondiales en quelques secondes.</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.25rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:1.5rem;color:rgba(37,99,235,0.15);margin-bottom:0.5rem;">03</div>
+      <div style="font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;margin-bottom:0.35rem;">Analysez</div>
+      <div style="font-size:0.75rem;color:var(--muted2);line-height:1.6;">Chaque entreprise reçoit un score détaillé sur 5 critères fondamentaux.</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Les 5 blocs de scoring</div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.25rem;margin-bottom:2rem;">
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:8px;height:8px;border-radius:50%;background:#2563EB;flex-shrink:0;"></div><div><span style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;">Valorisation (30%)</span> <span style="font-size:0.75rem;color:var(--muted2);">— PER, P/B, EV/EBITDA</span></div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:8px;height:8px;border-radius:50%;background:#16A34A;flex-shrink:0;"></div><div><span style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;">Rentabilité (30%)</span> <span style="font-size:0.75rem;color:var(--muted2);">— ROE, Marge nette</span></div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:8px;height:8px;border-radius:50%;background:#9333EA;flex-shrink:0;"></div><div><span style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;">Santé financière (20%)</span> <span style="font-size:0.75rem;color:var(--muted2);">— Dette/Equity</span></div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:8px;height:8px;border-radius:50%;background:#EA580C;flex-shrink:0;"></div><div><span style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;">Croissance (15%)</span> <span style="font-size:0.75rem;color:var(--muted2);">— Croissance du CA</span></div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:8px;height:8px;border-radius:50%;background:#DB2777;flex-shrink:0;"></div><div><span style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;">Dividende (5%)</span> <span style="font-size:0.75rem;color:var(--muted2);">— Rendement du dividende</span></div></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Avertissement</div>
+  <div style="font-size:0.75rem;color:var(--muted);line-height:1.75;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.25rem;margin-bottom:2rem;">
+    SmartValue Scanner est un outil d'aide à l'analyse fondamentale. Il ne fournit pas de conseils financiers personnalisés. Toute décision d'investissement reste sous la responsabilité exclusive de l'utilisateur. Les performances passées ne préjugent pas des performances futures.
+  </div>
+</div>
+</div><!-- fin tab-about-content -->
 
 <div class="toast" id="toast"></div>
 
@@ -669,7 +750,7 @@ function renderCard(r, rank) {
     <div class="card-body">
       <div class="card-why">${r['Résumé']||''} — ${r.Pourquoi||''}</div>
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:0.5rem;display:flex;align-items:center;gap:4px;">
-        <span>ℹ</span> Cliquez sur une métrique pour l'expliquer
+        <span>ℹ</span> Cliquez sur une métrique pour obtenir son explication
       </div>
       <div class="metrics-grid">${metrics}</div>
       <div class="score-bars-label">Détail du score</div>
@@ -789,67 +870,39 @@ function applyAdvancedFilters(results) {
 // ── GUIDE TOUR INTERACTIF ─────────────────────────────────
 const TOUR_STEPS = [
   {
-    target: '#btn-balanced',
+    target: '.profiles',
     title: 'Choisissez votre profil',
-    desc: 'Commencez par choisir votre stratégie. Cliquez sur <strong>Universel</strong> pour continuer.',
-    action: 'click:#btn-balanced',
-    hint: 'Cliquez sur Universel →',
+    desc: 'Sélectionnez votre stratégie. Défensif pour la sécurité, Universel pour tout couvrir, Croissance pour les entreprises dynamiques.',
     position: 'bottom',
   },
   {
     target: '.sectors-header',
     title: 'Sélectionnez vos secteurs',
-    desc: 'Cochez les marchés à analyser. Cliquez sur <strong>Tout cocher</strong> pour sélectionner tous les secteurs.',
-    action: 'click:.sector-action-btn',
-    hint: 'Cliquez sur Tout cocher →',
+    desc: 'Cochez les marchés à analyser — US, Europe, Asie. Utilisez "Tout cocher" pour tout sélectionner ou "Tout décocher" pour repartir de zéro.',
     position: 'bottom',
   },
   {
     target: '#advanced-toggle',
     title: 'Filtres avancés (optionnel)',
-    desc: 'Des critères précis pour le stock picking. Cliquez pour voir les filtres disponibles.',
-    action: 'click:#advanced-toggle',
-    hint: 'Cliquez pour ouvrir →',
+    desc: 'Pour le stock picking avancé — définissez des critères précis : PER maximum, ROE minimum, Marge, Dette/Equity et Croissance.',
     position: 'bottom',
   },
   {
     target: '#scan-btn',
-    title: 'Lancez votre premier scan !',
-    desc: 'Tout est prêt. Cliquez sur <strong>Lancer le scan</strong> pour analyser les entreprises.',
-    action: 'click:#scan-btn',
-    hint: 'Cliquez pour lancer le scan →',
-    waitScan: true,
+    title: 'Lancez le scan',
+    desc: 'Cliquez ici pour analyser toutes les entreprises sélectionnées. Le scan prend quelques secondes.',
     position: 'bottom',
-  },
-  {
-    target: '#results-area',
-    title: 'Vos résultats sont là !',
-    desc: 'Chaque carte est une entreprise analysée. Cliquez sur <strong>Voir les détails</strong> de la première carte.',
-    action: 'click:.card-details-hint',
-    hint: 'Cliquez sur Voir les détails →',
-    position: 'top',
-  },
-  {
-    target: '.card.open',
-    title: 'Comprenez les métriques',
-    desc: 'Cliquez sur une métrique — <strong>PER, ROE, Marge</strong>... — pour obtenir son explication en français.',
-    action: 'click:.metric-box',
-    hint: 'Cliquez sur une métrique →',
-    position: 'top',
   },
   {
     target: '.nav-search-wrap',
     title: 'Recherche rapide',
-    desc: 'Tapez <strong>AAPL</strong> dans la barre et appuyez sur Entrée pour analyser une action précise.',
-    action: 'search',
-    hint: 'Tapez AAPL et appuyez sur Entrée →',
+    desc: 'Vous connaissez une action ? Tapez son nom ou ticker — Apple, LVMH, AAPL — pour analyser directement.',
     position: 'bottom',
   },
   {
     target: '#tour-trigger',
-    title: 'Vous êtes prêt !',
-    desc: 'Bravo ! Vous connaissez maintenant toutes les fonctionnalités. Ce guide est disponible à tout moment en cliquant ici.',
-    action: 'finish',
+    title: 'Revoir ce guide',
+    desc: 'Pour revoir ces explications à tout moment, cliquez sur le bouton Guide dans la barre de navigation.',
     position: 'bottom',
   },
 ];
@@ -868,11 +921,6 @@ function showTourStep() {
   clearTourUI();
   if (tourStep >= TOUR_STEPS.length) { endTour(); return; }
   const step = TOUR_STEPS[tourStep];
-
-  // Étapes 4/5 nécessitent des résultats — skip si pas encore de scan
-  if ((tourStep === 4 || tourStep === 5) && !state.results.length) {
-    tourStep++; showTourStep(); return;
-  }
 
   const el = document.querySelector(step.target);
   if (!el) { tourStep++; showTourStep(); return; }
@@ -901,12 +949,10 @@ function showTourStep() {
     const dots = TOUR_STEPS.map((_,i) =>
       '<div class="tour-dot' + (i===tourStep?' active':'') + '"></div>').join('');
 
-    const isFinish = step.action === 'finish';
-    const actionArea = isFinish
+    const isLast = tourStep === TOUR_STEPS.length - 1;
+    const actionArea = isLast
       ? '<button class="tour-next" onclick="endTour()">Terminer ✓</button>'
-      : step.hint
-        ? '<div style="font-size:0.7rem;color:var(--blue);font-weight:600;animation:hintBounce 1.5s ease infinite;">' + step.hint + '</div>'
-        : '<button class="tour-next" onclick="nextTourStep()">Suivant →</button>';
+      : '<button class="tour-next" onclick="nextTourStep()">Suivant →</button>';
 
     bubble.innerHTML =
       '<div class="tour-step-label">Étape ' + (tourStep+1) + ' sur ' + TOUR_STEPS.length + '</div>' +
@@ -940,49 +986,7 @@ function showTourStep() {
       bubble.style.left = left + 'px';
     }, 50);
 
-    // Écouter l'action de l'utilisateur
-    if (!isFinish) listenForAction(step);
-
   }, 400);
-}
-
-function listenForAction(step) {
-  if (!step.action) return;
-
-  if (step.action.startsWith('click:')) {
-    const selector = step.action.replace('click:', '');
-    const targets = document.querySelectorAll(selector);
-    if (!targets.length) return;
-    const handler = () => {
-      targets.forEach(t => t.removeEventListener('click', handler));
-      if (step.waitScan) {
-        // Attendre fin du scan
-        const check = setInterval(() => {
-          if (!state.scanning && state.results.length > 0) {
-            clearInterval(check);
-            setTimeout(() => { tourStep++; showTourStep(); }, 800);
-          }
-        }, 500);
-      } else {
-        setTimeout(() => { tourStep++; showTourStep(); }, 350);
-      }
-    };
-    targets.forEach(t => t.addEventListener('click', handler, {once:true}));
-
-  } else if (step.action === 'search') {
-    const input = document.getElementById('ticker-input');
-    if (!input) return;
-    input.focus();
-    input.placeholder = 'Tapez AAPL...';
-    const handler = (e) => {
-      if (e.key === 'Enter' && input.value.trim()) {
-        input.removeEventListener('keydown', handler);
-        input.placeholder = 'Apple, AAPL, LVMH…';
-        setTimeout(() => { tourStep++; showTourStep(); }, 1500);
-      }
-    };
-    input.addEventListener('keydown', handler);
-  }
 }
 
 function nextTourStep() {
