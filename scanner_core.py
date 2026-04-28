@@ -281,15 +281,30 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     ev_direct = safe_float(info.get("enterpriseToEbitda"), 0.0)
     if 3 <= ev_direct <= 100:
         ev_ebitda = ev_direct
-    # Méthode 2 : recalcul via ebitdaMargins × revenue
-    # Mais seulement si EV et revenue sont dans la même devise
+
     elif enterprise_value > 0 and ebitda_margins > 0 and total_revenue > 0:
+        ebitda_local = ebitda_margins * total_revenue
+
         if currency == financial_currency:
-            ebitda_recalc = ebitda_margins * total_revenue
-            if ebitda_recalc > 0:
-                ev_calc = enterprise_value / ebitda_recalc
-                if 3 <= ev_calc <= 100:
-                    ev_ebitda = round(ev_calc, 2)
+            # Même devise — calcul direct
+            ev_calc = enterprise_value / ebitda_local
+            if 3 <= ev_calc <= 100:
+                ev_ebitda = round(ev_calc, 2)
+        else:
+            # Devises différentes — convertir via yfinance
+            try:
+                fx_pair = f"{financial_currency}{currency}=X"
+                import yfinance as _yf
+                fx = _yf.Ticker(fx_pair)
+                fx_info = fx.info
+                rate = safe_float(fx_info.get("regularMarketPrice") or fx_info.get("previousClose"), 0.0)
+                if rate > 0:
+                    ebitda_converted = ebitda_local * rate
+                    ev_calc = enterprise_value / ebitda_converted
+                    if 3 <= ev_calc <= 100:
+                        ev_ebitda = round(ev_calc, 2)
+            except Exception:
+                pass
     roe = safe_float(info.get("returnOnEquity"), 0.0)
     margin = safe_float(info.get("profitMargins"), 0.0)
 
