@@ -398,12 +398,12 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
         <input type="range" class="advanced-input" id="adv-pb" min="0" max="30" value="30" oninput="updateAdv('pb',this.value)">
       </div>
     </div>
-      <div class="advanced-field">
-        <div class="advanced-label">Dividende <span style="color:var(--muted);font-weight:400;font-size:0.6rem;">filtre</span></div>
+      <div class="advanced-field" style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:0.75rem;margin-top:0.25rem;">
+        <div class="advanced-label" style="margin-bottom:8px;">Dividende</div>
         <div class="div-filter-btns">
           <button class="div-btn active" id="div-btn-all" onclick="setDivFilter('all')">Tous</button>
-          <button class="div-btn" id="div-btn-yes" onclick="setDivFilter('yes')">Avec</button>
-          <button class="div-btn" id="div-btn-no" onclick="setDivFilter('no')">Sans</button>
+          <button class="div-btn" id="div-btn-yes" onclick="setDivFilter('yes')">Avec dividende</button>
+          <button class="div-btn" id="div-btn-no" onclick="setDivFilter('no')">Sans dividende</button>
         </div>
       </div>
     <button class="advanced-reset" onclick="resetAdvanced()">Réinitialiser les filtres</button>
