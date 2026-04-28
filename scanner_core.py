@@ -107,11 +107,11 @@ class Thresholds:
 
 @dataclass
 class Weights:
-    valuation: float = 0.30
+    valuation: float = 0.25
     profitability: float = 0.30
     financial_health: float = 0.20
     growth: float = 0.15
-    dividend: float = 0.05
+    dividend: float = 0.10
 
 
 # =========================
@@ -293,11 +293,28 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
         else:
             # Devises différentes — convertir via yfinance
             try:
-                fx_pair = f"{financial_currency}{currency}=X"
                 import yfinance as _yf
-                fx = _yf.Ticker(fx_pair)
-                fx_info = fx.info
-                rate = safe_float(fx_info.get("regularMarketPrice") or fx_info.get("previousClose"), 0.0)
+                # Essayer plusieurs paires de devises
+                pairs_to_try = [
+                    f"{financial_currency}{currency}=X",  # ex: TWDUSD=X
+                    f"{financial_currency}=X",             # ex: TWD=X
+                ]
+                rate = 0.0
+                for fx_pair in pairs_to_try:
+                    try:
+                        fx = _yf.Ticker(fx_pair)
+                        fx_hist = fx.history(period="1d")
+                        if not fx_hist.empty:
+                            rate = float(fx_hist["Close"].iloc[-1])
+                            if rate > 0:
+                                break
+                        fx_info = fx.fast_info
+                        r = getattr(fx_info, "last_price", 0.0) or 0.0
+                        if r > 0:
+                            rate = r
+                            break
+                    except Exception:
+                        continue
                 if rate > 0:
                     ebitda_converted = ebitda_local * rate
                     ev_calc = enterprise_value / ebitda_converted
@@ -468,7 +485,9 @@ class SmartValueScorer:
 
         # --- FINANCIAL HEALTH ---
         health = 0.0
-        if dte >= 0:
+        sector = m.get("sector_name", "")
+        is_bank = any(s in sector for s in ["Finance", "Bank", "Insurance"])
+        if dte > 0:
             if dte < 0.30:
                 health += 100 * 0.55; why.append("Dette très faible")
             elif dte < 0.60:
@@ -477,6 +496,9 @@ class SmartValueScorer:
                 health += 45 * 0.55
             elif dte < 1.5:
                 health += 20 * 0.55
+        elif is_bank:
+            # Pour les banques sans DTE disponible, score neutre basé sur cashflow seul
+            health += 55 * 0.55  # score neutre
         if revenue > 0 and ocf > 0:
             cf_m = ocf / revenue
             if cf_m > 0.18:
