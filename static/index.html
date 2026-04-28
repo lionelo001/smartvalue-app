@@ -842,7 +842,7 @@ async function submitWaitlist() {
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-q">Comment est calculé le score ? <span class="faq-icon">▼</span></div>
-      <div class="faq-a">Le score combine 5 blocs : Valorisation (30%), Rentabilité (30%), Santé financière (20%), Croissance (15%) et Dividende (5%). Chaque bloc est noté selon des seuils établis pour les actions mondiales.</div>
+      <div class="faq-a">Le score combine 5 blocs : Valorisation (25%), Rentabilité (30%), Santé financière (20%), Croissance (15%) et Dividende (10%). Chaque bloc est noté selon des seuils établis pour les actions mondiales.</div>
     </div>
   </div>
 
@@ -1137,7 +1137,7 @@ function renderCard(r, rank) {
     {l:'EV/EBITDA',v:r['EV/EBITDA']??'—'},
     {l:'Dette/Equity',v:r['Dette/Equity']??'—'},
     {l:'Croissance CA',v:r['Croissance CA %']!=null?r['Croissance CA %']+'%':'—'},
-    {l:'Dividende',v:'🔄 Bientôt'},
+    {l:'Dividende',v:r['Div %']>0?(r['Div %']+'%'):'—'},
   ].map(m=>`<div class="metric-box" onclick="showTooltip(event,'${m.l}')" style="cursor:pointer;"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l}</div></div>`).join('');
 
   return `
@@ -1212,7 +1212,7 @@ const METRIC_INFO = {
   'EV/EBITDA':{desc:"Valeur d'entreprise / profit opérationnel. Mesure le coût de l'entreprise par rapport à sa capacité à générer des bénéfices.",example:'EV/EBITDA < 12 = valorisation attractive · > 20 = prix élevé.'},
   'Dette/Equity':{desc:"Dette totale / capitaux propres. Mesure le niveau d'endettement de l'entreprise.",example:'< 0.5 = peu endettée · > 1.5 = endettement élevé, risque plus fort.'},
   'Croissance CA':{desc:"Évolution du chiffre d'affaires sur la dernière année.",example:'15% = le CA a augmenté de 15% vs l\'année précédente.'},
-  'Dividende':{desc:"Rendement du dividende annuel. Pourcentage du prix versé chaque année aux actionnaires.",example:"Dividende 3% = pour une action à 100€, vous recevez 3€/an."},
+  'Dividende':{desc:"Rendement du dividende annuel. Pourcentage du prix de l'action versé chaque année aux actionnaires. Un dividende régulier indique une entreprise mature et profitable.",example:"Dividende 3% = pour une action à 100€, vous recevez 3€/an. > 4% = très attractif."},
 };
 
 function showTooltip(event, label) {
