@@ -258,8 +258,8 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .tour-demo-tooltip{background:#1E2330;color:#fff;border-radius:5px;padding:0.4rem 0.65rem;font-size:0.65rem;margin-top:0.5rem;line-height:1.5;}
 
 /* ── DIV FILTER BTNS ── */
-.div-filter-btns{display:flex;gap:4px;margin-top:8px;}
-.div-btn{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:0.35rem 0;font-size:0.7rem;font-family:'Syne',sans-serif;font-weight:700;color:var(--muted2);cursor:pointer;transition:all 0.15s;}
+.div-filter-btns{display:flex;gap:4px;margin-top:6px;}
+.div-btn{background:var(--bg);border:1px solid var(--border2);border-radius:5px;padding:0.2rem 0.6rem;font-size:0.65rem;font-family:'Syne',sans-serif;font-weight:700;color:var(--muted2);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
 .div-btn:hover:not(.active){border-color:var(--blue);color:var(--blue);}
 .div-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
 
@@ -399,7 +399,7 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
       </div>
     </div>
       <div class="advanced-field">
-        <div class="advanced-label">Dividende</div>
+        <div class="advanced-label">Dividende <span style="color:var(--muted);font-weight:400;font-size:0.6rem;">filtre</span></div>
         <div class="div-filter-btns">
           <button class="div-btn active" id="div-btn-all" onclick="setDivFilter('all')">Tous</button>
           <button class="div-btn" id="div-btn-yes" onclick="setDivFilter('yes')">Avec</button>
