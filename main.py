@@ -144,3 +144,25 @@ Allow: /
 User-agent: Twitterbot
 Allow: /
 """)
+
+@app.get("/api/debug/{ticker}")
+def debug_ticker(ticker: str):
+    """Endpoint temporaire pour débugger les données yfinance"""
+    import yfinance as yf
+    t = yf.Ticker(ticker.upper())
+    info = t.info
+    return {
+        "ticker": ticker,
+        "enterpriseToEbitda": info.get("enterpriseToEbitda"),
+        "enterpriseValue": info.get("enterpriseValue"),
+        "ebitda": info.get("ebitda"),
+        "netIncome": info.get("netIncome"),
+        "taxProvision": info.get("taxProvision"),
+        "incomeTaxExpense": info.get("incomeTaxExpense"),
+        "interestExpense": info.get("interestExpense"),
+        "depreciationAndAmortization": info.get("depreciationAndAmortization"),
+        "totalDepreciationAndAmortization": info.get("totalDepreciationAndAmortization"),
+        "operatingCashflow": info.get("operatingCashflow"),
+        "ebitdaMargins": info.get("ebitdaMargins"),
+        "totalRevenue": info.get("totalRevenue"),
+    }
