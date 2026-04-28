@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel
 from scanner_core import SmartValueScanner, DEFAULT_UNIVERSE
 
@@ -69,10 +69,10 @@ def autocomplete(q: str = ""):
 # Static files pour l'app scanner
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Landing page sur /
+# Redirection / vers /app
 @app.get("/")
 def root():
-    return FileResponse("landing.html")
+    return RedirectResponse(url="/app", status_code=301)
 
 # Scanner sur /app
 @app.get("/app")
