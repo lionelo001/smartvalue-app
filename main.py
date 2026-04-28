@@ -43,9 +43,29 @@ def search(req: SearchRequest):
         raise HTTPException(status_code=404, detail=f"Ticker introuvable : {req.ticker}")
     return result
 
-@app.get("/api/health")
-def health():
-    return {"status": "ok"}
+class WaitlistRequest(BaseModel):
+    email: str
+
+@app.post("/api/waitlist")
+async def waitlist(req: WaitlistRequest):
+    import requests as req_lib
+    BREVO_API_KEY = "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"
+    try:
+        r = req_lib.post(
+            "https://api.brevo.com/v3/contacts",
+            headers={"api-key": BREVO_API_KEY, "Content-Type": "application/json"},
+            json={"email": req.email, "listIds": [2], "updateEnabled": True,
+                  "attributes": {"SOURCE": "SmartValue Waitlist"}},
+            timeout=10
+        )
+        if r.status_code in [201, 204]:
+            return {"success": True}
+        elif r.status_code == 400 and "duplicate" in r.text.lower():
+            return {"success": True}  # Email déjà inscrit — on considère comme succès
+        else:
+            raise HTTPException(status_code=500, detail="Erreur Brevo")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/autocomplete")
 def autocomplete(q: str = ""):
