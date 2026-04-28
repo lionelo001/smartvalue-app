@@ -257,10 +257,11 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .tour-demo-ml{font-size:0.55rem;color:#9096A8;text-transform:uppercase;letter-spacing:0.05em;}
 .tour-demo-tooltip{background:#1E2330;color:#fff;border-radius:5px;padding:0.4rem 0.65rem;font-size:0.65rem;margin-top:0.5rem;line-height:1.5;}
 
-/* ── ADV TOGGLE ── */
-.adv-toggle{background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:0.3rem 0.75rem;font-size:0.72rem;font-family:'Syne',sans-serif;font-weight:700;color:var(--muted2);cursor:pointer;transition:all 0.15s;}
-.adv-toggle.active{background:var(--blue);border-color:var(--blue);color:#fff;}
-.adv-toggle:hover:not(.active){border-color:var(--blue);color:var(--blue);}
+/* ── DIV FILTER BTNS ── */
+.div-filter-btns{display:flex;gap:4px;margin-top:8px;}
+.div-btn{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:0.35rem 0;font-size:0.7rem;font-family:'Syne',sans-serif;font-weight:700;color:var(--muted2);cursor:pointer;transition:all 0.15s;}
+.div-btn:hover:not(.active){border-color:var(--blue);color:var(--blue);}
+.div-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
 
 /* ── FOOTER ── */
 .footer{border-top:1px solid var(--border);padding:1.5rem 0;font-size:0.68rem;color:var(--muted);line-height:1.7;margin-top:2rem;}
@@ -399,9 +400,10 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
     </div>
       <div class="advanced-field">
         <div class="advanced-label">Dividende</div>
-        <div style="display:flex;gap:6px;margin-top:6px;">
-          <button class="adv-toggle active" id="adv-div-all" onclick="setDivFilter(null)">Tous</button>
-          <button class="adv-toggle" id="adv-div-yes" onclick="setDivFilter(true)">Avec dividende</button>
+        <div class="div-filter-btns">
+          <button class="div-btn active" id="div-btn-all" onclick="setDivFilter('all')">Tous</button>
+          <button class="div-btn" id="div-btn-yes" onclick="setDivFilter('yes')">Avec</button>
+          <button class="div-btn" id="div-btn-no" onclick="setDivFilter('no')">Sans</button>
         </div>
       </div>
     <button class="advanced-reset" onclick="resetAdvanced()">Réinitialiser les filtres</button>
@@ -1271,8 +1273,7 @@ function updateAdv(key, val) {
 function resetAdvanced() {
   advFilters.per = null; advFilters.roe = null; advFilters.margin = null;
   advFilters.dte = null; advFilters.growth = null; advFilters.pb = null; advFilters.div = null;
-  document.getElementById('adv-div-all').classList.add('active');
-  document.getElementById('adv-div-yes').classList.remove('active');
+  setDivFilter('all');
   document.getElementById('adv-per').value = 30;
   document.getElementById('adv-roe').value = 0;
   document.getElementById('adv-margin').value = 0;
@@ -1297,7 +1298,8 @@ function applyAdvancedFilters(results) {
     if (advFilters.dte !== null && advFilters.dte < 5 && r['Dette/Equity'] && r['Dette/Equity'] > advFilters.dte) return false;
     if (advFilters.growth !== null && (!r['Croissance CA %'] || r['Croissance CA %'] < advFilters.growth)) return false;
     if (advFilters.pb !== null && advFilters.pb < 30 && r['P/B'] && r['P/B'] > advFilters.pb) return false;
-    if (advFilters.div === true && (!r['Div %'] || r['Div %'] <= 0)) return false;
+    if (advFilters.div === 'yes' && (!r['Div %'] || r['Div %'] <= 0)) return false;
+    if (advFilters.div === 'no' && r['Div %'] > 0) return false;
     return true;
   });
 }
@@ -1506,9 +1508,10 @@ function toggleFaq(el) {
 }
 
 function setDivFilter(val) {
-  advFilters.div = val;
-  document.getElementById('adv-div-all').classList.toggle('active', val === null);
-  document.getElementById('adv-div-yes').classList.toggle('active', val === true);
+  advFilters.div = val === 'all' ? null : val;
+  ['all','yes','no'].forEach(v => {
+    document.getElementById('div-btn-' + v).classList.toggle('active', v === val);
+  });
 }
 </script>
 </body>
