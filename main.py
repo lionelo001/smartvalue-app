@@ -131,3 +131,16 @@ def preview_image():
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="Preview not found")
     return FileResponse(path, media_type="image/png")
+
+@app.get("/robots.txt")
+def robots():
+    from fastapi.responses import PlainTextResponse
+    return PlainTextResponse("""User-agent: *
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+""")
