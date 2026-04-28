@@ -49,7 +49,7 @@ class WaitlistRequest(BaseModel):
 @app.post("/api/waitlist")
 async def waitlist(req: WaitlistRequest):
     import requests as req_lib
-    BREVO_API_KEY = "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"
+    BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
     try:
         r = req_lib.post(
             "https://api.brevo.com/v3/contacts",
