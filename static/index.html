@@ -257,6 +257,11 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .tour-demo-ml{font-size:0.55rem;color:#9096A8;text-transform:uppercase;letter-spacing:0.05em;}
 .tour-demo-tooltip{background:#1E2330;color:#fff;border-radius:5px;padding:0.4rem 0.65rem;font-size:0.65rem;margin-top:0.5rem;line-height:1.5;}
 
+/* ── ADV TOGGLE ── */
+.adv-toggle{background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:0.3rem 0.75rem;font-size:0.72rem;font-family:'Syne',sans-serif;font-weight:700;color:var(--muted2);cursor:pointer;transition:all 0.15s;}
+.adv-toggle.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.adv-toggle:hover:not(.active){border-color:var(--blue);color:var(--blue);}
+
 /* ── FOOTER ── */
 .footer{border-top:1px solid var(--border);padding:1.5rem 0;font-size:0.68rem;color:var(--muted);line-height:1.7;margin-top:2rem;}
 
@@ -392,9 +397,12 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
         <input type="range" class="advanced-input" id="adv-pb" min="0" max="30" value="30" oninput="updateAdv('pb',this.value)">
       </div>
     </div>
-      <div class="advanced-field" style="grid-column:1/-1;">
-        <div class="advanced-label">Dividende minimum (%) <span id="adv-div-val">—</span></div>
-        <input type="range" class="advanced-input" id="adv-div" min="0" max="10" step="0.5" value="0" oninput="updateAdv('div',this.value)">
+      <div class="advanced-field">
+        <div class="advanced-label">Dividende</div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button class="adv-toggle active" id="adv-div-all" onclick="setDivFilter(null)">Tous</button>
+          <button class="adv-toggle" id="adv-div-yes" onclick="setDivFilter(true)">Avec dividende</button>
+        </div>
       </div>
     <button class="advanced-reset" onclick="resetAdvanced()">Réinitialiser les filtres</button>
   </div>
@@ -1263,6 +1271,8 @@ function updateAdv(key, val) {
 function resetAdvanced() {
   advFilters.per = null; advFilters.roe = null; advFilters.margin = null;
   advFilters.dte = null; advFilters.growth = null; advFilters.pb = null; advFilters.div = null;
+  document.getElementById('adv-div-all').classList.add('active');
+  document.getElementById('adv-div-yes').classList.remove('active');
   document.getElementById('adv-per').value = 30;
   document.getElementById('adv-roe').value = 0;
   document.getElementById('adv-margin').value = 0;
@@ -1275,8 +1285,7 @@ function resetAdvanced() {
   document.getElementById('adv-dte-val').textContent = '—';
   document.getElementById('adv-growth-val').textContent = '—';
   document.getElementById('adv-pb-val').textContent = '—';
-  document.getElementById('adv-div-val').textContent = '—';
-  document.getElementById('adv-div').value = 0;
+
   showToast('Filtres réinitialisés ✓');
 }
 
@@ -1288,7 +1297,7 @@ function applyAdvancedFilters(results) {
     if (advFilters.dte !== null && advFilters.dte < 5 && r['Dette/Equity'] && r['Dette/Equity'] > advFilters.dte) return false;
     if (advFilters.growth !== null && (!r['Croissance CA %'] || r['Croissance CA %'] < advFilters.growth)) return false;
     if (advFilters.pb !== null && advFilters.pb < 30 && r['P/B'] && r['P/B'] > advFilters.pb) return false;
-    if (advFilters.div !== null && advFilters.div > 0 && (!r['Div %'] || r['Div %'] < advFilters.div)) return false;
+    if (advFilters.div === true && (!r['Div %'] || r['Div %'] <= 0)) return false;
     return true;
   });
 }
@@ -1494,6 +1503,12 @@ function switchTab(tab) {
 
 function toggleFaq(el) {
   el.classList.toggle('open');
+}
+
+function setDivFilter(val) {
+  advFilters.div = val;
+  document.getElementById('adv-div-all').classList.toggle('active', val === null);
+  document.getElementById('adv-div-yes').classList.toggle('active', val === true);
 }
 </script>
 </body>
