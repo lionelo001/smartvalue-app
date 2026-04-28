@@ -95,7 +95,7 @@ FMP_BASE = "https://financialmodelingprep.com/api/v3"
 
 @dataclass
 class Thresholds:
-    pe_max: float = 30.0
+    pe_max: float = 35.0
     pb_max: float = 4.0
     ev_ebitda_max: float = 20.0
     roe_min: float = 0.08
@@ -468,7 +468,8 @@ class SmartValueScorer:
         elif is_bank:
             # Pour les banques sans DTE disponible, score neutre basé sur cashflow seul
             health += 55 * 0.55  # score neutre
-        if revenue > 0 and ocf > 0:
+        # Cashflow — ignoré pour les banques (OCF naturellement volatile/négatif)
+        if revenue > 0 and ocf > 0 and not is_bank:
             cf_m = ocf / revenue
             if cf_m > 0.18:
                 health += 100 * 0.45; why.append("Cashflow excellent")
@@ -476,6 +477,9 @@ class SmartValueScorer:
                 health += 75 * 0.45
             elif cf_m > 0.06:
                 health += 45 * 0.45
+        elif is_bank:
+            # Pour les banques, score cashflow neutre
+            health += 65 * 0.45
         details["financial_health"] = round(health, 1)
 
         # --- GROWTH ---
