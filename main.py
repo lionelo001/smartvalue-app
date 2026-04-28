@@ -165,4 +165,6 @@ def debug_ticker(ticker: str):
         "operatingCashflow": info.get("operatingCashflow"),
         "ebitdaMargins": info.get("ebitdaMargins"),
         "totalRevenue": info.get("totalRevenue"),
+        "currency": info.get("currency"),
+        "financialCurrency": info.get("financialCurrency"),
     }
