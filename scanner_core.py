@@ -266,7 +266,19 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
 
     pe = safe_float(info.get("trailingPE") or info.get("forwardPE"), 0.0)
     pb = safe_float(info.get("priceToBook"), 0.0)
-    ev_ebitda = safe_float(info.get("enterpriseToEbitda"), 0.0)
+
+    # EV/EBITDA — recalcul manuel pour éviter les bugs yfinance
+    ev_ebitda_direct = safe_float(info.get("enterpriseToEbitda"), 0.0)
+    enterprise_value = safe_float(info.get("enterpriseValue"), 0.0)
+    ebitda = safe_float(info.get("ebitda"), 0.0)
+    if enterprise_value > 0 and ebitda > 0:
+        ev_ebitda_calc = enterprise_value / ebitda
+        # Valider : entre 1 et 100 pour être réaliste
+        ev_ebitda = ev_ebitda_calc if 1 < ev_ebitda_calc < 100 else 0.0
+    elif ev_ebitda_direct > 1 and ev_ebitda_direct < 100:
+        ev_ebitda = ev_ebitda_direct
+    else:
+        ev_ebitda = 0.0
     roe = safe_float(info.get("returnOnEquity"), 0.0)
     margin = safe_float(info.get("profitMargins"), 0.0)
     dte_raw = safe_float(info.get("debtToEquity"), 0.0)
