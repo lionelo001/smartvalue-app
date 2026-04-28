@@ -258,11 +258,42 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
 
     price = safe_float(info.get("regularMarketPrice") or info.get("currentPrice"), 0.0)
     mcap = safe_float(info.get("marketCap"), 0.0)
+    currency = info.get("currency", "USD")
 
     if price <= 0:
         return None
     if mcap < 200_000_000:
         return None
+
+    # Conversion de devise — tout en USD ou EUR
+    # Actions européennes cotées en EUR/GBp/CHF → EUR
+    # Actions Asie/US cotées en KRW/JPY/TWD/HKD → USD
+    target_currency = currency
+    try:
+        if currency not in ("USD", "EUR"):
+            import yfinance as _yf
+            if currency in ("GBp", "GBX"):
+                # Pence → Livres sterling → EUR
+                price = price / 100.0
+                gbp_eur = _yf.Ticker("GBPEUR=X").fast_info.last_price or 1.17
+                price = round(price * gbp_eur, 2)
+                target_currency = "EUR"
+            elif currency in ("CHF",):
+                chf_eur = _yf.Ticker("CHFEUR=X").fast_info.last_price or 1.05
+                price = round(price * chf_eur, 2)
+                target_currency = "EUR"
+            elif currency in ("SEK", "NOK", "DKK"):
+                pair = f"{currency}EUR=X"
+                rate = _yf.Ticker(pair).fast_info.last_price or 0.09
+                price = round(price * rate, 2)
+                target_currency = "EUR"
+            elif currency in ("KRW", "JPY", "TWD", "HKD", "CNY", "INR"):
+                pair = f"{currency}USD=X"
+                rate = _yf.Ticker(pair).fast_info.last_price or 0.001
+                price = round(price * rate, 2)
+                target_currency = "USD"
+    except Exception:
+        target_currency = currency  # fallback devise originale
 
     pe = safe_float(info.get("trailingPE") or info.get("forwardPE"), 0.0)
     pb = safe_float(info.get("priceToBook"), 0.0)
@@ -320,7 +351,7 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     return {
         "ticker": ticker,
         "name": info.get("longName") or info.get("shortName") or ticker,
-        "currency": info.get("currency", "USD"),
+        "currency": target_currency,
         "exchange": info.get("exchange", ""),
         "country": info.get("country", ""),
         "sector": info.get("sector", ""),
