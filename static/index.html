@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>SmartValue — Scanner d'actions fondamental</title>
 <!-- Google Analytics GA4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M4S6VSF3W5"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -1043,6 +1043,7 @@ async function searchTicker() {
   const ticker = document.getElementById('ticker-input').value.trim().toUpperCase();
   if (!ticker) return;
   document.getElementById('autocomplete').classList.remove('open');
+  if(typeof gtag !== 'undefined') gtag('event','ticker_searched',{ticker:ticker});
   const area = document.getElementById('results-area');
   area.innerHTML = `<div class="empty"><div class="loader"></div><div class="loading-text">Analyse de ${ticker}…</div></div>`;
   try {
@@ -1066,6 +1067,8 @@ async function startScan() {
   state.scanning=true;
   const btn=document.getElementById('scan-btn');
   btn.disabled=true;btn.textContent='Analyse en cours…';
+  // GA4 event
+  if(typeof gtag !== 'undefined') gtag('event','scan_launched',{sectors_count:active.length});
   const area=document.getElementById('results-area');
   area.innerHTML=`<div class="empty"><div class="loader"></div><div class="loading-text" id="loading-text">Démarrage…</div></div>`;
   let i=0;
@@ -1155,7 +1158,9 @@ function renderCard(r, rank) {
 
 function toggleCard(rank) {
   const card=document.getElementById('card-'+rank);
+  const wasOpen = card.classList.contains('open');
   card.classList.toggle('open');
+  if(!wasOpen && typeof gtag !== 'undefined') gtag('event','card_opened',{rank:rank});
 }
 
 function renderEmpty() {
@@ -1195,6 +1200,7 @@ function showTooltip(event, label) {
   event.stopPropagation();
   const info = METRIC_INFO[label];
   if (!info) return;
+  if(typeof gtag !== 'undefined') gtag('event','indicator_clicked',{indicator:label});
   const existing = document.getElementById('tooltip-overlay');
   if (existing) existing.remove();
   const overlay = document.createElement('div');
@@ -1308,6 +1314,7 @@ function startTour() {
   tourStep = 0;
   tourActive = true;
   localStorage.setItem('sv_tour_done','1');
+  if(typeof gtag !== 'undefined') gtag('event','tour_started');
   showTourStep();
 }
 
@@ -1446,6 +1453,7 @@ function switchTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
   document.getElementById('tab-' + tab + '-content').classList.add('active');
   window.scrollTo({top:0, behavior:'smooth'});
+  if(typeof gtag !== 'undefined') gtag('event','tab_changed',{tab:tab});
   // Cacher/montrer la recherche et le guide selon l'onglet
   const navRight = document.querySelector('nav > div:last-child');
   const searchWrap = document.querySelector('.nav-search-wrap');
