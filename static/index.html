@@ -392,6 +392,10 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
         <input type="range" class="advanced-input" id="adv-pb" min="0" max="30" value="30" oninput="updateAdv('pb',this.value)">
       </div>
     </div>
+      <div class="advanced-field" style="grid-column:1/-1;">
+        <div class="advanced-label">Dividende minimum (%) <span id="adv-div-val">—</span></div>
+        <input type="range" class="advanced-input" id="adv-div" min="0" max="10" step="0.5" value="0" oninput="updateAdv('div',this.value)">
+      </div>
     <button class="advanced-reset" onclick="resetAdvanced()">Réinitialiser les filtres</button>
   </div>
 
@@ -1233,7 +1237,7 @@ function showTooltip(event, label) {
 init();
 
 // ── SCREENER AVANCÉ ───────────────────────────────────────
-const advFilters = { per:null, roe:null, margin:null, dte:null, growth:null, pb:null };
+const advFilters = { per:null, roe:null, margin:null, dte:null, growth:null, pb:null, div:null };
 
 function toggleAdvanced() {
   const btn = document.getElementById('advanced-toggle');
@@ -1258,7 +1262,7 @@ function updateAdv(key, val) {
 
 function resetAdvanced() {
   advFilters.per = null; advFilters.roe = null; advFilters.margin = null;
-  advFilters.dte = null; advFilters.growth = null; advFilters.pb = null;
+  advFilters.dte = null; advFilters.growth = null; advFilters.pb = null; advFilters.div = null;
   document.getElementById('adv-per').value = 30;
   document.getElementById('adv-roe').value = 0;
   document.getElementById('adv-margin').value = 0;
@@ -1271,6 +1275,8 @@ function resetAdvanced() {
   document.getElementById('adv-dte-val').textContent = '—';
   document.getElementById('adv-growth-val').textContent = '—';
   document.getElementById('adv-pb-val').textContent = '—';
+  document.getElementById('adv-div-val').textContent = '—';
+  document.getElementById('adv-div').value = 0;
   showToast('Filtres réinitialisés ✓');
 }
 
@@ -1282,6 +1288,7 @@ function applyAdvancedFilters(results) {
     if (advFilters.dte !== null && advFilters.dte < 5 && r['Dette/Equity'] && r['Dette/Equity'] > advFilters.dte) return false;
     if (advFilters.growth !== null && (!r['Croissance CA %'] || r['Croissance CA %'] < advFilters.growth)) return false;
     if (advFilters.pb !== null && advFilters.pb < 30 && r['P/B'] && r['P/B'] > advFilters.pb) return false;
+    if (advFilters.div !== null && advFilters.div > 0 && (!r['Div %'] || r['Div %'] < advFilters.div)) return false;
     return true;
   });
 }
