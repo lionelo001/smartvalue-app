@@ -74,7 +74,10 @@ async def waitlist(req: WaitlistRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/api/autocomplete")
+@app.get("/api/test-brevo")
+def test_brevo():
+    key = os.environ.get("BREVO_API_KEY", "")
+    return {"key_present": bool(key), "key_length": len(key), "key_start": key[:10] if key else "vide"}
 def autocomplete(q: str = ""):
     if not q or len(q) < 2:
         return {"results": []}
