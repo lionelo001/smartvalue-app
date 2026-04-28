@@ -267,49 +267,52 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     pe = safe_float(info.get("trailingPE") or info.get("forwardPE"), 0.0)
     pb = safe_float(info.get("priceToBook"), 0.0)
 
-    # EV/EBITDA — calcul manuel complet pour éviter les bugs yfinance
+    # EV/EBITDA — fix bug devise yfinance (EBITDA parfois en devise locale, EV en USD)
+    # Solution : recalculer EBITDA depuis ebitdaMargins × revenue (toujours dans la même devise)
     enterprise_value = safe_float(info.get("enterpriseValue"), 0.0)
-
-    # Tenter de reconstruire l'EBITDA depuis les composantes (plus fiable)
-    net_income = safe_float(info.get("netIncome"), 0.0)
-    tax = safe_float(info.get("taxProvision") or info.get("incomeTaxExpense"), 0.0)
-    interest = safe_float(info.get("interestExpense"), 0.0)
-    da = safe_float(info.get("depreciationAndAmortization") or info.get("totalDepreciationAndAmortization"), 0.0)
-
-    ebitda_manual = 0.0
-    if net_income != 0 and da > 0:
-        # EBITDA = Résultat net + Impôts + Intérêts + Amortissements
-        interest_abs = abs(interest)  # yfinance retourne parfois négatif
-        ebitda_manual = net_income + tax + interest_abs + da
-
-    # Fallback sur l'EBITDA direct de yfinance
-    ebitda_direct = safe_float(info.get("ebitda"), 0.0)
-    ebitda = ebitda_manual if ebitda_manual > 0 else ebitda_direct
-
+    ebitda_margins = safe_float(info.get("ebitdaMargins"), 0.0)
+    total_revenue = safe_float(info.get("totalRevenue"), 0.0)
+    
     ev_ebitda = 0.0
-    if enterprise_value > 0 and ebitda > 0:
-        ev_ebitda_calc = enterprise_value / ebitda
-        # Valider : entre 3 et 100 pour être réaliste
-        ev_ebitda = round(ev_ebitda_calc, 2) if 3 <= ev_ebitda_calc <= 100 else 0.0
-    else:
-        # Dernier recours : valeur directe yfinance si réaliste
+    if enterprise_value > 0 and ebitda_margins > 0 and total_revenue > 0:
+        ebitda_recalc = ebitda_margins * total_revenue
+        if ebitda_recalc > 0:
+            ev_calc = enterprise_value / ebitda_recalc
+            ev_ebitda = round(ev_calc, 2) if 3 <= ev_calc <= 100 else 0.0
+    
+    # Fallback sur valeur directe si recalcul échoue
+    if ev_ebitda == 0.0:
         ev_direct = safe_float(info.get("enterpriseToEbitda"), 0.0)
         ev_ebitda = ev_direct if 3 <= ev_direct <= 100 else 0.0
     roe = safe_float(info.get("returnOnEquity"), 0.0)
     margin = safe_float(info.get("profitMargins"), 0.0)
+
+    # Dette/Equity — calcul manuel si yfinance ne retourne rien
     dte_raw = safe_float(info.get("debtToEquity"), 0.0)
-    dte = (dte_raw / 100.0) if dte_raw > 10 else dte_raw
+    if dte_raw > 0:
+        dte = (dte_raw / 100.0) if dte_raw > 10 else dte_raw
+    else:
+        # Recalcul depuis totalDebt / totalStockholderEquity
+        total_debt = safe_float(info.get("totalDebt"), 0.0)
+        stockholder_equity = safe_float(info.get("totalStockholderEquity") or info.get("stockholdersEquity"), 0.0)
+        if total_debt > 0 and stockholder_equity > 0:
+            dte = round(total_debt / stockholder_equity, 2)
+        else:
+            dte = 0.0
+
     rev_growth = safe_float(info.get("revenueGrowth"), 0.0)
     revenue = safe_float(info.get("totalRevenue"), 0.0)
     ocf = safe_float(info.get("operatingCashflow"), 0.0)
 
-    # dividendYield yfinance = ratio (0.032 = 3.2%)
-    # On ignore lastDiv (montant en dollars) pour eviter confusion
+    # Dividende — sources multiples pour maximiser la couverture
     dy1 = safe_float(info.get("dividendYield"), 0.0)
     dy2 = safe_float(info.get("trailingAnnualDividendYield"), 0.0)
-    raw_yield = dy1 if dy1 > 0 else dy2
-    # Sanity: yield doit etre entre 0 et 15% (ratio entre 0 et 0.15)
-    div_yield = raw_yield if 0 < raw_yield < 0.15 else 0.0
+    dy3 = safe_float(info.get("fiveYearAvgDividendYield"), 0.0)
+    # fiveYearAvgDividendYield est en % (ex: 3.2 = 3.2%) — convertir en ratio
+    dy3_ratio = dy3 / 100.0 if dy3 > 0.15 else dy3
+    raw_yield = dy1 if dy1 > 0 else (dy2 if dy2 > 0 else dy3_ratio)
+    # Sanity: yield entre 0 et 20% (certaines actions européennes donnent >15%)
+    div_yield = raw_yield if 0 < raw_yield < 0.20 else 0.0
 
     return {
         "ticker": ticker,
