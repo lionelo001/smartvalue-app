@@ -963,6 +963,8 @@ function loadLogos() {
 }
 
 // ── INIT ──────────────────────────────────────────────────
+window.onload = () => window.scrollTo(0, 0);
+
 function init() {
   DEFAULT_SECTORS.forEach(s => { state.sectors[s] = true; });
   renderSectors();
