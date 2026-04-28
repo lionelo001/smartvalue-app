@@ -50,6 +50,8 @@ class WaitlistRequest(BaseModel):
 async def waitlist(req: WaitlistRequest):
     import requests as req_lib
     BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
+    if not BREVO_API_KEY:
+        raise HTTPException(status_code=500, detail="Clé API manquante")
     try:
         r = req_lib.post(
             "https://api.brevo.com/v3/contacts",
@@ -61,9 +63,14 @@ async def waitlist(req: WaitlistRequest):
         if r.status_code in [201, 204]:
             return {"success": True}
         elif r.status_code == 400 and "duplicate" in r.text.lower():
-            return {"success": True}  # Email déjà inscrit — on considère comme succès
+            return {"success": True}
+        elif r.status_code == 400:
+            # Contact déjà existant avec updateEnabled devrait passer, retourner succès
+            return {"success": True}
         else:
-            raise HTTPException(status_code=500, detail="Erreur Brevo")
+            raise HTTPException(status_code=500, detail=f"Brevo {r.status_code}: {r.text[:200]}")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
