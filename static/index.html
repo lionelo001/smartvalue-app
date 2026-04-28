@@ -765,17 +765,36 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
   <div class="footer-right">© 2026 · Outil d'analyse fondamentale gratuit</div>
 </footer>
 <script>
-function submitWaitlist() {
-  var email = document.getElementById('email-input') ? document.getElementById('email-input').value.trim() : '';
+async function submitWaitlist() {
+  var inp = document.getElementById('email-input');
+  if (!inp) return;
+  var email = inp.value.trim();
   if (!email || !email.includes('@')) {
-    var inp = document.getElementById('email-input');
-    if (inp) inp.style.borderColor = 'rgba(255,100,100,0.6)';
+    inp.style.borderColor = 'rgba(255,100,100,0.6)';
     return;
   }
-  var form = document.querySelector('#tab-about-content .waitlist-form');
-  if (form) form.style.display = 'none';
-  var success = document.getElementById('waitlist-success');
-  if (success) success.style.display = 'block';
+  inp.style.borderColor = '';
+  var btn = document.querySelector('#tab-about-content .btn-waitlist') || document.querySelector('.btn-waitlist');
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
+  try {
+    var res = await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email: email})
+    });
+    if (res.ok) {
+      var form = document.querySelector('#tab-about-content .waitlist-form');
+      if (form) form.style.display = 'none';
+      var success = document.getElementById('waitlist-success');
+      if (success) success.style.display = 'block';
+      if(typeof gtag !== 'undefined') gtag('event','waitlist_signup');
+    } else {
+      throw new Error('Erreur serveur');
+    }
+  } catch(e) {
+    if (btn) { btn.textContent = "M'inscrire →"; btn.disabled = false; }
+    alert('Une erreur est survenue. Réessayez.');
+  }
 }
 </script>
 </div><!-- fin tab-about-content -->
