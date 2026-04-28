@@ -4,6 +4,14 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>SmartValue — Scanner d'actions fondamental</title>
+<!-- Google Analytics GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-M4S6VSF3W5');
+</script>
 <meta name="description" content="Analysez les actions mondiales avec des critères fondamentaux clairs. Gratuit, simple, en français."/>
 <meta property="og:title" content="SmartValue — Scanner d'actions fondamental"/>
 <meta property="og:description" content="Analysez les actions mondiales — US, Europe, Asie — selon des critères fondamentaux clairs. Gratuit et en français."/>
@@ -214,12 +222,20 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 
 
 /* ── ONGLETS ── */
-.app-tabs{display:flex;border-bottom:2px solid var(--border);background:var(--bg2);}
-.app-tab{background:transparent;border:none;padding:0.75rem 1.5rem;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:var(--muted2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;letter-spacing:0.02em;}
+.app-tabs{display:flex;border-bottom:2px solid var(--border);background:var(--bg2);overflow-x:auto;}
+.app-tab{background:transparent;border:none;padding:0.75rem 1.25rem;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:var(--muted2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;letter-spacing:0.02em;white-space:nowrap;}
 .app-tab:hover{color:var(--text);}
 .app-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
 .tab-content{display:none;}
 .tab-content.active{display:block;}
+/* ── FAQ ── */
+.faq-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color 0.15s;}
+.faq-item:hover{border-color:var(--border2);}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:var(--text);}
+.faq-icon{font-size:0.65rem;color:var(--muted);transition:transform 0.2s;flex-shrink:0;}
+.faq-item.open .faq-icon{transform:rotate(180deg);}
+.faq-a{display:none;padding:0 1.25rem 1rem;font-size:0.8rem;color:var(--muted2);line-height:1.65;border-top:1px solid var(--border);}
+.faq-item.open .faq-a{display:block;}
 
 /* ── BANNIÈRE PREMIÈRE VISITE ── */
 .first-visit-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#EFF6FF;border-bottom:1px solid #BFDBFE;padding:0.55rem 2rem;font-size:0.78rem;color:#1E40AF;}
@@ -299,6 +315,7 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 <div class="app-tabs">
   <button class="app-tab active" id="tab-scanner" onclick="switchTab('scanner')">Scanner</button>
   <button class="app-tab" id="tab-about" onclick="switchTab('about')">En savoir plus</button>
+  <button class="app-tab" id="tab-support" onclick="switchTab('support')">Support</button>
 </div>
 
 <!-- BANNIÈRE PREMIÈRE VISITE -->
@@ -763,6 +780,60 @@ function submitWaitlist() {
 </script>
 </div><!-- fin tab-about-content -->
 
+<!-- PAGE SUPPORT -->
+<div class="tab-content" id="tab-support-content">
+<div class="page" style="max-width:600px;">
+  <div class="hero" style="text-align:left;padding:2.5rem 0 1.5rem;">
+    <h1>Smart<span style="color:var(--blue);">Value</span></h1>
+    <div style="font-size:1rem;color:var(--muted2);margin-bottom:0.5rem;">Support & Contact</div>
+    <p style="text-align:left;max-width:100%;">Une question, un bug, une suggestion ? Je suis là pour vous aider.</p>
+  </div>
+
+  <!-- Contact -->
+  <div class="sec-label">Nous contacter</div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
+      <div style="width:40px;height:40px;border-radius:8px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">✉</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;margin-bottom:2px;">Email</div>
+        <a href="mailto:contact@smartvaluescanner.com" style="font-size:0.82rem;color:var(--blue);text-decoration:none;">contact@smartvaluescanner.com</a>
+      </div>
+    </div>
+    <div style="font-size:0.78rem;color:var(--muted2);line-height:1.65;">Réponse sous 24-48h. Pour les bugs, merci de décrire ce qui s'est passé et sur quel appareil vous êtes.</div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="sec-label">Questions fréquentes</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1.5rem;">
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Les données sont-elles fiables ? <span class="faq-icon">▼</span></div>
+      <div class="faq-a">Les données proviennent de Yahoo Finance via yfinance. Elles sont généralement fiables mais peuvent parfois présenter des délais ou des anomalies, notamment pour les dividendes. Nous travaillons à améliorer la qualité des données.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Le scanner est-il vraiment gratuit ? <span class="faq-icon">▼</span></div>
+      <div class="faq-a">Oui, totalement gratuit. Aucune inscription requise, aucune carte de crédit. Des fonctionnalités premium sont prévues à l'avenir mais le scanner de base restera toujours gratuit.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Puis-je faire confiance aux scores ? <span class="faq-icon">▼</span></div>
+      <div class="faq-a">Les scores sont des indicateurs basés sur des critères fondamentaux objectifs — PER, ROE, marge, dette, croissance. Ils ne constituent pas des conseils financiers. Utilisez-les comme point de départ pour votre propre analyse.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Mon action préférée n'est pas dans le scanner ? <span class="faq-icon">▼</span></div>
+      <div class="faq-a">Utilisez la barre de recherche en haut — tapez le ticker exact (ex: AAPL, MC.PA, NESN.SW). Si l'action existe sur Yahoo Finance, elle sera analysée. Nous enrichissons régulièrement l'univers couvert.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Comment est calculé le score ? <span class="faq-icon">▼</span></div>
+      <div class="faq-a">Le score combine 5 blocs : Valorisation (30%), Rentabilité (30%), Santé financière (20%), Croissance (15%) et Dividende (5%). Chaque bloc est noté selon des seuils établis pour les actions mondiales.</div>
+    </div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div style="font-size:0.72rem;color:var(--muted);line-height:1.75;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.25rem;">
+    SmartValue Scanner est un outil d'aide à l'analyse fondamentale. Il ne fournit pas de conseils financiers personnalisés. Toute décision d'investissement reste sous la responsabilité exclusive de l'utilisateur.
+  </div>
+</div>
+</div><!-- fin tab-support-content -->
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1072,8 +1143,8 @@ function renderCard(r, rank) {
     </div>
     <div class="card-body">
       <div class="card-why">${r['Résumé']||''} — ${r.Pourquoi||''}</div>
-      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:0.5rem;display:flex;align-items:center;gap:4px;">
-        <span>ℹ</span> Cliquez sur une métrique pour obtenir son explication
+      <div style="font-size:0.65rem;color:var(--blue);margin-bottom:0.5rem;display:flex;align-items:center;gap:4px;">
+        <span>ℹ</span> Cliquez sur un indicateur pour avoir son explicatif
       </div>
       <div class="metrics-grid">${metrics}</div>
       <div class="score-bars-label">Détail du score</div>
@@ -1378,13 +1449,17 @@ function switchTab(tab) {
   // Cacher/montrer la recherche et le guide selon l'onglet
   const navRight = document.querySelector('nav > div:last-child');
   const searchWrap = document.querySelector('.nav-search-wrap');
-  if (tab === 'about') {
-    if (searchWrap) searchWrap.style.display = 'none';
-    if (navRight) navRight.style.display = 'none';
-  } else {
+  if (tab === 'scanner') {
     if (searchWrap) searchWrap.style.display = 'flex';
     if (navRight) navRight.style.display = 'flex';
+  } else {
+    if (searchWrap) searchWrap.style.display = 'none';
+    if (navRight) navRight.style.display = 'none';
   }
+}
+
+function toggleFaq(el) {
+  el.classList.toggle('open');
 }
 </script>
 </body>
