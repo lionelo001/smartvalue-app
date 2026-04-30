@@ -12,6 +12,19 @@ from scanner_core import SmartValueScanner, DEFAULT_UNIVERSE
 app = FastAPI(title="SmartValue Scanner API")
 
 API_KEY = os.environ.get("FMP_API_KEY", "")
+MAINTENANCE = os.environ.get("MAINTENANCE", "false").lower() == "true"
+
+from fastapi import Request
+from fastapi.responses import HTMLResponse
+
+@app.middleware("http")
+async def maintenance_middleware(request: Request, call_next):
+    if MAINTENANCE:
+        # Laisser passer uniquement les assets statiques
+        if not request.url.path.startswith("/static"):
+            with open("maintenance.html", "r") as f:
+                return HTMLResponse(content=f.read(), status_code=503)
+    return await call_next(request)
 
 class ScanRequest(BaseModel):
     sectors: list[str] = list(DEFAULT_UNIVERSE.keys())
