@@ -1099,7 +1099,7 @@ async function searchTicker() {
     const res = await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticker})});
     if (res.status===404){showToast('Ticker introuvable : '+ticker);renderEmpty();return;}
     const r = await res.json();
-    area.innerHTML = `<div class="results-meta"><div class="results-count">Résultat — ${ticker}</div></div>`+renderCard(r,1);
+    area.innerHTML = `<div class="results-meta"><div class="results-count">Résultat — ${ticker}</div></div>`+renderCard(r,1,{});
     setTimeout(loadLogos, 50);
     // Scroll automatique vers le résultat
     setTimeout(() => {
@@ -1140,8 +1140,9 @@ function renderResults(results, total) {
     document.getElementById('results-area').innerHTML=`<div class="empty"><div class="empty-title">Aucun résultat</div><div class="empty-sub">Essayez de sélectionner plus de secteurs ou le profil Universel.</div></div>`;
     return;
   }
+  const sectorAvgs = computeSectorAverages(results);
   const header=`<div class="results-meta"><div class="results-count">${results.length} opportunités · ${total} analysées</div><button class="export-btn" onclick="exportCSV()">⬇ Exporter CSV</button></div>`;
-  document.getElementById('results-area').innerHTML=header+results.map((r,i)=>renderCard(r,i+1)).join('');
+  document.getElementById('results-area').innerHTML=header+results.map((r,i)=>renderCard(r,i+1,sectorAvgs)).join('');
   document.querySelectorAll('.card').forEach((c,i)=>{c.style.animationDelay=`${i*0.04}s`;});
   setTimeout(loadLogos, 50);
 }
@@ -1149,7 +1150,29 @@ function renderResults(results, total) {
 function scoreClass(s){return s>=60?'score-high':s>=40?'score-mid':'score-low';}
 function confClass(c){return c>=75?'conf-high':c>=55?'conf-mid':'conf-low';}
 
-function renderCard(r, rank) {
+function computeSectorAverages(results) {
+  const sectors = {};
+  results.forEach(r => {
+    const s = r.Secteur || 'Autre';
+    if (!sectors[s]) sectors[s] = {roe:[], margin:[], per:[], count:0};
+    if (r['ROE %']) sectors[s].roe.push(r['ROE %']);
+    if (r['Marge %']) sectors[s].margin.push(r['Marge %']);
+    if (r.PER) sectors[s].per.push(r.PER);
+    sectors[s].count++;
+  });
+  const avgs = {};
+  Object.keys(sectors).forEach(s => {
+    const d = sectors[s];
+    avgs[s] = {
+      roe: d.roe.length ? d.roe.reduce((a,b)=>a+b,0)/d.roe.length : 0,
+      margin: d.margin.length ? d.margin.reduce((a,b)=>a+b,0)/d.margin.length : 0,
+      per: d.per.length ? d.per.reduce((a,b)=>a+b,0)/d.per.length : 0,
+    };
+  });
+  return avgs;
+}
+
+function renderCard(r, rank, sectorAvgs) {
   const score=r.Score||0;
   const conf=r['Confiance %']||0;
   const tags=(r.Tags||'').split(',').filter(t=>t.trim()).map(t=>`<span class="tag">${t.trim()}</span>`).join('');
