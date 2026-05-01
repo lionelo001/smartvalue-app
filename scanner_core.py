@@ -297,7 +297,16 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
 
     pe = safe_float(info.get("trailingPE") or info.get("forwardPE"), 0.0)
     pb = safe_float(info.get("priceToBook"), 0.0)
-    pb = pb if 0 < pb < 100 else 0.0  # filtrer valeurs aberrantes (ex: ASML)
+    # Recalcul manuel si P/B aberrant ou manquant
+    if pb <= 0 or pb > 100:
+        equity = safe_float(info.get("totalStockholderEquity") or info.get("stockholdersEquity"), 0.0)
+        shares = safe_float(info.get("sharesOutstanding"), 0.0)
+        if equity > 0 and shares > 0 and price > 0:
+            book_value_per_share = equity / shares
+            pb_calc = price / book_value_per_share
+            pb = round(pb_calc, 2) if 0 < pb_calc < 100 else 0.0
+        else:
+            pb = 0.0
 
     # EV/EBITDA — fix bug devise yfinance
     enterprise_value = safe_float(info.get("enterpriseValue"), 0.0)
