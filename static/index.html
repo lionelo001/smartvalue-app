@@ -1194,7 +1194,7 @@ function renderCard(r, rank, sectorAvgs) {
     })()},
     {l:'PER',v:r.PER??'—'},
     {l:'PEG',v:r.PEG??'—'},
-    {l:'P/B',v:r['P/B']??'—'},
+    {l:'P/B',v:r['P/B']?(r['P/B']>30?r['P/B']+' ⚠':r['P/B']):'—'},
     {l:'ROE',v:r['ROE %']!=null?r['ROE %']+'%':'—'},
     {l:'Marge nette',v:r['Marge %']!=null?r['Marge %']+'%':'—'},
     {l:'EV/EBITDA',v:r['EV/EBITDA']??'—'},
@@ -1240,9 +1240,7 @@ function renderCard(r, rank, sectorAvgs) {
       <div style="font-size:0.65rem;color:var(--blue);margin-bottom:0.5rem;display:flex;align-items:center;gap:4px;">
         <span>ℹ</span> Cliquez sur un indicateur pour avoir son explicatif
       </div>
-      <div style="font-size:0.6rem;color:var(--muted);margin-bottom:0.5rem;line-height:1.5;">
-        ⚠ Certaines données peuvent être imprécises pour les actions cotées en devises étrangères (ex: TWD, JPY, KRW).
-      </div>
+
       <div class="metrics-grid">${metrics}</div>
       <div class="score-bars-label">Détail du score</div>
       <div class="score-bars">${bars}</div>
