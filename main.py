@@ -3,6 +3,9 @@ SmartValue Scanner — FastAPI Backend
 """
 from __future__ import annotations
 import os
+import time
+import threading
+from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
@@ -13,6 +16,45 @@ app = FastAPI(title="SmartValue Scanner API")
 
 API_KEY = os.environ.get("FMP_API_KEY", "")
 MAINTENANCE = os.environ.get("MAINTENANCE", "false").lower() == "true"
+CACHE_INTERVAL = 3600  # 1 heure en secondes
+
+# ── CACHE SYSTÈME ─────────────────────────────────────────
+_cache = {
+    "results": [],
+    "total": 0,
+    "last_update": None,
+    "updating": False,
+}
+
+def refresh_cache():
+    """Scan complet de l'univers en arrière-plan"""
+    if _cache["updating"]:
+        return
+    _cache["updating"] = True
+    try:
+        scanner = SmartValueScanner(api_key=API_KEY, universe=DEFAULT_UNIVERSE)
+        results = scanner.scan(min_score=30, min_confidence=50)
+        _cache["results"] = results
+        _cache["total"] = len(results)
+        _cache["last_update"] = datetime.now().strftime("%H:%M")
+        print(f"[Cache] Mis à jour à {_cache['last_update']} — {len(results)} résultats")
+    except Exception as e:
+        print(f"[Cache] Erreur: {e}")
+    finally:
+        _cache["updating"] = False
+
+def cache_scheduler():
+    """Tourne en arrière-plan, rafraîchit toutes les heures"""
+    while True:
+        refresh_cache()
+        time.sleep(CACHE_INTERVAL)
+
+# Lancer le cache au démarrage
+@app.on_event("startup")
+def startup_event():
+    thread = threading.Thread(target=cache_scheduler, daemon=True)
+    thread.start()
+    print("[Cache] Scheduler démarré")
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
@@ -41,12 +83,22 @@ def get_sectors():
 
 @app.post("/api/scan")
 def scan(req: ScanRequest):
-    universe = {k: DEFAULT_UNIVERSE[k] for k in req.sectors if k in DEFAULT_UNIVERSE}
-    if not universe:
-        raise HTTPException(status_code=400, detail="Aucun secteur sélectionné.")
-    scanner = SmartValueScanner(api_key=API_KEY, universe=universe)
-    results = scanner.scan(min_score=req.min_score, min_confidence=req.min_confidence)
-    return {"results": results[:req.top_n], "total": len(results)}
+    # Si cache vide ou en cours de mise à jour première fois, scanner directement
+    if not _cache["results"] and not _cache["updating"]:
+        refresh_cache()
+
+    # Filtrer depuis le cache selon les secteurs demandés
+    all_results = _cache["results"]
+    if req.sectors and set(req.sectors) != set(DEFAULT_UNIVERSE.keys()):
+        all_results = [r for r in all_results if r.get("Secteur") in req.sectors or
+                      any(s in r.get("Secteur", "") for s in req.sectors)]
+
+    return {
+        "results": all_results[:req.top_n],
+        "total": len(all_results),
+        "last_update": _cache["last_update"],
+        "cache_size": _cache["total"]
+    }
 
 @app.post("/api/search")
 def search(req: SearchRequest):
