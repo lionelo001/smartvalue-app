@@ -1127,6 +1127,7 @@ async function startScan() {
     const res=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({sectors:active,min_score:state.minScore,min_confidence:state.minConf,top_n:state.topN})});
     const data=await res.json();
+    const totalAnalysed = data.total || data.results.length;
     // Filtrer par secteurs sélectionnés côté client
     let filtered = data.results.filter(r => active.includes(r.Secteur));
     // Filtrer par score minimum du profil
@@ -1136,7 +1137,10 @@ async function startScan() {
     // Limiter à 25 résultats
     const displayed = filtered.slice(0, 25);
     state.results = displayed;
-    renderResults(displayed, filtered.length);
+    renderResults(displayed, totalAnalysed);
+    if (data.last_update) {
+      document.getElementById('cache-badge').innerHTML = '<span class="nav-badge-dot"></span>Mis à jour ' + data.last_update;
+    }
   } catch(e){showToast('Erreur lors du scan');renderEmpty();}
   finally{clearInterval(iv);state.scanning=false;btn.disabled=false;btn.textContent='Lancer le scan';}
 }
