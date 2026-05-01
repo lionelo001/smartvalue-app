@@ -21,62 +21,77 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
     # ── US ──────────────────────────────────────────────────────
     "Tech US": [
         "AAPL", "MSFT", "GOOGL", "NVDA", "META", "ADBE", "CRM", "ORCL", "INTC", "AMD",
+        "CSCO", "IBM", "QCOM", "TXN", "AVGO", "NOW", "SNOW", "PLTR", "NET", "MU",
     ],
     "Finance US": [
         "JPM", "BAC", "WFC", "GS", "MS", "AXP", "V", "MA", "BRK-B",
+        "C", "USB", "PNC", "TFC", "COF", "SCHW", "BLK", "SPGI", "MCO",
     ],
     "Santé US": [
         "JNJ", "PFE", "UNH", "ABBV", "LLY", "MRK", "ABT", "BMY", "TMO",
+        "DHR", "MDT", "ISRG", "SYK", "BSX", "ZTS", "REGN", "VRTX", "GILD",
     ],
     "Energie US": [
         "XOM", "CVX", "COP", "EOG", "PSX",
+        "SLB", "OXY", "MPC", "VLO", "HAL",
     ],
     "Conso US": [
         "PG", "KO", "PEP", "WMT", "COST", "MCD", "NKE", "SBUX", "HD",
+        "TGT", "LOW", "TJX", "AMZN", "TSLA", "PM", "MO", "CL", "EL",
     ],
     "Industriels US": [
         "CAT", "HON", "GE", "MMM", "UNP", "UPS", "FDX", "DE", "ETN",
+        "LMT", "RTX", "BA", "NOC", "GD", "EMR", "ITW", "PH", "ROK",
     ],
 
     # ── EUROPE ──────────────────────────────────────────────────
     "Tech Europe": [
-        "ASML", "SAP", "CAP.PA", "STM.PA", "DSY.PA",
+        "ASML", "SAP", "CAP.PA", "DSY.PA",
         "ERIC-B.ST", "WKL.AS", "PHIA.AS",
+        "IFX.DE", "NOKIA.HE", "TEMN.SW", "DASSAULT.PA",
     ],
     "Finance Europe": [
         "BNP.PA", "AXA.PA", "GLE.PA", "DBK.DE", "ALV.DE", "MUV2.DE",
         "HSBA.L", "BARC.L", "LLOY.L", "INGA.AS", "NN.AS",
         "SAN.MC", "BBVA.MC", "UCG.MI", "ISP.MI",
         "AGS.BR", "ACKB.BR", "ZURN.SW",
+        "CABK.MC", "SAB.MC", "CS.PA", "CNP.PA",
     ],
     "Santé Europe": [
         "ROG.SW", "NOVN.SW", "NESN.SW", "AZN.L", "GSK.L",
         "BAYN.DE", "SAN.PA", "UCB.BR", "ARGX.BR", "EL.PA", "LONN.SW",
+        "FRE.DE", "CON.DE", "GIVN.SW", "STRAUMANN.SW",
     ],
     "Energie Europe": [
         "TTE.PA", "ENGI.PA", "SHEL.L", "BP.L", "ENI.MI",
         "IBE.MC", "ENEL.MI", "NESTE.HE",
+        "OMV.VI", "GALP.LS", "RWE.DE", "E.ON.DE",
     ],
     "Conso Europe": [
         "MC.PA", "OR.PA", "RMS.PA", "CDI.PA", "KER.PA",
         "HEIA.AS", "DGE.L", "ULVR.L", "COLR.BR",
         "ITX.MC", "CFR.SW",
+        "AIR.PA", "RI.PA", "PERNOD.PA", "VIE.PA", "ABI.BR",
     ],
     "Industriels Europe": [
         "SIE.DE", "ABB.SW", "AIR.PA", "SAF.PA", "ALO.PA",
         "DG.PA", "SGO.PA", "VOLV-B.ST", "RAND.AS",
         "SIKA.SW", "AKZA.AS", "SOLB.BR", "WDP.BR",
+        "LIN.DE", "SU.PA", "ST.PA", "SCHN.PA", "KN.DE",
     ],
 
     # ── ASIE / MONDE ────────────────────────────────────────────
     "Tech Asie": [
         "TSM", "SONY", "9988.HK", "700.HK", "005930.KS",
+        "TM", "HMC", "NTDOY", "FANUY", "SSNLF",
     ],
     "Finance Asie": [
         "MUFG", "8306.T", "939.HK",
+        "SMFG", "MFG", "8316.T",
     ],
     "Energie Asie": [
         "PTR", "SNP", "STO",
+        "LUKOY", "E", "CEO",
     ],
 }
 
