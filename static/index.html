@@ -1183,7 +1183,15 @@ function renderCard(r, rank, sectorAvgs) {
   }).join('');
   const metrics=[
     {l:'Prix',v:`${r.Prix||'—'} ${r.Devise||''}`},
-    {l:'Cap. boursière',v:r['Cap boursière']||'—'},
+    {l:'Cap. boursière',v:(()=>{
+      const cap = r['Cap boursière']||'';
+      const mc = r['Market Cap']||0;
+      if (!cap) return '—';
+      if (mc >= 1e12) return cap+' · '+( mc/1e12).toFixed(1)+'T$';
+      if (mc >= 1e9) return cap+' · '+(mc/1e9).toFixed(0)+'Md$';
+      if (mc >= 1e6) return cap+' · '+(mc/1e6).toFixed(0)+'M$';
+      return cap;
+    })()},
     {l:'PER',v:r.PER??'—'},
     {l:'PEG',v:r.PEG??'—'},
     {l:'P/B',v:r['P/B']??'—'},
@@ -1268,14 +1276,16 @@ function showToast(msg){
 
 // ── TOOLTIPS MÉTRIQUES ────────────────────────────────────
 const METRIC_INFO = {
-  'Prix':{desc:"Le prix actuel de l'action sur le marché.",example:'Ex: 389.40 USD → l\'action vaut 389,40 dollars.'},
+  'Prix':{desc:"Le prix actuel de l'action sur le marché.",example:"Ex: 389.40 USD → l'action vaut 389,40 dollars."},
+  'Cap. boursière':{desc:"Valeur totale de l'entreprise en bourse. Large Cap (>200Mds$) = entreprises établies et stables. Mid Cap (10-200Mds$) = bon compromis croissance/stabilité. Small Cap (<10Mds$) = plus risqué mais potentiel élevé.",example:"Apple = Large Cap ~3T$ · Ageas = Mid Cap ~8Mds$ · Une startup cotée = Small Cap."},
   'PER':{desc:"Prix / Bénéfices. Indique combien les investisseurs paient pour 1€ de bénéfice. Un PER bas peut signifier une action sous-évaluée.",example:'PER < 15 = potentiellement bon marché · PER > 30 = croissance très attendue.'},
+  'PEG':{desc:"PER divisé par la croissance des bénéfices. Bien plus précis que le PER seul car il tient compte de la vitesse de croissance de l'entreprise.",example:"PEG < 1 = sous-évalué par rapport à sa croissance · PEG 1-2 = juste valorisé · PEG > 2 = cher."},
   'P/B':{desc:"Prix / Valeur comptable. Compare le prix de l'action à la valeur des actifs nets.",example:"P/B < 1 = l'action vaut moins que ses actifs · P/B élevé = forte rentabilité attendue."},
   'ROE':{desc:"Rentabilité des capitaux propres. Mesure le profit généré pour chaque euro investi par les actionnaires.",example:'ROE > 15% = très bonne rentabilité · ROE > 25% = exceptionnel.'},
   'Marge nette':{desc:"Bénéfice net divisé par le chiffre affaires. Part des revenus qui devient du profit.",example:"Marge 10% = pour 100€ de ventes, 10€ de profit net."},
   'EV/EBITDA':{desc:"Valeur d'entreprise / profit opérationnel. Mesure le coût de l'entreprise par rapport à sa capacité à générer des bénéfices.",example:'EV/EBITDA < 12 = valorisation attractive · > 20 = prix élevé.'},
   'Dette/Equity':{desc:"Dette totale / capitaux propres. Mesure le niveau d'endettement de l'entreprise.",example:'< 0.5 = peu endettée · > 1.5 = endettement élevé, risque plus fort.'},
-  'Croissance CA':{desc:"Évolution du chiffre d'affaires sur la dernière année.",example:'15% = le CA a augmenté de 15% vs l\'année précédente.'},
+  'Croissance CA':{desc:"Évolution du chiffre d'affaires sur la dernière année.",example:"15% = le CA a augmenté de 15% vs l'année précédente."},
   'Dividende':{desc:"Rendement du dividende annuel. Pourcentage du prix de l'action versé chaque année aux actionnaires. Un dividende régulier indique une entreprise mature et profitable.",example:"Dividende 3% = pour une action à 100€, vous recevez 3€/an. > 4% = très attractif."},
 };
 
