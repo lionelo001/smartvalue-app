@@ -263,6 +263,11 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .div-btn:hover:not(.active){border-color:var(--blue);color:var(--blue);}
 .div-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
 
+/* ── BADGES SECTORIEL ── */
+.sector-badge{font-size:0.58rem;padding:0.15rem 0.5rem;border-radius:20px;font-weight:700;letter-spacing:0.03em;}
+.sector-badge.good{background:#DCFCE7;color:#16A34A;border:1px solid #BBF7D0;}
+.sector-badge.value{background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;}
+
 /* ── FOOTER ── */
 .footer{border-top:1px solid var(--border);padding:1.5rem 0;font-size:0.68rem;color:var(--muted);line-height:1.7;margin-top:2rem;}
 
@@ -399,6 +404,15 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
       </div>
     </div>
       <div class="advanced-field" style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:0.75rem;margin-top:0.25rem;">
+        <div class="advanced-label" style="margin-bottom:8px;">Capitalisation</div>
+        <div class="div-filter-btns">
+          <button class="div-btn active" id="cap-btn-all" onclick="setCapFilter('all')">Toutes</button>
+          <button class="div-btn" id="cap-btn-large" onclick="setCapFilter('large')">Large Cap</button>
+          <button class="div-btn" id="cap-btn-mid" onclick="setCapFilter('mid')">Mid Cap</button>
+          <button class="div-btn" id="cap-btn-small" onclick="setCapFilter('small')">Small Cap</button>
+        </div>
+      </div>
+      <div class="advanced-field" style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:0.75rem;">
         <div class="advanced-label" style="margin-bottom:8px;">Dividende</div>
         <div class="div-filter-btns">
           <button class="div-btn active" id="div-btn-all" onclick="setDivFilter('all')">Tous</button>
@@ -1146,7 +1160,9 @@ function renderCard(r, rank) {
   }).join('');
   const metrics=[
     {l:'Prix',v:`${r.Prix||'—'} ${r.Devise||''}`},
+    {l:'Cap. boursière',v:r['Cap boursière']||'—'},
     {l:'PER',v:r.PER??'—'},
+    {l:'PEG',v:r.PEG??'—'},
     {l:'P/B',v:r['P/B']??'—'},
     {l:'ROE',v:r['ROE %']!=null?r['ROE %']+'%':'—'},
     {l:'Marge nette',v:r['Marge %']!=null?r['Marge %']+'%':'—'},
@@ -1181,6 +1197,15 @@ function renderCard(r, rank) {
     </div>
     <div class="card-body">
       <div class="card-why">${r['Résumé']||''} — ${r.Pourquoi||''}</div>
+      ${(()=>{
+        const avg = sectorAvgs && sectorAvgs[r.Secteur];
+        if (!avg) return '';
+        const badges = [];
+        if (r['ROE %'] && avg.roe > 0 && r['ROE %'] > avg.roe * 1.2) badges.push('<span class="sector-badge good">ROE sup. secteur</span>');
+        if (r['Marge %'] && avg.margin > 0 && r['Marge %'] > avg.margin * 1.2) badges.push('<span class="sector-badge good">Marge sup. secteur</span>');
+        if (r.PER && avg.per > 0 && r.PER < avg.per * 0.8) badges.push('<span class="sector-badge value">Sous-évalué vs secteur</span>');
+        return badges.length ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:0.5rem;">'+badges.join('')+'</div>' : '';
+      })()}
       <div style="font-size:0.65rem;color:var(--blue);margin-bottom:0.5rem;display:flex;align-items:center;gap:4px;">
         <span>ℹ</span> Cliquez sur un indicateur pour avoir son explicatif
       </div>
@@ -1249,7 +1274,7 @@ function showTooltip(event, label) {
 init();
 
 // ── SCREENER AVANCÉ ───────────────────────────────────────
-const advFilters = { per:null, roe:null, margin:null, dte:null, growth:null, pb:null, div:null };
+const advFilters = { per:null, roe:null, margin:null, dte:null, growth:null, pb:null, div:null, cap:null };
 
 function toggleAdvanced() {
   const btn = document.getElementById('advanced-toggle');
@@ -1276,6 +1301,7 @@ function resetAdvanced() {
   advFilters.per = null; advFilters.roe = null; advFilters.margin = null;
   advFilters.dte = null; advFilters.growth = null; advFilters.pb = null; advFilters.div = null;
   setDivFilter('all');
+  setCapFilter('all');
   document.getElementById('adv-per').value = 30;
   document.getElementById('adv-roe').value = 0;
   document.getElementById('adv-margin').value = 0;
@@ -1302,6 +1328,9 @@ function applyAdvancedFilters(results) {
     if (advFilters.pb !== null && advFilters.pb < 30 && r['P/B'] && r['P/B'] > advFilters.pb) return false;
     if (advFilters.div === 'yes' && (!r['Div %'] || r['Div %'] <= 0)) return false;
     if (advFilters.div === 'no' && r['Div %'] > 0) return false;
+    if (advFilters.cap === 'large' && r['Cap boursière'] !== 'Large Cap') return false;
+    if (advFilters.cap === 'mid' && r['Cap boursière'] !== 'Mid Cap') return false;
+    if (advFilters.cap === 'small' && !['Small Cap','Micro Cap'].includes(r['Cap boursière'])) return false;
     return true;
   });
 }
@@ -1507,6 +1536,13 @@ function switchTab(tab) {
 
 function toggleFaq(el) {
   el.classList.toggle('open');
+}
+
+function setCapFilter(val) {
+  advFilters.cap = val === 'all' ? null : val;
+  ['all','large','mid','small'].forEach(v => {
+    document.getElementById('cap-btn-' + v).classList.toggle('active', v === val);
+  });
 }
 
 function setDivFilter(val) {
