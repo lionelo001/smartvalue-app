@@ -72,7 +72,7 @@ class ScanRequest(BaseModel):
     sectors: list[str] = list(DEFAULT_UNIVERSE.keys())
     min_score: float = 35
     min_confidence: float = 50
-    top_n: int = 15
+    top_n: int = 25
 
 class SearchRequest(BaseModel):
     ticker: str
@@ -83,21 +83,14 @@ def get_sectors():
 
 @app.post("/api/scan")
 def scan(req: ScanRequest):
-    # Si cache vide ou en cours de mise à jour première fois, scanner directement
+    # Si cache vide, lancer un scan direct
     if not _cache["results"] and not _cache["updating"]:
         refresh_cache()
 
-    # Filtrer depuis le cache selon les secteurs demandés
-    all_results = _cache["results"]
-    if req.sectors and set(req.sectors) != set(DEFAULT_UNIVERSE.keys()):
-        all_results = [r for r in all_results if r.get("Secteur") in req.sectors or
-                      any(s in r.get("Secteur", "") for s in req.sectors)]
-
     return {
-        "results": all_results[:req.top_n],
-        "total": len(all_results),
+        "results": _cache["results"],
+        "total": _cache["total"],
         "last_update": _cache["last_update"],
-        "cache_size": _cache["total"]
     }
 
 @app.post("/api/search")
