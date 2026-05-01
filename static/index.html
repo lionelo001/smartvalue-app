@@ -1127,9 +1127,16 @@ async function startScan() {
     const res=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({sectors:active,min_score:state.minScore,min_confidence:state.minConf,top_n:state.topN})});
     const data=await res.json();
-    const filtered = applyAdvancedFilters(data.results);
-    state.results=filtered;
-    renderResults(filtered, data.total);
+    // Filtrer par secteurs sélectionnés côté client
+    let filtered = data.results.filter(r => active.includes(r.Secteur));
+    // Filtrer par score minimum du profil
+    filtered = filtered.filter(r => r.Score >= state.minScore);
+    // Appliquer les filtres avancés
+    filtered = applyAdvancedFilters(filtered);
+    // Limiter à 25 résultats
+    const displayed = filtered.slice(0, 25);
+    state.results = displayed;
+    renderResults(displayed, filtered.length);
   } catch(e){showToast('Erreur lors du scan');renderEmpty();}
   finally{clearInterval(iv);state.scanning=false;btn.disabled=false;btn.textContent='Lancer le scan';}
 }
