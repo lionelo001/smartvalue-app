@@ -322,6 +322,21 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
                     ev_ebitda = round(ev_calc, 2)
         # Devises différentes (ex: TSM USD/TWD) → impossible sans taux fiable
         # On laisse 0 → affiché — dans l'interface, honnête et transparent
+    # PEG Ratio
+    peg = safe_float(info.get("trailingPegRatio"), 0.0)
+    peg = peg if 0 < peg < 10 else 0.0  # filtrer valeurs aberrantes
+
+    # Capitalisation boursière
+    mcap_raw = safe_float(info.get("marketCap"), 0.0)
+    if mcap_raw >= 200_000_000_000:
+        cap_category = "Large Cap"
+    elif mcap_raw >= 10_000_000_000:
+        cap_category = "Mid Cap"
+    elif mcap_raw >= 2_000_000_000:
+        cap_category = "Small Cap"
+    else:
+        cap_category = "Micro Cap"
+
     roe = safe_float(info.get("returnOnEquity"), 0.0)
     margin = safe_float(info.get("profitMargins"), 0.0)
 
@@ -360,6 +375,9 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
         "pe": pe,
         "pb": pb,
         "ev_ebitda": ev_ebitda,
+        "peg": peg,
+        "market_cap": mcap_raw,
+        "cap_category": cap_category,
         "roe": roe,
         "margin": margin,
         "debt_to_equity": dte,
@@ -668,7 +686,9 @@ class SmartValueScanner:
             "Marge %": round(margin_val, 1) if margin_val else None,
             "Dette/Equity": round(dte_val, 2) if dte_val else None,
             "Croissance CA %": round(rg_val, 1) if rg_val else 0.0,
-            "Div %": div_pct,
+            "PEG": round(safe_float(m.get("peg"), 0.0), 2) if m.get("peg") else None,
+        "Cap boursière": m.get("cap_category", ""),
+        "Div %": div_pct,
             "Div affichage": format_div(div_pct),
 
             "Score": score,
