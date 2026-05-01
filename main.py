@@ -155,7 +155,23 @@ def preview_image():
         raise HTTPException(status_code=404, detail="Preview not found")
     return FileResponse(path, media_type="image/png")
 
-@app.get("/robots.txt")
+@app.get("/sitemap.xml")
+def sitemap():
+    from fastapi.responses import Response
+    content = '''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://smartvaluescanner.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://smartvaluescanner.com/app</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>'''
+    return Response(content=content, media_type="application/xml")
 def robots():
     from fastapi.responses import PlainTextResponse
     return PlainTextResponse("""User-agent: *
