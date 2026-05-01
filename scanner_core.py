@@ -688,6 +688,7 @@ class SmartValueScanner:
             "Croissance CA %": round(rg_val, 1) if rg_val else 0.0,
             "PEG": round(safe_float(m.get("peg"), 0.0), 2) if m.get("peg") else None,
         "Cap boursière": m.get("cap_category", ""),
+        "Market Cap": m.get("market_cap", 0),
         "Div %": div_pct,
             "Div affichage": format_div(div_pct),
 
