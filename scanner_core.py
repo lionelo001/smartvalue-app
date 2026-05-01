@@ -297,6 +297,7 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
 
     pe = safe_float(info.get("trailingPE") or info.get("forwardPE"), 0.0)
     pb = safe_float(info.get("priceToBook"), 0.0)
+    pb = pb if 0 < pb < 100 else 0.0  # filtrer valeurs aberrantes (ex: ASML)
 
     # EV/EBITDA — fix bug devise yfinance
     enterprise_value = safe_float(info.get("enterpriseValue"), 0.0)
