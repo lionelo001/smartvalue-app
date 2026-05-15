@@ -55,7 +55,7 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
         "HSBA.L", "BARC.L", "LLOY.L", "INGA.AS", "NN.AS",
         "SAN.MC", "BBVA.MC", "UCG.MI", "ISP.MI",
         "AGS.BR", "ACKB.BR", "ZURN.SW",
-        "CABK.MC", "SAB.MC", "CS.PA", "CNPP.PA",
+        "CABK.MC", "SAB.MC", "CS.PA", "CNP.PA",
     ],
     "Santé Europe": [
         "ROG.SW", "NOVN.SW", "NESN.SW", "AZN.L", "GSK.L",
@@ -77,7 +77,7 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
         "SIE.DE", "ABBN.SW", "AIR.PA", "SAF.PA", "ALO.PA",
         "DG.PA", "SGO.PA", "VOLV-B.ST", "RAND.AS",
         "SIKA.SW", "AKZA.AS", "SOLB.BR", "WDP.BR",
-        "LIN.DE", "SU.PA", "STM.PA", "SU.PA", 
+        "LIN.DE", "SU.PA", "STM", "SU.PA", 
     ],
 
     # ── ASIE / MONDE ────────────────────────────────────────────
@@ -90,7 +90,7 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
         "SMFG", "MFG", "8316.T",
     ],
     "Energie Asie": [
-        "E", "STO.OL",
+        "E", "EQNR.OL",
     ],
 }
 
