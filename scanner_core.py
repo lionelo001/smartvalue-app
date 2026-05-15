@@ -48,50 +48,49 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
     "Tech Europe": [
         "ASML", "SAP", "CAP.PA", "DSY.PA",
         "ERIC-B.ST", "WKL.AS", "PHIA.AS",
-        "IFX.DE", "NOKIA.HE", "TEMN.SW", "DASSAULT.PA",
+        "IFX.DE", "NOKIA.HE", "TEMN.SW", "AM.PA",
     ],
     "Finance Europe": [
-        "BNP.PA", "AXA.PA", "GLE.PA", "DBK.DE", "ALV.DE", "MUV2.DE",
+        "BNP.PA", "CS.PA", "GLE.PA", "DBK.DE", "ALV.DE", "MUV2.DE",
         "HSBA.L", "BARC.L", "LLOY.L", "INGA.AS", "NN.AS",
         "SAN.MC", "BBVA.MC", "UCG.MI", "ISP.MI",
         "AGS.BR", "ACKB.BR", "ZURN.SW",
-        "CABK.MC", "SAB.MC", "CS.PA", "CNP.PA",
+        "CABK.MC", "SAB.MC", "CS.PA", "CNPP.PA",
     ],
     "Santé Europe": [
         "ROG.SW", "NOVN.SW", "NESN.SW", "AZN.L", "GSK.L",
         "BAYN.DE", "SAN.PA", "UCB.BR", "ARGX.BR", "EL.PA", "LONN.SW",
-        "FRE.DE", "CON.DE", "GIVN.SW", "STRAUMANN.SW",
+        "FRE.DE", "CON.DE", "GIVN.SW", "STMN.SW",
     ],
     "Energie Europe": [
         "TTE.PA", "ENGI.PA", "SHEL.L", "BP.L", "ENI.MI",
         "IBE.MC", "ENEL.MI", "NESTE.HE",
-        "OMV.VI", "GALP.LS", "RWE.DE", "E.ON.DE",
+        "OMV.VI", "GALP.LS", "RWE.DE", "EOAN.DE",
     ],
     "Conso Europe": [
         "MC.PA", "OR.PA", "RMS.PA", "CDI.PA", "KER.PA",
         "HEIA.AS", "DGE.L", "ULVR.L", "COLR.BR",
         "ITX.MC", "CFR.SW",
-        "AIR.PA", "RI.PA", "PERNOD.PA", "VIE.PA", "ABI.BR",
+        "AIR.PA", "RI.PA", "RI.PA", "VIE.PA", "ABI.BR",
     ],
     "Industriels Europe": [
-        "SIE.DE", "ABB.SW", "AIR.PA", "SAF.PA", "ALO.PA",
+        "SIE.DE", "ABBN.SW", "AIR.PA", "SAF.PA", "ALO.PA",
         "DG.PA", "SGO.PA", "VOLV-B.ST", "RAND.AS",
         "SIKA.SW", "AKZA.AS", "SOLB.BR", "WDP.BR",
-        "LIN.DE", "SU.PA", "ST.PA", "SCHN.PA", "KN.DE",
+        "LIN.DE", "SU.PA", "STM.PA", "SU.PA", 
     ],
 
     # ── ASIE / MONDE ────────────────────────────────────────────
     "Tech Asie": [
-        "TSM", "SONY", "9988.HK", "700.HK", "005930.KS",
-        "TM", "HMC", "NTDOY", "FANUY", "SSNLF",
+        "TSM", "SONY", "9988.HK", "0700.HK", "005930.KS",
+        "TM", "HMC", "NTDOY", "FANUY", 
     ],
     "Finance Asie": [
-        "MUFG", "8306.T", "939.HK",
+        "MUFG", "8306.T", "0939.HK",
         "SMFG", "MFG", "8316.T",
     ],
     "Energie Asie": [
-        "PTR", "SNP", "STO",
-        "LUKOY", "E", "CEO",
+        "E", "STO.OL",
     ],
 }
 
