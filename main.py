@@ -231,36 +231,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/")
-def root():
-    html = """<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8"/>
-<meta property="og:title" content="SmartValue — Scanner d'actions fondamental"/>
-<meta property="og:description" content="Analysez les actions mondiales — US, Europe, Asie — selon des critères fondamentaux clairs. Gratuit et en français."/>
-<meta property="og:type" content="website"/>
-<meta property="og:url" content="https://smartvaluescanner.com/"/>
-<meta property="og:image" content="https://smartvaluescanner.com/preview.png"/>
-<meta property="og:image:width" content="1200"/>
-<meta property="og:image:height" content="630"/>
-<meta property="og:locale" content="fr_FR"/>
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="SmartValue — Scanner d'actions fondamental"/>
-<meta name="twitter:description" content="Analysez les actions mondiales gratuitement. Simple, en français."/>
-<meta name="twitter:image" content="https://smartvaluescanner.com/preview.png"/>
-<meta http-equiv="refresh" content="0;url=/app"/>
-<title>SmartValue — Scanner d'actions fondamental</title>
-</head>
-<body>
-<script>window.location.href='/app';</script>
-</body>
-</html>"""
-    from fastapi.responses import HTMLResponse
-    return HTMLResponse(content=html)
-
-
 @app.get("/app")
-def scanner_app():
+def root():
     return FileResponse("static/index.html")
 
 
