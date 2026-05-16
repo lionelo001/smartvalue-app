@@ -1,20 +1,25 @@
 """
-scanner_core.py  —  SmartValue Scanner V4
-Source : Financial Modeling Prep (FMP) — fiable, officiel, plan gratuit 250 req/jour
+scanner_core.py  —  SmartValue Scanner V5
+Source : yfinance — fiable, gratuit
 Univers : Mondial (US, Europe, Asie)
+Corrections V5 :
+  - Doublons supprimés dans DEFAULT_UNIVERSE
+  - Bug sector_name vide corrigé (lecture depuis fetch_metrics)
+  - Tag SAFE ne s'active plus si dte == 0 (donnée manquante)
+  - Profils Défensif / Universel / Croissance avec poids réellement différenciés
 """
 
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import requests
 
 # =========================
-# UNIVERS MONDIAL
+# UNIVERS MONDIAL (doublons supprimés)
 # =========================
 
 DEFAULT_UNIVERSE: Dict[str, List[str]] = {
@@ -51,11 +56,11 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
         "IFX.DE", "NOKIA.HE", "TEMN.SW", "AM.PA",
     ],
     "Finance Europe": [
-        "BNP.PA", "CS.PA", "GLE.PA", "DBK.DE", "ALV.DE", "MUV2.DE",
+        "BNP.PA", "GLE.PA", "DBK.DE", "ALV.DE", "MUV2.DE",
         "HSBA.L", "BARC.L", "LLOY.L", "INGA.AS", "NN.AS",
         "SAN.MC", "BBVA.MC", "UCG.MI", "ISP.MI",
         "AGS.BR", "ACKB.BR", "ZURN.SW",
-        "CABK.MC", "SAB.MC", "CS.PA", "CNPA.PA",
+        "CABK.MC", "SAB.MC", "CNPA.PA",
     ],
     "Santé Europe": [
         "ROG.SW", "NOVN.SW", "NESN.SW", "AZN.L", "GSK.L",
@@ -70,20 +75,19 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
     "Conso Europe": [
         "MC.PA", "OR.PA", "RMS.PA", "CDI.PA", "KER.PA",
         "HEIA.AS", "DGE.L", "ULVR.L", "COLR.BR",
-        "ITX.MC", "CFR.SW",
-        "AIR.PA", "RI.PA", "RI.PA", "VIE.PA", "ABI.BR",
+        "ITX.MC", "CFR.SW", "RI.PA", "VIE.PA", "ABI.BR",
     ],
     "Industriels Europe": [
         "SIE.DE", "ABBN.SW", "AIR.PA", "SAF.PA", "ALO.PA",
         "DG.PA", "SGO.PA", "VOLV-B.ST", "RAND.AS",
         "SIKA.SW", "AKZA.AS", "SOLB.BR", "WDP.BR",
-        "LIN.DE", "SU.PA", "STM", "SU.PA", 
+        "LIN.DE", "SU.PA", "STM",
     ],
 
     # ── ASIE / MONDE ────────────────────────────────────────────
     "Tech Asie": [
         "TSM", "SONY", "9988.HK", "0700.HK", "005930.KS",
-        "TM", "HMC", "NTDOY", "FANUY", 
+        "TM", "HMC", "NTDOY", "FANUY",
     ],
     "Finance Asie": [
         "MUFG", "8306.T", "0939.HK",
@@ -104,7 +108,7 @@ FMP_BASE = "https://financialmodelingprep.com/api/v3"
 
 
 # =========================
-# CONFIG
+# CONFIG — PROFILS DIFFÉRENCIÉS
 # =========================
 
 @dataclass
@@ -121,11 +125,97 @@ class Thresholds:
 
 @dataclass
 class Weights:
+    """
+    Poids par profil :
+    - Universel   : équilibré (défaut)
+    - Défensif    : dividende et santé financière prioritaires, valorisation stricte
+    - Croissance  : croissance et rentabilité prioritaires, dividende ignoré
+    """
     valuation: float = 0.25
     profitability: float = 0.30
     financial_health: float = 0.20
     growth: float = 0.15
     dividend: float = 0.10
+
+
+def weights_for_profile(profile: str) -> Weights:
+    """Retourne les poids adaptés au profil investisseur."""
+    if profile == "defensif":
+        return Weights(
+            valuation=0.25,
+            profitability=0.20,
+            financial_health=0.25,
+            growth=0.05,
+            dividend=0.25,
+        )
+    elif profile == "croissance":
+        return Weights(
+            valuation=0.15,
+            profitability=0.35,
+            financial_health=0.15,
+            growth=0.35,
+            dividend=0.00,
+        )
+    else:  # universel (défaut)
+        return Weights(
+            valuation=0.25,
+            profitability=0.30,
+            financial_health=0.20,
+            growth=0.15,
+            dividend=0.10,
+        )
+
+
+def thresholds_for_profile(profile: str) -> Thresholds:
+    """Retourne les seuils adaptés au profil."""
+    if profile == "defensif":
+        # Valorisation stricte, dividende exigé
+        return Thresholds(
+            pe_max=22.0,
+            pb_max=3.0,
+            ev_ebitda_max=15.0,
+            roe_min=0.08,
+            margin_min=0.05,
+            debt_to_equity_max=0.8,
+            rev_growth_min=0.0,
+            dividend_min=0.02,
+        )
+    elif profile == "croissance":
+        # PER élevé toléré, dividende non requis
+        return Thresholds(
+            pe_max=60.0,
+            pb_max=10.0,
+            ev_ebitda_max=35.0,
+            roe_min=0.10,
+            margin_min=0.05,
+            debt_to_equity_max=1.5,
+            rev_growth_min=0.10,
+            dividend_min=0.0,
+        )
+    else:
+        return Thresholds()
+
+
+# Secteurs autorisés par profil (filtre appliqué au scan)
+PROFILE_SECTORS = {
+    "defensif": [
+        "Finance US", "Finance Europe", "Finance Asie",
+        "Santé US", "Santé Europe",
+        "Conso US", "Conso Europe",
+        "Energie US", "Energie Europe", "Energie Asie",
+        "Industriels US", "Industriels Europe",
+    ],
+    "croissance": [
+        "Tech US", "Tech Europe", "Tech Asie",
+        "Santé US", "Santé Europe",
+        "Conso US", "Conso Europe",
+        "Industriels US",
+    ],
+    "universel": None,  # None = tous les secteurs
+}
+
+# Secteurs à caractère bancaire — pour le traitement spécial dette/cashflow
+BANK_SECTORS = {"Finance US", "Finance Europe", "Finance Asie"}
 
 
 # =========================
@@ -151,7 +241,7 @@ def clamp(v: float, lo: float = 0.0, hi: float = 100.0) -> float:
 def normalize_div(dy) -> float:
     """Retourne dividende en % (ex: 3.2).
     yfinance retourne dividendYield comme ratio (0.032 = 3.2%).
-    Cap a 15% pour eviter les glitches.
+    Cap à 15% pour éviter les glitches.
     """
     dy = safe_float(dy, 0.0)
     if dy <= 0:
@@ -210,28 +300,24 @@ class FMPClient:
         return None
 
     def get_quote(self, ticker: str) -> Optional[dict]:
-        """Endpoint gratuit FMP — prix, PE, volume."""
         data = self._get(f"quote/{ticker}")
         if data and isinstance(data, list):
             return data[0]
         return None
 
     def get_ratios(self, ticker: str) -> Optional[dict]:
-        """Ratios annuels — gratuit sur FMP (pas TTM)."""
         data = self._get(f"ratios/{ticker}", {"limit": 1})
         if data and isinstance(data, list):
             return data[0]
         return None
 
     def get_income(self, ticker: str) -> Optional[dict]:
-        """Income statement annuel — gratuit."""
         data = self._get(f"income-statement/{ticker}", {"limit": 2})
         if data and isinstance(data, list):
             return data
         return None
 
     def get_balance(self, ticker: str) -> Optional[dict]:
-        """Balance sheet annuel — gratuit."""
         data = self._get(f"balance-sheet-statement/{ticker}", {"limit": 1})
         if data and isinstance(data, list):
             return data[0]
@@ -252,19 +338,15 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     """Fetch via yfinance (fonctionne depuis un serveur, gratuit, fiable)."""
     try:
         import yfinance as yf
-        # fast_info est plus fiable que .info sur serveur
         t = yf.Ticker(ticker)
-        # Essayer fast_info d abord pour le prix
         try:
             fast = t.fast_info
             price_check = float(fast.last_price) if hasattr(fast, "last_price") else 0
         except Exception:
             price_check = 0
         info = t.info
-        # Si info semble vide ou stale, retenter
         if not info or len(info) < 5:
             return None
-        # Utiliser le prix de fast_info si disponible et different
         if price_check > 0 and abs(price_check - safe_float(info.get("regularMarketPrice") or info.get("currentPrice"), 0)) > 0.01:
             info["regularMarketPrice"] = price_check
     except Exception:
@@ -279,15 +361,11 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     if mcap < 200_000_000:
         return None
 
-    # Conversion de devise — tout en USD ou EUR
-    # Actions européennes cotées en EUR/GBp/CHF → EUR
-    # Actions Asie/US cotées en KRW/JPY/TWD/HKD → USD
     target_currency = currency
     try:
         if currency not in ("USD", "EUR"):
             import yfinance as _yf
             if currency in ("GBp", "GBX"):
-                # Pence → Livres sterling → EUR
                 price = price / 100.0
                 gbp_eur = _yf.Ticker("GBPEUR=X").fast_info.last_price or 1.17
                 price = round(price * gbp_eur, 2)
@@ -307,11 +385,10 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
                 price = round(price * rate, 2)
                 target_currency = "USD"
     except Exception:
-        target_currency = currency  # fallback devise originale
+        target_currency = currency
 
     pe = safe_float(info.get("trailingPE") or info.get("forwardPE"), 0.0)
     pb = safe_float(info.get("priceToBook"), 0.0)
-    # Recalcul manuel si P/B aberrant ou manquant
     if pb <= 0 or pb > 100:
         equity = safe_float(info.get("totalStockholderEquity") or info.get("stockholdersEquity"), 0.0)
         shares = safe_float(info.get("sharesOutstanding"), 0.0)
@@ -322,35 +399,26 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
         else:
             pb = 0.0
 
-    # EV/EBITDA — fix bug devise yfinance
     enterprise_value = safe_float(info.get("enterpriseValue"), 0.0)
     ebitda_margins = safe_float(info.get("ebitdaMargins"), 0.0)
     total_revenue = safe_float(info.get("totalRevenue"), 0.0)
-    currency = info.get("currency", "USD")
     financial_currency = info.get("financialCurrency", currency)
 
     ev_ebitda = 0.0
-
-    # Méthode 1 : valeur directe yfinance si réaliste (3-100)
     ev_direct = safe_float(info.get("enterpriseToEbitda"), 0.0)
     if 3 <= ev_direct <= 100:
         ev_ebitda = ev_direct
-
     elif enterprise_value > 0 and ebitda_margins > 0 and total_revenue > 0:
         if currency == financial_currency:
-            # Même devise — recalcul via ebitdaMargins × revenue (fiable)
             ebitda_recalc = ebitda_margins * total_revenue
             if ebitda_recalc > 0:
                 ev_calc = enterprise_value / ebitda_recalc
                 if 3 <= ev_calc <= 100:
                     ev_ebitda = round(ev_calc, 2)
-        # Devises différentes (ex: TSM USD/TWD) → impossible sans taux fiable
-        # On laisse 0 → affiché — dans l'interface, honnête et transparent
-    # PEG Ratio
-    peg = safe_float(info.get("trailingPegRatio"), 0.0)
-    peg = peg if 0 < peg < 10 else 0.0  # filtrer valeurs aberrantes
 
-    # Capitalisation boursière
+    peg = safe_float(info.get("trailingPegRatio"), 0.0)
+    peg = peg if 0 < peg < 10 else 0.0
+
     mcap_raw = safe_float(info.get("marketCap"), 0.0)
     if mcap_raw >= 200_000_000_000:
         cap_category = "Large Cap"
@@ -364,12 +432,10 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     roe = safe_float(info.get("returnOnEquity"), 0.0)
     margin = safe_float(info.get("profitMargins"), 0.0)
 
-    # Dette/Equity — calcul manuel si yfinance ne retourne rien
     dte_raw = safe_float(info.get("debtToEquity"), 0.0)
     if dte_raw > 0:
         dte = (dte_raw / 100.0) if dte_raw > 10 else dte_raw
     else:
-        # Recalcul depuis totalDebt / totalStockholderEquity
         total_debt = safe_float(info.get("totalDebt"), 0.0)
         stockholder_equity = safe_float(info.get("totalStockholderEquity") or info.get("stockholdersEquity"), 0.0)
         if total_debt > 0 and stockholder_equity > 0:
@@ -381,11 +447,13 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     revenue = safe_float(info.get("totalRevenue"), 0.0)
     ocf = safe_float(info.get("operatingCashflow"), 0.0)
 
-    # Dividende — uniquement trailingAnnualDividendYield, le plus fiable
     div_yield = 0.0
     dy = safe_float(info.get("trailingAnnualDividendYield"), 0.0)
-    if 0 < dy < 0.20:  # entre 0% et 20%
+    if 0 < dy < 0.20:
         div_yield = dy
+
+    # On récupère le secteur yfinance pour détecter les banques correctement
+    yf_sector = info.get("sector", "")
 
     return {
         "ticker": ticker,
@@ -393,7 +461,7 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
         "currency": target_currency,
         "exchange": info.get("exchange", ""),
         "country": info.get("country", ""),
-        "sector": info.get("sector", ""),
+        "sector": yf_sector,          # secteur yfinance (ex: "Financial Services")
         "price": price,
         "mcap": mcap,
         "pe": pe,
@@ -405,6 +473,7 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
         "roe": roe,
         "margin": margin,
         "debt_to_equity": dte,
+        "dte_available": dte > 0,     # True uniquement si la donnée est réelle
         "revenue": revenue,
         "ocf": ocf,
         "rev_growth": rev_growth,
@@ -419,11 +488,9 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
 def quality_confidence(m: dict) -> float:
     keys = ["pe", "pb", "ev_ebitda", "roe", "margin", "debt_to_equity", "rev_growth", "div_yield"]
 
-    # 1) Complétude
     present = sum(1 for k in keys if safe_float(m.get(k), 0.0) != 0.0)
     completeness = (present / len(keys)) * 100
 
-    # 2) Sanity checks
     penalties = 0
     pe = safe_float(m.get("pe"), 0.0)
     pb = safe_float(m.get("pb"), 0.0)
@@ -445,7 +512,6 @@ def quality_confidence(m: dict) -> float:
 
     sanity = clamp(100 - penalties)
 
-    # 3) Fraîcheur
     freshness = 100.0
     if safe_float(m.get("price"), 0.0) <= 0: freshness -= 40
     if safe_float(m.get("mcap"), 0.0) <= 0: freshness -= 25
@@ -460,12 +526,23 @@ def quality_confidence(m: dict) -> float:
 # SCORER
 # =========================
 
+def _is_bank(m: dict, sector_label: str = "") -> bool:
+    """
+    Détecte si l'action est une banque/assurance.
+    On vérifie à la fois le secteur yfinance ET le label de secteur SmartValue.
+    """
+    yf_sector = m.get("sector", "").lower()
+    sv_sector = sector_label.lower()
+    bank_keywords = ["financial", "bank", "insurance", "finance"]
+    return any(k in yf_sector or k in sv_sector for k in bank_keywords)
+
+
 class SmartValueScorer:
     def __init__(self, th: Thresholds = Thresholds(), w: Weights = Weights()):
         self.th = th
         self.w = w
 
-    def score(self, m: dict) -> Tuple[float, dict, List[str], float, List[str], str]:
+    def score(self, m: dict, sector_label: str = "") -> Tuple[float, dict, List[str], float, List[str], str]:
         details = {}
         why: List[str] = []
         confidence = quality_confidence(m)
@@ -478,15 +555,17 @@ class SmartValueScorer:
         margin = safe_float(m.get("margin"), 0.0)
         margin_pct = margin * 100
         dte = safe_float(m.get("debt_to_equity"), 0.0)
+        dte_available = m.get("dte_available", False)   # ← CORRECTION : donnée réelle ou manquante
         revenue = safe_float(m.get("revenue"), 0.0)
         ocf = safe_float(m.get("ocf"), 0.0)
         rg = safe_float(m.get("rev_growth"), 0.0)
         rg_pct = rg * 100
         dy_pct = normalize_div(m.get("div_yield"))
 
+        is_bank = _is_bank(m, sector_label)
+
         # --- VALUATION ---
         val = 0.0
-        # PER — score complet si < pe_max, score partiel si PE eleve mais justifie par croissance
         if 1 < pe < self.th.pe_max:
             if pe < 12:
                 val += 100 * 0.50; why.append(f"PER très bas ({pe:.1f})")
@@ -495,13 +574,11 @@ class SmartValueScorer:
             else:
                 val += 55 * 0.50
         elif 1 < pe and rg_pct > 20:
-            # Entreprise croissance : PER eleve mais tolere si croissance forte
             val += 25 * 0.50
         if 0 < pb < self.th.pb_max:
             val += clamp(100 * (self.th.pb_max - pb) / self.th.pb_max) * 0.30
             if pb < 2: why.append(f"P/B attractif ({pb:.2f})")
         elif 0 < pb and rg_pct > 30:
-            # P/B eleve tolere si hyper-croissance
             val += 10 * 0.30
         if 1 < ev < self.th.ev_ebitda_max:
             val += clamp(100 * (self.th.ev_ebitda_max - ev) / self.th.ev_ebitda_max) * 0.20
@@ -510,7 +587,7 @@ class SmartValueScorer:
 
         # --- PROFITABILITY ---
         prof = 0.0
-        roe_capped = min(roe_pct, 60)  # cap pour eviter distorsion (NVDA ROE 101%)
+        roe_capped = min(roe_pct, 60)
         if roe_capped > 0:
             if roe_capped > 25:
                 prof += 100 * 0.50; why.append(f"ROE exceptionnel ({roe_pct:.1f}%)")
@@ -527,9 +604,8 @@ class SmartValueScorer:
 
         # --- FINANCIAL HEALTH ---
         health = 0.0
-        sector = m.get("sector_name", "")
-        is_bank = any(s in sector for s in ["Finance", "Bank", "Insurance"])
-        if dte > 0:
+        if dte_available and dte > 0:
+            # Donnée réelle disponible
             if dte < 0.30:
                 health += 100 * 0.55; why.append("Dette très faible")
             elif dte < 0.60:
@@ -538,10 +614,13 @@ class SmartValueScorer:
                 health += 45 * 0.55
             elif dte < 1.5:
                 health += 20 * 0.55
+            # else : dette > 1.5, score dette = 0
         elif is_bank:
-            # Pour les banques sans DTE disponible, score neutre basé sur cashflow seul
-            health += 55 * 0.55  # score neutre
-        # Cashflow — ignoré pour les banques (OCF naturellement volatile/négatif)
+            # Banques : traitement spécial, score neutre sur la dette
+            health += 55 * 0.55
+        # else : dte_available == False et pas une banque → score dette = 0 (pas de faux signal SAFE)
+
+        # Cashflow — ignoré pour les banques
         if revenue > 0 and ocf > 0 and not is_bank:
             cf_m = ocf / revenue
             if cf_m > 0.18:
@@ -551,7 +630,6 @@ class SmartValueScorer:
             elif cf_m > 0.06:
                 health += 45 * 0.45
         elif is_bank:
-            # Pour les banques, score cashflow neutre
             health += 65 * 0.45
         details["financial_health"] = round(health, 1)
 
@@ -593,11 +671,12 @@ class SmartValueScorer:
         )
 
         # --- TAGS ---
+        # CORRECTION : SAFE uniquement si dte_available ET dte < 0.60
         tags: List[str] = []
         if 0 < pe < 15: tags.append("VALUE")
         if 0 < pb < 2: tags.append("ASSET")
         if roe_pct > 20 and margin > 0.12: tags.append("QUALITY")
-        if dte < 0.60: tags.append("SAFE")
+        if dte_available and 0 < dte < 0.60: tags.append("SAFE")  # ← CORRECTION
         if rg_pct > 8: tags.append("GROWTH")
         if dy_pct >= 2: tags.append("DIVIDEND")
 
@@ -638,17 +717,22 @@ class SmartValueScanner:
         universe: Dict[str, List[str]] = None,
         th: Thresholds = Thresholds(),
         w: Weights = Weights(),
+        profile: str = "universel",
     ):
         self.client = FMPClient(api_key)
         self.universe = universe or DEFAULT_UNIVERSE
-        self.scorer = SmartValueScorer(th, w)
+        self.profile = profile
+        # Utiliser les poids et seuils du profil si non surchargés
+        self.scorer = SmartValueScorer(
+            th=thresholds_for_profile(profile),
+            w=weights_for_profile(profile),
+        )
 
     def scan_ticker(self, ticker: str, sector_label: str = "Recherche") -> Optional[dict]:
-        """Scanner un ticker individuel (recherche libre)."""
         m = fetch_metrics(ticker, self.client)
         if not m:
             return None
-        score, details, why, confidence, tags, summary = self.scorer.score(m)
+        score, details, why, confidence, tags, summary = self.scorer.score(m, sector_label)
         return self._build_result(m, score, details, why, confidence, tags, summary, sector_label)
 
     def scan(
@@ -657,7 +741,14 @@ class SmartValueScanner:
         min_confidence: float = 50,
         progress_callback=None,
     ) -> List[dict]:
-        tickers = [(sector, t) for sector, lst in self.universe.items() for t in lst]
+        # Filtrer les secteurs selon le profil
+        allowed_sectors = PROFILE_SECTORS.get(self.profile)
+        if allowed_sectors is not None:
+            universe = {k: v for k, v in self.universe.items() if k in allowed_sectors}
+        else:
+            universe = self.universe
+
+        tickers = [(sector, t) for sector, lst in universe.items() for t in lst]
         results: List[dict] = []
         total = len(tickers)
 
@@ -670,7 +761,7 @@ class SmartValueScanner:
                 time.sleep(0.1)
                 continue
 
-            score, details, why, confidence, tags, summary = self.scorer.score(m)
+            score, details, why, confidence, tags, summary = self.scorer.score(m, sector)
 
             if confidence < min_confidence or score < min_score:
                 time.sleep(0.05)
@@ -679,7 +770,7 @@ class SmartValueScanner:
             results.append(
                 self._build_result(m, score, details, why, confidence, tags, summary, sector)
             )
-            time.sleep(0.12)  # respecter rate limit FMP
+            time.sleep(0.12)
 
         results.sort(key=lambda x: x["Score"], reverse=True)
         return results
@@ -711,9 +802,9 @@ class SmartValueScanner:
             "Dette/Equity": round(dte_val, 2) if dte_val else None,
             "Croissance CA %": round(rg_val, 1) if rg_val else 0.0,
             "PEG": round(safe_float(m.get("peg"), 0.0), 2) if m.get("peg") else None,
-        "Cap boursière": m.get("cap_category", ""),
-        "Market Cap": m.get("market_cap", 0),
-        "Div %": div_pct,
+            "Cap boursière": m.get("cap_category", ""),
+            "Market Cap": m.get("market_cap", 0),
+            "Div %": div_pct,
             "Div affichage": format_div(div_pct),
 
             "Score": score,
