@@ -146,19 +146,13 @@ def scan(req: ScanRequest):
     if not _cache["results"] and not _cache["updating"]:
         refresh_cache()
 
-    # Filtrer les résultats selon le profil demandé côté API
+    # Retourner TOUS les résultats du cache — le frontend filtre par secteur/profil
+    # Ne jamais limiter ici sinon les profils Défensif/Croissance voient trop peu d'actions
     results = _cache["results"]
-
-    # Filtre score minimum
-    if req.min_score > 30:
-        results = [r for r in results if r.get("Score", 0) >= req.min_score]
-
-    # Limiter au top_n
-    results = results[:req.top_n]
 
     return {
         "results": results,
-        "total": len(results),
+        "total": _cache["total"],
         "last_update": _cache["last_update"],
         "profile": req.profile,
     }
