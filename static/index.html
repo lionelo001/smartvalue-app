@@ -904,17 +904,18 @@ const BAR_KEYS   = ['Bloc valuation','Bloc rentabilité','Bloc santé','Bloc cro
 const BAR_COLORS = ['#2563EB','#16A34A','#9333EA','#EA580C','#DB2777'];
 
 const DEFAULT_SECTORS = [
-  'Tech US','Finance US','Santé US','Energie US','Conso US','Industriels US',
+  'Tech US','Finance US','Santé US','Energie US','Conso US','Industriels US','REITs US',
   'Tech Europe','Finance Europe','Santé Europe','Energie Europe','Conso Europe','Industriels Europe',
-  'Tech Asie','Finance Asie','Energie Asie'
+  'Tech Asie','Finance Asie','Energie Asie',
+  'Tech Japon','Industriels Japon','Tech Inde'
 ];
 
 const PROFILES = {
   defensive:{ minScore:40, minConf:70, topN:15,
-    sectors:['Finance US','Santé US','Conso US','Energie US','Finance Europe','Santé Europe','Energie Europe','Conso Europe'] },
+    sectors:['Finance US','Santé US','Conso US','Energie US','Finance Europe','Santé Europe','Energie Europe','Conso Europe','REITs US','Industriels Japon'] },
   balanced:{ minScore:35, minConf:50, topN:15, sectors:null },
   growth:{ minScore:30, minConf:50, topN:20,
-    sectors:['Tech US','Industriels US','Tech Europe','Industriels Europe','Tech Asie'] },
+    sectors:['Tech US','Industriels US','Tech Europe','Industriels Europe','Tech Asie','Tech Japon','Tech Inde'] },
 };
 
 // Avatars colorés avec initiales
