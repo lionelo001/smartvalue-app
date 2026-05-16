@@ -159,13 +159,14 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .metric-box{background:var(--bg3);border-radius:5px;padding:0.55rem 0.65rem;}
 .metric-v{font-family:'DM Mono',monospace;font-size:0.88rem;font-weight:500;color:var(--text);}
 .metric-l{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
-.score-bars-label{font-size:0.6rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem;}
-.score-bars{}
-.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.bar-lbl{font-size:0.62rem;color:var(--muted2);width:60px;flex-shrink:0;}
-.bar-track{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
-.bar-fill{height:4px;border-radius:2px;}
-.bar-val{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);width:28px;text-align:right;flex-shrink:0;}
+.score-bars-label{font-size:0.6rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem;}
+.score-bars{display:flex;flex-direction:column;gap:0;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.bar-lbl{font-size:0.67rem;color:var(--muted2);width:90px;flex-shrink:0;display:flex;align-items:center;gap:5px;}
+.bar-lbl-icon{font-size:0.75rem;opacity:0.85;}
+.bar-track{flex:1;height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.bar-fill{height:7px;border-radius:4px;width:0%;transition:width 0.55s cubic-bezier(0.4,0,0.2,1);}
+.bar-badge{font-family:'DM Mono',monospace;font-size:0.62rem;font-weight:600;width:26px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:4px;flex-shrink:0;}
 
 /* ── SCREENER AVANCÉ ── */
 .advanced-toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:0.75rem;color:var(--muted2);background:var(--bg2);border:1px solid var(--border2);padding:0.35rem 0.85rem;border-radius:5px;margin-bottom:1rem;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
@@ -903,18 +904,17 @@ const BAR_KEYS   = ['Bloc valuation','Bloc rentabilité','Bloc santé','Bloc cro
 const BAR_COLORS = ['#2563EB','#16A34A','#9333EA','#EA580C','#DB2777'];
 
 const DEFAULT_SECTORS = [
-  'Tech US','Finance US','Santé US','Energie US','Conso US','Industriels US','REITs US',
+  'Tech US','Finance US','Santé US','Energie US','Conso US','Industriels US',
   'Tech Europe','Finance Europe','Santé Europe','Energie Europe','Conso Europe','Industriels Europe',
-  'Tech Asie','Finance Asie','Energie Asie',
-  'Tech Japon','Industriels Japon','Tech Inde'
+  'Tech Asie','Finance Asie','Energie Asie'
 ];
 
 const PROFILES = {
   defensive:{ minScore:40, minConf:70, topN:15,
-    sectors:['Finance US','Santé US','Conso US','Energie US','Finance Europe','Santé Europe','Energie Europe','Conso Europe','REITs US','Industriels Japon'] },
+    sectors:['Finance US','Santé US','Conso US','Energie US','Finance Europe','Santé Europe','Energie Europe','Conso Europe'] },
   balanced:{ minScore:35, minConf:50, topN:15, sectors:null },
   growth:{ minScore:30, minConf:50, topN:20,
-    sectors:['Tech US','Industriels US','Tech Europe','Industriels Europe','Tech Asie','Tech Japon','Tech Inde'] },
+    sectors:['Tech US','Industriels US','Tech Europe','Industriels Europe','Tech Asie'] },
 };
 
 // Avatars colorés avec initiales
@@ -938,10 +938,6 @@ const LOGO_DOMAINS = {
   'ROG.SW':'roche.com','NOVN.SW':'novartis.com','ABB.SW':'abb.com',
   'HSBA.L':'hsbc.com','BARC.L':'barclays.com','BP.L':'bp.com','AZN.L':'astrazeneca.com',
   'SONY':'sony.com','005930.KS':'samsung.com',
-  'PLD':'prologis.com','O':'realtyincome.com','AMT':'americantower.com',
-  'EQIX':'equinix.com','SPG':'simon.com','DLR':'digitalrealty.com',
-  'INFY':'infosys.com','WIT':'wipro.com','HDB':'hdfcbank.com','IBN':'icicibank.com',
-  'TM':'toyota.com','HMC':'honda.com','NTDOY':'nintendo.com',
 };
 const AVATAR_COLORS = ['#2563EB','#16A34A','#9333EA','#EA580C','#DB2777','#0891B2','#65A30D','#DC2626','#7C3AED','#D97706'];
 
@@ -1050,13 +1046,6 @@ const TICKERS = [
   {s:'HSBA.L',n:'HSBC Holdings'},{s:'BARC.L',n:'Barclays'},{s:'BP.L',n:'BP'},{s:'AZN.L',n:'AstraZeneca'},
   {s:'9988.HK',n:'Alibaba Group'},{s:'700.HK',n:'Tencent Holdings'},{s:'005930.KS',n:'Samsung Electronics'},
   {s:'SONY',n:'Sony Group'},{s:'MUFG',n:'Mitsubishi UFJ'},
-  // REITs US
-  {s:'PLD',n:'Prologis'},{s:'O',n:'Realty Income'},{s:'AMT',n:'American Tower'},
-  {s:'EQIX',n:'Equinix'},{s:'SPG',n:'Simon Property Group'},{s:'DLR',n:'Digital Realty'},{s:'WPC',n:'W.P. Carey'},
-  // Japon
-  {s:'TM',n:'Toyota'},{s:'HMC',n:'Honda'},{s:'NTDOY',n:'Nintendo'},{s:'9984.T',n:'SoftBank'},{s:'6954.T',n:'Fanuc'},
-  // Inde (ADR)
-  {s:'INFY',n:'Infosys'},{s:'WIT',n:'Wipro'},{s:'HDB',n:'HDFC Bank'},{s:'IBN',n:'ICICI Bank'},
   // Belgique
   {s:'UCB.BR',n:'UCB SA'},{s:'ABI.BR',n:'AB InBev'},{s:'SOLB.BR',n:'Solvay'},
   {s:'COLR.BR',n:'Colruyt'},{s:'PROX.BR',n:'Proximus'},{s:'AGS.BR',n:'Ageas'},
@@ -1216,14 +1205,29 @@ function renderCard(r, rank, sectorAvgs) {
   const score=r.Score||0;
   const conf=r['Confiance %']||0;
   const tags=(r.Tags||'').split(',').filter(t=>t.trim()).map(t=>`<span class="tag">${t.trim()}</span>`).join('');
+  const BAR_ICONS = ['📊','💰','🛡️','📈','💎'];
   const bars=BAR_LABELS.map((lbl,i)=>{
     const val=r[BAR_KEYS[i]]||0;
     const w=Math.min(Math.round(val),100);
-    const displayVal = val === 0 ? '—' : val.toFixed(0);
-    const barHtml = val === 0
-      ? '<div class="bar-track"><div style="height:4px;border-radius:2px;background:var(--bg4);width:100%;opacity:0.4;"></div></div>'
-      : '<div class="bar-track"><div class="bar-fill" style="background:'+BAR_COLORS[i]+';width:'+w+'%"></div></div>';
-    return '<div class="bar-row"><div class="bar-lbl">'+lbl+'</div>'+barHtml+'<div class="bar-val">'+displayVal+'</div></div>';
+    const isEmpty = val === 0;
+    // Couleur dynamique selon la valeur
+    let barColor, badgeBg, badgeColor;
+    if(isEmpty){
+      barColor='var(--bg4)'; badgeBg='var(--bg3)'; badgeColor='var(--muted)';
+    } else if(w>=70){
+      barColor=BAR_COLORS[i]; badgeBg=BAR_COLORS[i]+'22'; badgeColor=BAR_COLORS[i];
+    } else if(w>=40){
+      barColor=BAR_COLORS[i]+'BB'; badgeBg='var(--bg3)'; badgeColor='var(--muted2)';
+    } else {
+      barColor='#94a3b8'; badgeBg='var(--bg3)'; badgeColor='var(--muted)';
+    }
+    const displayVal = isEmpty ? '—' : val.toFixed(0);
+    const uid = 'bar-'+Math.random().toString(36).slice(2)+'-'+i;
+    return `<div class="bar-row">
+      <div class="bar-lbl"><span class="bar-lbl-icon">${BAR_ICONS[i]}</span>${lbl}</div>
+      <div class="bar-track"><div class="bar-fill" id="${uid}" style="background:${barColor};width:0%"></div></div>
+      <div class="bar-badge" style="background:${badgeBg};color:${badgeColor}">${displayVal}</div>
+    </div><script>requestAnimationFrame(()=>setTimeout(()=>{const el=document.getElementById('${uid}');if(el)el.style.width='${isEmpty?0:w}%';},80+${i}*60))<\/script>`;
   }).join('');
   const metrics=[
     {l:'Prix',v:`${r.Prix||'—'} ${r.Devise||''}`},
@@ -1253,7 +1257,7 @@ function renderCard(r, rank, sectorAvgs) {
       ${logoHtml(r.Ticker||'', r.Ticker||'')}
       <div class="card-info">
         <div class="card-ticker">${r.Ticker||''} <span style="font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:400;color:var(--muted2);">— ${r['Société']||''}</span></div>
-        <div class="card-name">${r.Pays||''} · ${r['Secteur yfinance']||r.Secteur||''}</div>
+        <div class="card-name">${r.Pays||''} · ${r.Secteur||''}</div>
         <div class="card-tags-row">${tags}</div>
       </div>
       <div class="card-right">
@@ -1288,14 +1292,6 @@ function renderCard(r, rank, sectorAvgs) {
       <div class="metrics-grid">${metrics}</div>
       <div class="score-bars-label">Détail du score</div>
       <div class="score-bars">${bars}</div>
-      <div style="display:flex;gap:12px;margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid var(--border);">
-        <a href="https://finance.yahoo.com/quote/${r.Ticker}" target="_blank" rel="noopener" style="font-size:0.68rem;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.15s;" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted2)'">
-          <span>↗</span> Yahoo Finance
-        </a>
-        <a href="https://www.google.com/finance/quote/${r.Ticker}" target="_blank" rel="noopener" style="font-size:0.68rem;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.15s;" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted2)'">
-          <span>↗</span> Google Finance
-        </a>
-      </div>
     </div>
   </div>`;
 }
