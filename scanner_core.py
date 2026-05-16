@@ -1,12 +1,18 @@
 """
-scanner_core.py  —  SmartValue Scanner V5
+scanner_core.py  —  SmartValue Scanner V5.1
 Source : yfinance — fiable, gratuit
-Univers : Mondial (US, Europe, Asie)
+Univers : Mondial (US, Europe, Asie, Japon, Inde, REITs)
 Corrections V5 :
   - Doublons supprimés dans DEFAULT_UNIVERSE
   - Bug sector_name vide corrigé (lecture depuis fetch_metrics)
   - Tag SAFE ne s'active plus si dte == 0 (donnée manquante)
   - Profils Défensif / Universel / Croissance avec poids réellement différenciés
+V5.1 :
+  - CNPA.PA retirée (délistée)
+  - Japon ajouté : Toyota, Sony, Keyence, Shin-Etsu, Fast Retailing, Recruit
+  - Inde ajouté : Infosys, TCS, HDFC Bank, Reliance (ADR/cotations accessibles)
+  - REITs US ajoutés : Prologis, Realty Income, American Tower, Equinix
+  - Univers ~210 actions (équilibré yfinance rate limit)
 """
 
 from __future__ import annotations
@@ -48,6 +54,16 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
         "CAT", "HON", "GE", "MMM", "UNP", "UPS", "FDX", "DE", "ETN",
         "LMT", "RTX", "BA", "NOC", "GD", "EMR", "ITW", "PH", "ROK",
     ],
+    # REITs US — secteur immobilier défensif très demandé
+    "REITs US": [
+        "PLD",   # Prologis — leader logistique mondial
+        "O",     # Realty Income — dividende mensuel, très défensif
+        "AMT",   # American Tower — tours télécom
+        "EQIX",  # Equinix — datacenters
+        "SPG",   # Simon Property — centres commerciaux premium
+        "DLR",   # Digital Realty — datacenters
+        "WPC",   # W.P. Carey — diversifié
+    ],
 
     # ── EUROPE ──────────────────────────────────────────────────
     "Tech Europe": [
@@ -60,7 +76,7 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
         "HSBA.L", "BARC.L", "LLOY.L", "INGA.AS", "NN.AS",
         "SAN.MC", "BBVA.MC", "UCG.MI", "ISP.MI",
         "AGS.BR", "ACKB.BR", "ZURN.SW",
-        "CABK.MC", "SAB.MC", "CNPA.PA",
+        "CABK.MC", "SAB.MC",
     ],
     "Santé Europe": [
         "ROG.SW", "NOVN.SW", "NESN.SW", "AZN.L", "GSK.L",
@@ -84,10 +100,36 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
         "LIN.DE", "SU.PA", "STM",
     ],
 
+    # ── JAPON ───────────────────────────────────────────────────
+    # Cotés en ADR ou via yfinance directement — fiables
+    "Tech Japon": [
+        "KYCCF",  # Keyence — capteurs industriels, marges exceptionnelles
+        "SNEJF",  # Sony (cotation Tokyo)
+        "6954.T", # Fanuc — robotique industrielle
+        "9984.T", # SoftBank Group
+        "6861.T", # Keyence (Tokyo direct)
+    ],
+    "Industriels Japon": [
+        "TM",     # Toyota — leader automobile mondial
+        "HMC",    # Honda
+        "7203.T", # Toyota (Tokyo)
+        "NTDOY",  # Nintendo (ADR)
+        "6501.T", # Hitachi
+    ],
+
+    # ── INDE ────────────────────────────────────────────────────
+    # ADR cotés sur NYSE/NASDAQ — accessibles et fiables via yfinance
+    "Tech Inde": [
+        "INFY",   # Infosys — IT services, ADR NYSE
+        "WIT",    # Wipro — IT services, ADR NYSE
+        "HDB",    # HDFC Bank — banque privée leader
+        "IBN",    # ICICI Bank — ADR NYSE
+    ],
+
     # ── ASIE / MONDE ────────────────────────────────────────────
     "Tech Asie": [
         "TSM", "SONY", "9988.HK", "0700.HK", "005930.KS",
-        "TM", "HMC", "NTDOY", "FANUY",
+        "NTDOY", "FANUY",
     ],
     "Finance Asie": [
         "MUFG", "8306.T", "0939.HK",
@@ -204,12 +246,16 @@ PROFILE_SECTORS = {
         "Conso US", "Conso Europe",
         "Energie US", "Energie Europe", "Energie Asie",
         "Industriels US", "Industriels Europe",
+        "REITs US",           # REITs très défensifs, dividendes stables
+        "Finance Asie",
+        "Industriels Japon",  # Toyota, Honda — valeurs défensives
     ],
     "croissance": [
         "Tech US", "Tech Europe", "Tech Asie",
+        "Tech Japon", "Tech Inde",
         "Santé US", "Santé Europe",
         "Conso US", "Conso Europe",
-        "Industriels US",
+        "Industriels US", "Industriels Japon",
     ],
     "universel": None,  # None = tous les secteurs
 }
