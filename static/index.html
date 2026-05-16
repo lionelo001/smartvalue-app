@@ -1209,25 +1209,15 @@ function renderCard(r, rank, sectorAvgs) {
   const bars=BAR_LABELS.map((lbl,i)=>{
     const val=r[BAR_KEYS[i]]||0;
     const w=Math.min(Math.round(val),100);
-    const isEmpty = val === 0;
-    // Couleur dynamique selon la valeur
-    let barColor, badgeBg, badgeColor;
-    if(isEmpty){
-      barColor='var(--bg4)'; badgeBg='var(--bg3)'; badgeColor='var(--muted)';
-    } else if(w>=70){
-      barColor=BAR_COLORS[i]; badgeBg=BAR_COLORS[i]+'22'; badgeColor=BAR_COLORS[i];
-    } else if(w>=40){
-      barColor=BAR_COLORS[i]+'BB'; badgeBg='var(--bg3)'; badgeColor='var(--muted2)';
-    } else {
-      barColor='#94a3b8'; badgeBg='var(--bg3)'; badgeColor='var(--muted)';
-    }
+    const isEmpty = val===0;
+    let barColor,badgeBg,badgeColor;
+    if(isEmpty){ barColor='var(--bg4)';badgeBg='var(--bg3)';badgeColor='var(--muted)'; }
+    else if(w>=70){ barColor=BAR_COLORS[i];badgeBg=BAR_COLORS[i]+'22';badgeColor=BAR_COLORS[i]; }
+    else if(w>=40){ barColor=BAR_COLORS[i]+'BB';badgeBg='var(--bg3)';badgeColor='var(--muted2)'; }
+    else { barColor='#94a3b8';badgeBg='var(--bg3)';badgeColor='var(--muted)'; }
     const displayVal = isEmpty ? '—' : val.toFixed(0);
-    const uid = 'bar-'+Math.random().toString(36).slice(2)+'-'+i;
-    return `<div class="bar-row">
-      <div class="bar-lbl"><span class="bar-lbl-icon">${BAR_ICONS[i]}</span>${lbl}</div>
-      <div class="bar-track"><div class="bar-fill" id="${uid}" style="background:${barColor};width:0%"></div></div>
-      <div class="bar-badge" style="background:${badgeBg};color:${badgeColor}">${displayVal}</div>
-    </div><script>requestAnimationFrame(()=>setTimeout(()=>{const el=document.getElementById('${uid}');if(el)el.style.width='${isEmpty?0:w}%';},80+${i}*60))<\/script>`;
+    // data-w stocke la largeur cible — l'animation est déclenchée par animateBars() à l'ouverture
+    return `<div class="bar-row"><div class="bar-lbl"><span class="bar-lbl-icon">${BAR_ICONS[i]}</span>${lbl}</div><div class="bar-track"><div class="bar-fill" data-w="${isEmpty?0:w}" style="background:${barColor};width:0%"></div></div><div class="bar-badge" style="background:${badgeBg};color:${badgeColor}">${displayVal}</div></div>`;
   }).join('');
   const metrics=[
     {l:'Prix',v:`${r.Prix||'—'} ${r.Devise||''}`},
@@ -1296,11 +1286,26 @@ function renderCard(r, rank, sectorAvgs) {
   </div>`;
 }
 
+function animateBars(card){
+  const fills = card.querySelectorAll('.bar-fill');
+  fills.forEach((el,i)=>{
+    const target = el.getAttribute('data-w')||'0';
+    el.style.width='0%';
+    setTimeout(()=>{ el.style.width=target+'%'; }, 60 + i*70);
+  });
+}
+
 function toggleCard(rank) {
   const card=document.getElementById('card-'+rank);
   const wasOpen = card.classList.contains('open');
   card.classList.toggle('open');
-  if(!wasOpen && typeof gtag !== 'undefined') gtag('event','card_opened',{rank:rank});
+  if(!wasOpen){
+    if(typeof gtag !== 'undefined') gtag('event','card_opened',{rank:rank});
+    setTimeout(()=>{
+      animateBars(card);
+      card.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 120);
+  }
 }
 
 function renderEmpty() {
