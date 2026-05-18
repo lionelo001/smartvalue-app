@@ -222,10 +222,10 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 
 
 /* ── ONGLETS ── */
-.app-tabs{display:flex;align-items:center;gap:6px;padding:0.75rem 1.25rem;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;}
-.app-tab{background:transparent;border:1px solid transparent;padding:0.45rem 1.1rem;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:var(--muted2);cursor:pointer;border-radius:20px;transition:all 0.15s;letter-spacing:0.02em;white-space:nowrap;}
-.app-tab:hover{color:var(--text);background:var(--bg3);border-color:var(--border2);}
-.app-tab.active{color:var(--blue);background:#EFF6FF;border-color:#BFDBFE;}
+.app-tabs{display:flex;border-bottom:2px solid var(--border);background:var(--bg2);overflow-x:auto;}
+.app-tab{background:transparent;border:none;padding:0.75rem 1.25rem;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:var(--muted2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;letter-spacing:0.02em;white-space:nowrap;}
+.app-tab:hover{color:var(--text);}
+.app-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
 .tab-content{display:none;}
 .tab-content.active{display:block;}
 /* ── FAQ ── */
@@ -238,9 +238,13 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .faq-item.open .faq-a{display:block;}
 
 /* ── BANNIÈRE INITIALISATION ── */
-.init-banner{display:none;align-items:center;justify-content:center;gap:10px;background:#FEF3C7;border-bottom:1px solid #FDE68A;padding:0.65rem 2rem;font-size:0.8rem;color:#92400E;font-weight:500;text-align:center;}
+.init-banner{display:none;align-items:center;justify-content:center;gap:12px;background:#FEF3C7;border-bottom:1px solid #FDE68A;padding:0.75rem 2rem;font-size:0.82rem;color:#92400E;font-weight:500;text-align:center;flex-wrap:wrap;}
 .init-banner.visible{display:flex;}
-.init-spinner{width:16px;height:16px;border:2px solid #FDE68A;border-top-color:#92400E;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+.init-spinner{width:18px;height:18px;border:2.5px solid #FDE68A;border-top-color:#92400E;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+.init-progress{display:flex;align-items:center;gap:8px;}
+.init-bar-wrap{width:120px;height:5px;background:#FDE68A;border-radius:3px;overflow:hidden;}
+.init-bar-fill{height:5px;background:#92400E;border-radius:3px;width:0%;transition:width 1s linear;}
+.init-eta{font-size:0.7rem;opacity:0.75;font-family:'DM Mono',monospace;}
 
 /* ── BANNIÈRE PREMIÈRE VISITE ── */
 .first-visit-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#EFF6FF;border-bottom:1px solid #BFDBFE;padding:0.55rem 2rem;font-size:0.78rem;color:#1E40AF;}
@@ -337,7 +341,11 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 <!-- BANNIÈRE INITIALISATION CACHE -->
 <div class="init-banner" id="init-banner">
   <div class="init-spinner"></div>
-  <span>⏳ Scanner en cours d'initialisation... Revenez dans quelques minutes ou réessayez !</span>
+  <span id="init-msg">🔍 Analyse en cours — nous scannons 200+ actions mondiales pour vous...</span>
+  <div class="init-progress">
+    <div class="init-bar-wrap"><div class="init-bar-fill" id="init-bar"></div></div>
+    <span class="init-eta" id="init-eta">~25 min</span>
+  </div>
 </div>
 
 <!-- BANNIÈRE PREMIÈRE VISITE -->
@@ -1140,6 +1148,42 @@ async function startScan() {
     const data=await res.json();
     const totalAnalysed = data.total || data.results.length;
     const initB = document.getElementById('init-banner');
+    // Animer la barre de progression pendant l'initialisation
+    if(initB && initB.classList.contains('visible')){
+      let elapsed = 0;
+      const total = 25 * 60; // 25 minutes en secondes
+      const bar = document.getElementById('init-bar');
+      const eta = document.getElementById('init-eta');
+      const msgs = [
+        '🔍 Analyse en cours — nous scannons 200+ actions mondiales...',
+        '📊 Calcul des scores fondamentaux en cours...',
+        '🌍 Analyse des marchés US, Europe et Asie...',
+        '💹 Presque prêt — dernières actions en cours...',
+      ];
+      const initTimer = setInterval(()=>{
+        elapsed++;
+        const pct = Math.min((elapsed/total)*100, 95);
+        if(bar) bar.style.width = pct + '%';
+        const remaining = Math.max(total - elapsed, 10);
+        const mins = Math.floor(remaining/60);
+        const secs = remaining % 60;
+        if(eta) eta.textContent = mins > 0 ? '~'+mins+' min' : secs+'s';
+        const msgEl = document.getElementById('init-msg');
+        if(msgEl) msgEl.textContent = msgs[Math.min(Math.floor(elapsed/(total/msgs.length)), msgs.length-1)];
+        // Vérifier si le cache est prêt
+        if(elapsed % 30 === 0){
+          fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sectors:[],min_score:20,top_n:5})})
+            .then(r=>r.json()).then(d=>{
+              if(d.results && d.results.length > 0){
+                clearInterval(initTimer);
+                if(bar) bar.style.width = '100%';
+                if(eta) eta.textContent = '✓ Prêt !';
+                setTimeout(()=>{ initB.classList.remove('visible'); }, 1000);
+              }
+            }).catch(()=>{});
+        }
+      }, 1000);
+    }
     if (data.results && data.results.length > 0) {
       if (initB) initB.classList.remove('visible');
     } else {
