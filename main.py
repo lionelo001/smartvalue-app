@@ -73,9 +73,9 @@ def refresh_cache():
     _cache["updating"] = True
     try:
         scanner = SmartValueScanner(api_key=API_KEY, universe=DEFAULT_UNIVERSE, profile="universel")
-        results = scanner.scan(min_score=30, min_confidence=50)
+        # Seuils très bas pour garantir des résultats même sur nouvelle IP
+        results = scanner.scan(min_score=20, min_confidence=40)
 
-        # On n'écrase le cache que si le scan a retourné des résultats
         if results:
             _cache["results"] = results
             _cache["total"] = len(results)
@@ -83,7 +83,16 @@ def refresh_cache():
             print(f"[Cache] Mis à jour à {_cache['last_update']} — {len(results)} résultats")
             save_cache_to_disk()
         else:
-            print("[Cache] Scan vide — ancien cache conservé")
+            print("[Cache] Scan vide — retry dans 5 minutes")
+            # Retry automatique dans 5 minutes si scan vide
+            def retry():
+                import time as _time
+                _time.sleep(300)
+                _cache["updating"] = False
+                refresh_cache()
+            import threading as _threading
+            _threading.Thread(target=retry, daemon=True).start()
+            return
     except Exception as e:
         print(f"[Cache] Erreur scan : {e} — ancien cache conservé")
     finally:
