@@ -232,11 +232,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 def root():
-    return FileResponse("landing.html")
+    path = os.path.join(os.path.dirname(__file__), "landing.html")
+    return FileResponse(path)
 
 @app.get("/app")
 def scanner_app():
-    return FileResponse("index.html")
+    path = os.path.join(os.path.dirname(__file__), "index.html")
+    return FileResponse(path)
 
 
 @app.get("/preview.png")
