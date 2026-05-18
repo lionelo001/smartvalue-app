@@ -1109,9 +1109,11 @@ function selectTicker(s){document.getElementById('ticker-input').value=s;documen
 document.addEventListener('click',e=>{if(!e.target.closest('.nav-search-wrap'))document.getElementById('autocomplete').classList.remove('open');});
 
 // ── SEARCH ────────────────────────────────────────────────
-async function searchTicker() {
-  const ticker = document.getElementById('ticker-input').value.trim().toUpperCase();
+async function searchTicker(forceTicker) {
+  const input = document.getElementById('ticker-input');
+  const ticker = forceTicker ? forceTicker.toUpperCase() : input.value.trim().toUpperCase();
   if (!ticker) return;
+  if(input) input.value = ticker;
   document.getElementById('autocomplete').classList.remove('open');
   if(typeof gtag !== 'undefined') gtag('event','ticker_searched',{ticker:ticker});
   const area = document.getElementById('results-area');
@@ -1413,12 +1415,9 @@ function shareVia(platform, ticker, name, score, tags, e){
   const q = params.get('q');
   if(q){
     document.title = q.toUpperCase() + ' — SmartValue';
-    window.addEventListener('DOMContentLoaded', ()=>{
-      setTimeout(()=>{
-        const input = document.getElementById('search-input');
-        if(input){ input.value = q.toUpperCase(); }
-        searchTicker(q.toUpperCase());
-      }, 300);
+    // On attend que la page soit complètement chargée
+    window.addEventListener('load', ()=>{
+      setTimeout(()=>{ searchTicker(q.toUpperCase()); }, 400);
     });
   }
 })();
