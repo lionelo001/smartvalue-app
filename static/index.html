@@ -287,8 +287,13 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .tooltip-close{width:100%;background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.55rem;border:none;cursor:pointer;border-radius:6px;}
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--accent);color:#fff;padding:0.65rem 1.1rem;font-size:0.75rem;transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:1000;border-radius:5px;}
 .toast.show{transform:translateY(0);opacity:1;}
-.share-btn{background:none;border:none;cursor:pointer;font-size:0.7rem;color:var(--muted2);display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:5px;transition:background 0.15s,color 0.15s;}
+.share-btn{background:none;border:none;cursor:pointer;font-size:0.7rem;color:var(--muted2);display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:5px;transition:background 0.15s,color 0.15s;position:relative;}
 .share-btn:hover{background:var(--bg3);color:var(--blue);}
+.share-menu{position:absolute;bottom:calc(100% + 8px);right:0;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:6px;display:none;flex-direction:column;gap:3px;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:999;}
+.share-menu.open{display:flex;}
+.share-menu-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;font-size:0.72rem;color:var(--text);text-decoration:none;cursor:pointer;background:none;border:none;width:100%;text-align:left;transition:background 0.12s;}
+.share-menu-item:hover{background:var(--bg3);}
+.share-menu-divider{height:1px;background:var(--border);margin:3px 0;}
 
 /* ── RESPONSIVE ── */
 .desktop-only{display:inline;}
@@ -1290,7 +1295,27 @@ function renderCard(r, rank, sectorAvgs) {
       <div style="display:flex;gap:12px;margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid var(--border);align-items:center;">
         <a href="https://finance.yahoo.com/quote/${r.Ticker}" target="_blank" rel="noopener" style="font-size:0.68rem;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.15s;" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted2)'">↗ Yahoo Finance</a>
         <a href="https://www.google.com/finance/quote/${r.Ticker}" target="_blank" rel="noopener" style="font-size:0.68rem;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.15s;" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted2)'">↗ Google Finance</a>
-        <button class="share-btn" onclick="shareAction('${r.Ticker}',event)" title="Partager cette action">🔗 Partager</button>
+        <div class="share-btn" onclick="toggleShareMenu('${r.Ticker}',event)" title="Partager cette action">
+          🔗 Partager
+          <div class="share-menu" id="share-menu-${r.Ticker}">
+            <a class="share-menu-item" onclick="shareVia('whatsapp','${r.Ticker}','${r.Société}',${score},'${(r.Tags||'').replace(/'/g,'')}',event)">
+              <span>💬</span> WhatsApp
+            </a>
+            <a class="share-menu-item" onclick="shareVia('messenger','${r.Ticker}','${r.Société}',${score},'${(r.Tags||'').replace(/'/g,'')}',event)">
+              <span>💙</span> Messenger
+            </a>
+            <a class="share-menu-item" onclick="shareVia('twitter','${r.Ticker}','${r.Société}',${score},'${(r.Tags||'').replace(/'/g,'')}',event)">
+              <span>🐦</span> Twitter / X
+            </a>
+            <a class="share-menu-item" onclick="shareVia('linkedin','${r.Ticker}','${r.Société}',${score},'${(r.Tags||'').replace(/'/g,'')}',event)">
+              <span>💼</span> LinkedIn
+            </a>
+            <div class="share-menu-divider"></div>
+            <a class="share-menu-item" onclick="shareVia('copy','${r.Ticker}','${r.Société}',${score},'${(r.Tags||'').replace(/'/g,'')}',event)">
+              <span>📋</span> Copier le lien
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>`;
@@ -1318,22 +1343,68 @@ function toggleCard(rank) {
   }
 }
 
-function shareAction(ticker, e){
+function toggleShareMenu(ticker, e){
+  e.stopPropagation();
+  // Fermer tous les autres menus ouverts
+  document.querySelectorAll('.share-menu.open').forEach(m => {
+    if(m.id !== 'share-menu-'+ticker) m.classList.remove('open');
+  });
+  const menu = document.getElementById('share-menu-'+ticker);
+  if(menu) menu.classList.toggle('open');
+}
+
+// Fermer les menus si on clique ailleurs
+document.addEventListener('click', ()=>{
+  document.querySelectorAll('.share-menu.open').forEach(m => m.classList.remove('open'));
+});
+
+function shareVia(platform, ticker, name, score, tags, e){
   e.stopPropagation();
   const url = window.location.origin + '/?q=' + encodeURIComponent(ticker);
-  navigator.clipboard.writeText(url).then(()=>{
-    showToast('🔗 Lien copié — ' + ticker);
-    if(typeof gtag !== 'undefined') gtag('event','share_action',{ticker:ticker});
-  }).catch(()=>{
-    // Fallback si clipboard non disponible
-    const inp = document.createElement('input');
-    inp.value = url;
-    document.body.appendChild(inp);
-    inp.select();
-    document.execCommand('copy');
-    document.body.removeChild(inp);
-    showToast('🔗 Lien copié — ' + ticker);
-  });
+  // Message récapitulatif
+  const msg = '🔎 ' + ticker + ' — ' + name + '\n'
+    + '📊 Score SmartValue : ' + score + '/100\n'
+    + '🏷️ ' + tags + '\n'
+    + '\n👉 Voir l\'analyse complète : ' + url
+    + '\n\n_Analysé par SmartValue — Scanner d\'actions fondamental_';
+
+  const encodedMsg = encodeURIComponent(msg);
+  const encodedUrl = encodeURIComponent(url);
+
+  let link = '';
+  if(platform === 'whatsapp'){
+    // Sur mobile ouvre WhatsApp, sur desktop ouvre WhatsApp Web
+    link = 'https://wa.me/?text=' + encodedMsg;
+  } else if(platform === 'messenger'){
+    link = 'https://www.facebook.com/dialog/send?link=' + encodedUrl + '&app_id=291494419107518&redirect_uri=' + encodedUrl;
+  } else if(platform === 'twitter'){
+    const tweet = '🔎 ' + ticker + ' — Score ' + score + '/100 sur SmartValue\n' + tags + '\n👉 ' + url;
+    link = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
+  } else if(platform === 'linkedin'){
+    link = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodedUrl;
+  } else if(platform === 'copy'){
+    // Copier le message complet
+    navigator.clipboard.writeText(msg).then(()=>{
+      showToast('📋 Récapitulatif copié !');
+    }).catch(()=>{
+      const inp = document.createElement('textarea');
+      inp.value = msg;
+      document.body.appendChild(inp);
+      inp.select();
+      document.execCommand('copy');
+      document.body.removeChild(inp);
+      showToast('📋 Récapitulatif copié !');
+    });
+    document.getElementById('share-menu-'+ticker)?.classList.remove('open');
+    if(typeof gtag !== 'undefined') gtag('event','share_action',{ticker:ticker,platform:'copy'});
+    return;
+  }
+
+  if(link){
+    window.open(link, '_blank', 'noopener');
+    document.getElementById('share-menu-'+ticker)?.classList.remove('open');
+    if(typeof gtag !== 'undefined') gtag('event','share_action',{ticker:ticker,platform:platform});
+  }
 }
 
 // Gestion URL ?q=TICKER — lance la recherche automatiquement à l'arrivée
