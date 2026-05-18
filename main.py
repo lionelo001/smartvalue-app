@@ -231,9 +231,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/")
-@app.get("/app")
 def root():
-    return FileResponse("static/index.html")
+    return FileResponse("landing.html")
+
+@app.get("/app")
+def scanner_app():
+    return FileResponse("index.html")
 
 
 @app.get("/preview.png")
