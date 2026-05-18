@@ -235,13 +235,9 @@ if os.path.exists(_static_dir):
 
 
 @app.get("/")
-def root():
-    path = os.path.join(os.path.dirname(__file__), "landing.html")
-    return FileResponse(path)
-
 @app.get("/app")
-def scanner_app():
-    path = os.path.join(os.path.dirname(__file__), "index.html")
+def root():
+    path = os.path.join(os.path.dirname(__file__), "static", "index.html")
     return FileResponse(path)
 
 
