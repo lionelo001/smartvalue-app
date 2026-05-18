@@ -118,7 +118,8 @@ from fastapi.responses import HTMLResponse
 async def maintenance_middleware(request: Request, call_next):
     if MAINTENANCE:
         if not request.url.path.startswith("/static"):
-            with open("maintenance.html", "r") as f:
+            maint_path = os.path.join(os.path.dirname(__file__), "maintenance.html")
+            with open(maint_path, "r") as f:
                 return HTMLResponse(content=f.read(), status_code=503)
     return await call_next(request)
 
@@ -226,8 +227,11 @@ def test_brevo():
     return {"key_present": bool(key), "key_length": len(key), "key_start": key[:10] if key else "vide"}
 
 
-# Static files pour l'app scanner
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Static files — dossier relatif au fichier main.py
+_base_dir = os.path.dirname(__file__)
+_static_dir = os.path.join(_base_dir, "static")
+if os.path.exists(_static_dir):
+    app.mount("/static", StaticFiles(directory=_static_dir), name="static")
 
 
 @app.get("/")
