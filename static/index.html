@@ -1778,7 +1778,7 @@ function fabNewsletter(){
 }
 function fabShare(){
   const url = 'https://smartvaluescanner.com';
-  const msg = '🔎 SmartValue — Scanner d'actions fondamental gratuit\nAnalysez 200+ entreprises mondiales avec un score clair sur 100.\n👉 ' + url;
+  const msg = '🔎 SmartValue — Scanner d\u2019actions fondamental gratuit\nAnalysez 200+ entreprises mondiales avec un score clair sur 100.\n👉 ' + url;
   if(navigator.share){
     navigator.share({title:'SmartValue Scanner',text:msg,url:url}).catch(()=>{});
   } else {
