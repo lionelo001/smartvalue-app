@@ -16,7 +16,8 @@
 <meta property="og:title" content="SmartValue — Scanner d'actions fondamental"/>
 <meta property="og:description" content="Analysez les actions mondiales — US, Europe, Asie — selon des critères fondamentaux clairs. Gratuit et en français."/>
 <meta property="og:type" content="website"/>
-<meta property="og:url" content="https://smartvaluescanner.com/app"/>
+<meta property="og:url" content="https://smartvaluescanner.com/"/>
+<link rel="canonical" href="https://smartvaluescanner.com/"/>
 <meta property="og:image" content="https://smartvaluescanner.com/preview.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
@@ -159,13 +160,14 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .metric-box{background:var(--bg3);border-radius:5px;padding:0.55rem 0.65rem;}
 .metric-v{font-family:'DM Mono',monospace;font-size:0.88rem;font-weight:500;color:var(--text);}
 .metric-l{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
-.score-bars-label{font-size:0.6rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem;}
-.score-bars{}
-.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.bar-lbl{font-size:0.62rem;color:var(--muted2);width:60px;flex-shrink:0;}
-.bar-track{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
-.bar-fill{height:4px;border-radius:2px;}
-.bar-val{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);width:28px;text-align:right;flex-shrink:0;}
+.score-bars-label{font-size:0.6rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem;}
+.score-bars{display:flex;flex-direction:column;gap:0;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.bar-lbl{font-size:0.67rem;color:var(--muted2);width:90px;flex-shrink:0;display:flex;align-items:center;gap:5px;}
+.bar-lbl-icon{font-size:0.75rem;opacity:0.85;}
+.bar-track{flex:1;height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.bar-fill{height:7px;border-radius:4px;width:0%;transition:width 0.55s cubic-bezier(0.4,0,0.2,1);}
+.bar-badge{font-family:'DM Mono',monospace;font-size:0.62rem;font-weight:600;width:26px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:4px;flex-shrink:0;}
 
 /* ── SCREENER AVANCÉ ── */
 .advanced-toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:0.75rem;color:var(--muted2);background:var(--bg2);border:1px solid var(--border2);padding:0.35rem 0.85rem;border-radius:5px;margin-bottom:1rem;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
@@ -222,10 +224,10 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 
 
 /* ── ONGLETS ── */
-.app-tabs{display:flex;border-bottom:2px solid var(--border);background:var(--bg2);overflow-x:auto;}
-.app-tab{background:transparent;border:none;padding:0.75rem 1.25rem;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:var(--muted2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;letter-spacing:0.02em;white-space:nowrap;}
-.app-tab:hover{color:var(--text);}
-.app-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.app-tabs{display:flex;align-items:center;gap:6px;padding:0.75rem 1.25rem;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;}
+.app-tab{background:transparent;border:1px solid transparent;padding:0.45rem 1.1rem;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:var(--muted2);cursor:pointer;border-radius:20px;transition:all 0.15s;letter-spacing:0.02em;white-space:nowrap;}
+.app-tab:hover{color:var(--text);background:var(--bg3);border-color:var(--border2);}
+.app-tab.active{color:var(--blue);background:#EFF6FF;border-color:#BFDBFE;}
 .tab-content{display:none;}
 .tab-content.active{display:block;}
 /* ── FAQ ── */
@@ -238,13 +240,9 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .faq-item.open .faq-a{display:block;}
 
 /* ── BANNIÈRE INITIALISATION ── */
-.init-banner{display:none;align-items:center;justify-content:center;gap:12px;background:#FEF3C7;border-bottom:1px solid #FDE68A;padding:0.75rem 2rem;font-size:0.82rem;color:#92400E;font-weight:500;text-align:center;flex-wrap:wrap;}
+.init-banner{display:none;align-items:center;justify-content:center;gap:10px;background:#FEF3C7;border-bottom:1px solid #FDE68A;padding:0.65rem 2rem;font-size:0.8rem;color:#92400E;font-weight:500;text-align:center;}
 .init-banner.visible{display:flex;}
-.init-spinner{width:18px;height:18px;border:2.5px solid #FDE68A;border-top-color:#92400E;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
-.init-progress{display:flex;align-items:center;gap:8px;}
-.init-bar-wrap{width:120px;height:5px;background:#FDE68A;border-radius:3px;overflow:hidden;}
-.init-bar-fill{height:5px;background:#92400E;border-radius:3px;width:0%;transition:width 1s linear;}
-.init-eta{font-size:0.7rem;opacity:0.75;font-family:'DM Mono',monospace;}
+.init-spinner{width:16px;height:16px;border:2px solid #FDE68A;border-top-color:#92400E;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
 
 /* ── BANNIÈRE PREMIÈRE VISITE ── */
 .first-visit-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#EFF6FF;border-bottom:1px solid #BFDBFE;padding:0.55rem 2rem;font-size:0.78rem;color:#1E40AF;}
@@ -289,6 +287,12 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .tooltip-close{width:100%;background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.55rem;border:none;cursor:pointer;border-radius:6px;}
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--accent);color:#fff;padding:0.65rem 1.1rem;font-size:0.75rem;transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:1000;border-radius:5px;}
 .toast.show{transform:translateY(0);opacity:1;}
+.share-btn{background:none;border:none;cursor:pointer;font-size:0.7rem;color:var(--muted2);display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:5px;transition:background 0.15s,color 0.15s;position:relative;}
+.share-btn:hover{background:var(--bg3);color:var(--blue);}
+.share-menu{position:absolute;bottom:calc(100% + 8px);right:0;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:6px;display:none;flex-direction:column;gap:3px;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:999;}
+.share-menu.open{display:flex;}
+.share-menu-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;font-size:0.72rem;color:var(--text);text-decoration:none;cursor:pointer;background:none;border:none;width:100%;text-align:left;transition:background 0.12s;}
+.share-menu-item:hover{background:var(--bg3);}
 
 /* ── RESPONSIVE ── */
 .desktop-only{display:inline;}
@@ -341,11 +345,7 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 <!-- BANNIÈRE INITIALISATION CACHE -->
 <div class="init-banner" id="init-banner">
   <div class="init-spinner"></div>
-  <span id="init-msg">🔍 Analyse en cours — nous scannons 200+ actions mondiales pour vous...</span>
-  <div class="init-progress">
-    <div class="init-bar-wrap"><div class="init-bar-fill" id="init-bar"></div></div>
-    <span class="init-eta" id="init-eta">~25 min</span>
-  </div>
+  <span>⏳ Scanner en cours d'initialisation... Revenez dans quelques minutes ou réessayez !</span>
 </div>
 
 <!-- BANNIÈRE PREMIÈRE VISITE -->
@@ -911,17 +911,18 @@ const BAR_KEYS   = ['Bloc valuation','Bloc rentabilité','Bloc santé','Bloc cro
 const BAR_COLORS = ['#2563EB','#16A34A','#9333EA','#EA580C','#DB2777'];
 
 const DEFAULT_SECTORS = [
-  'Tech US','Finance US','Santé US','Energie US','Conso US','Industriels US',
+  'Tech US','Finance US','Santé US','Energie US','Conso US','Industriels US','REITs US',
   'Tech Europe','Finance Europe','Santé Europe','Energie Europe','Conso Europe','Industriels Europe',
-  'Tech Asie','Finance Asie','Energie Asie'
+  'Tech Asie','Finance Asie','Energie Asie',
+  'Tech Japon','Industriels Japon','Tech Inde'
 ];
 
 const PROFILES = {
   defensive:{ minScore:40, minConf:70, topN:15,
-    sectors:['Finance US','Santé US','Conso US','Energie US','Finance Europe','Santé Europe','Energie Europe','Conso Europe'] },
+    sectors:['Finance US','Santé US','Conso US','Energie US','Finance Europe','Santé Europe','Energie Europe','Conso Europe','REITs US','Industriels Japon'] },
   balanced:{ minScore:35, minConf:50, topN:15, sectors:null },
   growth:{ minScore:30, minConf:50, topN:20,
-    sectors:['Tech US','Industriels US','Tech Europe','Industriels Europe','Tech Asie'] },
+    sectors:['Tech US','Industriels US','Tech Europe','Industriels Europe','Tech Asie','Tech Japon','Tech Inde'] },
 };
 
 // Avatars colorés avec initiales
@@ -1107,9 +1108,11 @@ function selectTicker(s){document.getElementById('ticker-input').value=s;documen
 document.addEventListener('click',e=>{if(!e.target.closest('.nav-search-wrap'))document.getElementById('autocomplete').classList.remove('open');});
 
 // ── SEARCH ────────────────────────────────────────────────
-async function searchTicker() {
-  const ticker = document.getElementById('ticker-input').value.trim().toUpperCase();
+async function searchTicker(forceTicker) {
+  const input = document.getElementById('ticker-input');
+  const ticker = forceTicker ? forceTicker.toUpperCase() : input.value.trim().toUpperCase();
   if (!ticker) return;
+  if(input) input.value = ticker;
   document.getElementById('autocomplete').classList.remove('open');
   if(typeof gtag !== 'undefined') gtag('event','ticker_searched',{ticker:ticker});
   const area = document.getElementById('results-area');
@@ -1148,42 +1151,6 @@ async function startScan() {
     const data=await res.json();
     const totalAnalysed = data.total || data.results.length;
     const initB = document.getElementById('init-banner');
-    // Animer la barre de progression pendant l'initialisation
-    if(initB && initB.classList.contains('visible')){
-      let elapsed = 0;
-      const total = 25 * 60; // 25 minutes en secondes
-      const bar = document.getElementById('init-bar');
-      const eta = document.getElementById('init-eta');
-      const msgs = [
-        '🔍 Analyse en cours — nous scannons 200+ actions mondiales...',
-        '📊 Calcul des scores fondamentaux en cours...',
-        '🌍 Analyse des marchés US, Europe et Asie...',
-        '💹 Presque prêt — dernières actions en cours...',
-      ];
-      const initTimer = setInterval(()=>{
-        elapsed++;
-        const pct = Math.min((elapsed/total)*100, 95);
-        if(bar) bar.style.width = pct + '%';
-        const remaining = Math.max(total - elapsed, 10);
-        const mins = Math.floor(remaining/60);
-        const secs = remaining % 60;
-        if(eta) eta.textContent = mins > 0 ? '~'+mins+' min' : secs+'s';
-        const msgEl = document.getElementById('init-msg');
-        if(msgEl) msgEl.textContent = msgs[Math.min(Math.floor(elapsed/(total/msgs.length)), msgs.length-1)];
-        // Vérifier si le cache est prêt
-        if(elapsed % 30 === 0){
-          fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sectors:[],min_score:20,top_n:5})})
-            .then(r=>r.json()).then(d=>{
-              if(d.results && d.results.length > 0){
-                clearInterval(initTimer);
-                if(bar) bar.style.width = '100%';
-                if(eta) eta.textContent = '✓ Prêt !';
-                setTimeout(()=>{ initB.classList.remove('visible'); }, 1000);
-              }
-            }).catch(()=>{});
-        }
-      }, 1000);
-    }
     if (data.results && data.results.length > 0) {
       if (initB) initB.classList.remove('visible');
     } else {
@@ -1248,10 +1215,18 @@ function renderCard(r, rank, sectorAvgs) {
   const score=r.Score||0;
   const conf=r['Confiance %']||0;
   const tags=(r.Tags||'').split(',').filter(t=>t.trim()).map(t=>`<span class="tag">${t.trim()}</span>`).join('');
+  const BAR_ICONS = ['📊','💰','🛡️','📈','💎'];
   const bars=BAR_LABELS.map((lbl,i)=>{
     const val=r[BAR_KEYS[i]]||0;
     const w=Math.min(Math.round(val),100);
-    return `<div class="bar-row"><div class="bar-lbl">${lbl}</div><div class="bar-track"><div class="bar-fill" style="background:${BAR_COLORS[i]};width:${w}%"></div></div><div class="bar-val">${val.toFixed(0)}</div></div>`;
+    const isEmpty = val===0;
+    let barColor,badgeBg,badgeColor;
+    if(isEmpty){ barColor='var(--bg4)';badgeBg='var(--bg3)';badgeColor='var(--muted)'; }
+    else if(w>=70){ barColor=BAR_COLORS[i];badgeBg=BAR_COLORS[i]+'22';badgeColor=BAR_COLORS[i]; }
+    else if(w>=40){ barColor=BAR_COLORS[i]+'BB';badgeBg='var(--bg3)';badgeColor='var(--muted2)'; }
+    else { barColor='#94a3b8';badgeBg='var(--bg3)';badgeColor='var(--muted)'; }
+    const displayVal = isEmpty ? '—' : val.toFixed(0);
+    return `<div class="bar-row"><div class="bar-lbl"><span class="bar-lbl-icon">${BAR_ICONS[i]}</span>${lbl}</div><div class="bar-track"><div class="bar-fill" data-w="${isEmpty?0:w}" style="background:${barColor};width:0%"></div></div><div class="bar-badge" style="background:${badgeBg};color:${badgeColor}">${displayVal}</div></div>`;
   }).join('');
   const metrics=[
     {l:'Prix',v:`${r.Prix||'—'} ${r.Devise||''}`},
@@ -1316,16 +1291,92 @@ function renderCard(r, rank, sectorAvgs) {
       <div class="metrics-grid">${metrics}</div>
       <div class="score-bars-label">Détail du score</div>
       <div class="score-bars">${bars}</div>
+      <div style="display:flex;gap:12px;margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid var(--border);align-items:center;">
+        <a href="https://finance.yahoo.com/quote/${r.Ticker}" target="_blank" rel="noopener" style="font-size:0.68rem;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.15s;" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted2)'">↗ Yahoo Finance</a>
+        <a href="https://www.google.com/finance/quote/${r.Ticker}" target="_blank" rel="noopener" style="font-size:0.68rem;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.15s;" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted2)'">↗ Google Finance</a>
+        <div class="share-btn" onclick="toggleShareMenu('${r.Ticker}',event)" title="Partager">
+          🔗 Partager
+          <div class="share-menu" id="share-menu-${r.Ticker}">
+            <button class="share-menu-item" onclick="shareVia('whatsapp','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)"><span>💬</span> WhatsApp</button>
+            <button class="share-menu-item" onclick="shareVia('twitter','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)"><span>🐦</span> Twitter / X</button>
+            <button class="share-menu-item" onclick="shareVia('linkedin','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)"><span>💼</span> LinkedIn</button>
+            <button class="share-menu-item" onclick="shareVia('copy','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)"><span>📋</span> Copier</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>`;
+}
+
+function animateBars(card){
+  const fills = card.querySelectorAll('.bar-fill');
+  fills.forEach((el,i)=>{
+    const target = el.getAttribute('data-w')||'0';
+    el.style.width='0%';
+    setTimeout(()=>{ el.style.width=target+'%'; }, 60 + i*70);
+  });
 }
 
 function toggleCard(rank) {
   const card=document.getElementById('card-'+rank);
   const wasOpen = card.classList.contains('open');
   card.classList.toggle('open');
-  if(!wasOpen && typeof gtag !== 'undefined') gtag('event','card_opened',{rank:rank});
+  if(!wasOpen){
+    if(typeof gtag !== 'undefined') gtag('event','card_opened',{rank:rank});
+    setTimeout(()=>{
+      animateBars(card);
+      card.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 120);
+  }
 }
+
+function toggleShareMenu(ticker, e){
+  e.stopPropagation();
+  document.querySelectorAll('.share-menu.open').forEach(m => {
+    if(m.id !== 'share-menu-'+ticker) m.classList.remove('open');
+  });
+  const menu = document.getElementById('share-menu-'+ticker);
+  if(menu) menu.classList.toggle('open');
+}
+
+document.addEventListener('click', ()=>{
+  document.querySelectorAll('.share-menu.open').forEach(m => m.classList.remove('open'));
+});
+
+function shareVia(platform, ticker, name, score, tags, e){
+  e.stopPropagation();
+  const url = window.location.origin + '/?q=' + encodeURIComponent(ticker);
+  const msg = '🔎 ' + ticker + ' — ' + name + '\n'
+    + '📊 Score SmartValue : ' + score + '/100\n'
+    + '🏷️ ' + tags + '\n'
+    + '\n👉 Voir l\'analyse complète : ' + url
+    + '\n\n_Analysé par SmartValue — Scanner d\'actions fondamental_';
+  let link = '';
+  if(platform === 'whatsapp') link = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  else if(platform === 'twitter'){
+    const tweet = '🔎 ' + ticker + ' — Score ' + score + '/100 sur SmartValue\n' + tags + '\n👉 ' + url;
+    link = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
+  } else if(platform === 'linkedin') link = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url);
+  else if(platform === 'copy'){
+    navigator.clipboard.writeText(msg).then(()=>showToast('📋 Récapitulatif copié !')).catch(()=>{
+      const inp=document.createElement('textarea');inp.value=msg;document.body.appendChild(inp);inp.select();document.execCommand('copy');document.body.removeChild(inp);showToast('📋 Récapitulatif copié !');
+    });
+    document.getElementById('share-menu-'+ticker)?.classList.remove('open');
+    if(typeof gtag !== 'undefined') gtag('event','share_action',{ticker:ticker,platform:'copy'});
+    return;
+  }
+  if(link){ window.open(link,'_blank','noopener'); document.getElementById('share-menu-'+ticker)?.classList.remove('open'); if(typeof gtag !== 'undefined') gtag('event','share_action',{ticker:ticker,platform:platform}); }
+}
+
+// Gestion URL ?q=TICKER
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get('q');
+  if(q){
+    document.title = q.toUpperCase() + ' — SmartValue';
+    window.addEventListener('load', ()=>{ setTimeout(()=>{ searchTicker(q.toUpperCase()); }, 400); });
+  }
+})();
 
 function renderEmpty() {
   document.getElementById('results-area').innerHTML=`<div class="empty"><div class="empty-icon">◎</div><div class="empty-title">Lancez un scan pour voir les opportunités</div><div class="empty-sub">Choisissez votre profil, sélectionnez vos secteurs et cliquez sur Lancer le scan.</div></div>`;
