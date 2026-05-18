@@ -79,7 +79,7 @@ DEFAULT_UNIVERSE: Dict[str, List[str]] = {
         "CABK.MC", "SAB.MC",
     ],
     "Santé Europe": [
-        "ROG.SW", "NOVN.SW", "NESN.SW", "AZN.L", "GSK.L",
+        "NOVN.SW", "NESN.SW", "AZN.L", "GSK.L",
         "BAYN.DE", "SAN.PA", "UCB.BR", "ARGX.BR", "EL.PA", "LONN.SW",
         "FRE.DE", "CON.DE", "GIVN.SW", "STMN.SW",
     ],
