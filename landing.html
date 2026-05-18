@@ -23,10 +23,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;ove
 nav{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;padding:1rem 2.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(242,244,247,0.96);backdrop-filter:blur(12px);z-index:100;}
 .nav-logo{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-0.02em;text-decoration:none;color:var(--text);}
 .nav-logo span{color:var(--blue);}
-.nav-links{display:flex;align-items:center;gap:1.5rem;}
-.nav-link{font-size:0.82rem;color:var(--muted2);text-decoration:none;transition:color 0.15s;white-space:nowrap;}
-.nav-link:hover{color:var(--text);}
-.btn-nav{background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 1.25rem;text-decoration:none;border-radius:5px;transition:opacity 0.15s;white-space:nowrap;flex-shrink:0;}
+.nav-links{display:flex;align-items:center;gap:0.5rem;}
+.nav-link{font-size:0.78rem;color:var(--muted2);text-decoration:none;transition:all 0.15s;white-space:nowrap;padding:0.45rem 1rem;border-radius:20px;border:1px solid transparent;font-weight:500;}
+.nav-link:hover{color:var(--text);background:var(--bg3);border-color:var(--border2);}
+.nav-link.active{color:var(--blue);background:#EFF6FF;border-color:#BFDBFE;}
+.btn-nav{background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.5rem 1.25rem;text-decoration:none;border-radius:20px;transition:opacity 0.15s;white-space:nowrap;flex-shrink:0;}
 .btn-nav:hover{opacity:0.85;}
 
 /* ── HERO ── */
@@ -180,8 +181,8 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;jus
 
 <!-- STATS -->
 <div class="stats">
-  <div class="stat"><div class="stat-n">100+</div><div class="stat-l">Actions analysables</div></div>
-  <div class="stat"><div class="stat-n">15+</div><div class="stat-l">Marchés couverts</div></div>
+  <div class="stat"><div class="stat-n">200+</div><div class="stat-l">Actions analysées</div></div>
+  <div class="stat"><div class="stat-n">19</div><div class="stat-l">Secteurs couverts</div></div>
   <div class="stat"><div class="stat-n">5</div><div class="stat-l">Blocs de scoring</div></div>
   <div class="stat"><div class="stat-n">0€</div><div class="stat-l">Pour commencer</div></div>
 </div>
@@ -265,7 +266,7 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;jus
             <div class="pc-ticker">TSM <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Taiwan Semiconductor</span></div>
             <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">SÛR</span><span class="pc-tag">CROISSANCE</span></div>
           </div>
-          <div><div class="pc-score">74.8</div><div class="pc-conf">88.8%</div></div>
+          <div><div class="pc-score">80.6</div><div class="pc-conf">88.8%</div></div>
         </div>
         <div class="pc">
           <div class="pc-avatar" style="background:#1E2330;">ME</div>
@@ -273,15 +274,15 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;jus
             <div class="pc-ticker">META <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Meta Platforms</span></div>
             <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">CROISSANCE</span></div>
           </div>
-          <div><div class="pc-score">69.6</div><div class="pc-conf">92%</div></div>
+          <div><div class="pc-score">72.6</div><div class="pc-conf">92%</div></div>
         </div>
         <div class="pc">
-          <div class="pc-avatar" style="background:#6B7080;">AD</div>
+          <div class="pc-avatar" style="background:#34A853;">GO</div>
           <div>
-            <div class="pc-ticker">ADBE <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Adobe Inc.</span></div>
-            <div class="pc-tags"><span class="pc-tag">VALUE</span><span class="pc-tag">QUALITÉ</span></div>
+            <div class="pc-ticker">GOOGL <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Alphabet Inc.</span></div>
+            <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">CROISSANCE</span></div>
           </div>
-          <div><div class="pc-score">69.0</div><div class="pc-conf">92%</div></div>
+          <div><div class="pc-score">71.9</div><div class="pc-conf">91%</div></div>
         </div>
       </div>
     </div>
@@ -336,13 +337,13 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;jus
 
 <!-- WAITLIST -->
 <section class="waitlist">
-  <h2>Nouvelles fonctionnalités<br>en cours de développement.</h2>
-  <p>Alertes personnalisées, données premium, historique des scans — soyez notifié en premier.</p>
+  <h2>Chaque lundi, les 5 meilleures<br>opportunités du scanner.</h2>
+  <p>Recevez directement dans votre boîte mail les actions les mieux scorées de la semaine — avec leur score, leurs points forts et le lien vers l'analyse complète.</p>
   <div class="waitlist-form">
     <input class="waitlist-input" id="email-input" type="email" placeholder="votre@email.com">
     <button class="btn-waitlist" onclick="submitWaitlist()">M'inscrire →</button>
   </div>
-  <div class="waitlist-success" id="waitlist-success">✓ Vous êtes sur la liste — on vous contacte en premier !</div>
+  <div class="waitlist-success" id="waitlist-success">✓ Inscription confirmée — votre premier Top 5 arrive lundi !</div>
   <p class="waitlist-note">Aucun spam. Désabonnement en 1 clic.</p>
 </section>
 
