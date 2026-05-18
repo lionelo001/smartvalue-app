@@ -44,6 +44,18 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--bg4);}
 
+/* ── FAB MENU FLOTTANT ── */
+.fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:500;}
+.fab-btn{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 4px 16px rgba(0,0,0,0.2);transition:transform 0.2s,box-shadow 0.2s;}
+.fab-btn:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(0,0,0,0.25);}
+.fab-btn.open{background:var(--blue);}
+.fab-items{position:absolute;bottom:58px;right:0;display:flex;flex-direction:column;gap:8px;align-items:flex-end;opacity:0;pointer-events:none;transform:translateY(10px);transition:all 0.2s;}
+.fab-items.open{opacity:1;pointer-events:all;transform:translateY(0);}
+.fab-item{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:0.5rem 1rem 0.5rem 0.75rem;font-size:0.78rem;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.08);transition:all 0.15s;font-family:'Syne',sans-serif;}
+.fab-item:hover{background:var(--bg3);border-color:var(--border2);transform:translateX(-2px);}
+.fab-item.active{background:#EFF6FF;border-color:#BFDBFE;color:var(--blue);}
+.fab-item-icon{font-size:1rem;}
+
 /* ── NAV ── */
 nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:0.85rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(242,244,247,0.96);backdrop-filter:blur(12px);z-index:100;}
 .nav-logo{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-0.02em;text-decoration:none;color:var(--text);flex-shrink:0;}
@@ -629,8 +641,8 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 
 <!-- STATS -->
 <div class="stats">
-  <div class="stat"><div class="stat-n">100+</div><div class="stat-l">Actions analysables</div></div>
-  <div class="stat"><div class="stat-n">15+</div><div class="stat-l">Marchés couverts</div></div>
+  <div class="stat"><div class="stat-n">200+</div><div class="stat-l">Actions analysées</div></div>
+  <div class="stat"><div class="stat-n">19</div><div class="stat-l">Secteurs couverts</div></div>
   <div class="stat"><div class="stat-n">5</div><div class="stat-l">Blocs de scoring</div></div>
   <div class="stat"><div class="stat-n">0€</div><div class="stat-l">Pour commencer</div></div>
 </div>
@@ -714,7 +726,7 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
             <div class="pc-ticker">TSM <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Taiwan Semiconductor</span></div>
             <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">SÛR</span><span class="pc-tag">CROISSANCE</span></div>
           </div>
-          <div><div class="pc-score">74.8</div><div class="pc-conf">88.8%</div></div>
+          <div><div class="pc-score">80.6</div><div class="pc-conf">88.8%</div></div>
         </div>
         <div class="pc">
           <div class="pc-avatar" style="background:#1E2330;">ME</div>
@@ -722,15 +734,15 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
             <div class="pc-ticker">META <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Meta Platforms</span></div>
             <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">CROISSANCE</span></div>
           </div>
-          <div><div class="pc-score">69.6</div><div class="pc-conf">92%</div></div>
+          <div><div class="pc-score">72.6</div><div class="pc-conf">92%</div></div>
         </div>
         <div class="pc">
-          <div class="pc-avatar" style="background:#6B7080;">AD</div>
+          <div class="pc-avatar" style="background:#34A853;">GO</div>
           <div>
-            <div class="pc-ticker">ADBE <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Adobe Inc.</span></div>
-            <div class="pc-tags"><span class="pc-tag">VALUE</span><span class="pc-tag">QUALITÉ</span></div>
+            <div class="pc-ticker">GOOGL <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Alphabet Inc.</span></div>
+            <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">CROISSANCE</span></div>
           </div>
-          <div><div class="pc-score">69.0</div><div class="pc-conf">92%</div></div>
+          <div><div class="pc-score">71.9</div><div class="pc-conf">91%</div></div>
         </div>
       </div>
     </div>
@@ -785,13 +797,13 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 
 <!-- WAITLIST -->
 <section class="waitlist">
-  <h2>Nouvelles fonctionnalités<br>en cours de développement.</h2>
-  <p>Alertes personnalisées, données premium, historique des scans — soyez notifié en premier.</p>
+  <h2>Chaque lundi, les 5 meilleures<br>opportunités du scanner.</h2>
+  <p>Recevez directement dans votre boîte mail les actions les mieux scorées de la semaine — avec leur score, leurs points forts et le lien vers l'analyse complète.</p>
   <div class="waitlist-form">
     <input class="waitlist-input" id="email-input" type="email" placeholder="votre@email.com">
     <button class="btn-waitlist" onclick="submitWaitlist()">M'inscrire →</button>
   </div>
-  <div class="waitlist-success" id="waitlist-success">✓ Vous êtes sur la liste — on vous contacte en premier !</div>
+  <div class="waitlist-success" id="waitlist-success">✓ Inscription confirmée — votre premier Top 5 arrive lundi !</div>
   <p class="waitlist-note">Aucun spam. Désabonnement en 1 clic.</p>
 </section>
 
@@ -1708,6 +1720,75 @@ function setDivFilter(val) {
     document.getElementById('div-btn-' + v).classList.toggle('active', v === val);
   });
 }
+</script>
+
+<!-- FAB MENU FLOTTANT -->
+<div class="fab" id="fab">
+  <div class="fab-items" id="fab-items">
+    <button class="fab-item" id="fab-scanner" onclick="fabGo('scanner')">
+      <span class="fab-item-icon">📊</span> Scanner
+    </button>
+    <button class="fab-item" id="fab-newsletter" onclick="fabNewsletter()">
+      <span class="fab-item-icon">📬</span> Top hebdo
+    </button>
+    <button class="fab-item" onclick="fabShare()">
+      <span class="fab-item-icon">🔗</span> Partager SmartValue
+    </button>
+    <button class="fab-item" id="fab-about" onclick="fabGo('about')">
+      <span class="fab-item-icon">ℹ️</span> En savoir plus
+    </button>
+    <button class="fab-item" id="fab-support" onclick="fabGo('support')">
+      <span class="fab-item-icon">💬</span> Support
+    </button>
+  </div>
+  <button class="fab-btn" id="fab-btn" onclick="toggleFab()">☰</button>
+</div>
+
+<script>
+function toggleFab(){
+  const btn = document.getElementById('fab-btn');
+  const items = document.getElementById('fab-items');
+  btn.classList.toggle('open');
+  items.classList.toggle('open');
+}
+document.addEventListener('click', function(e){
+  const fab = document.getElementById('fab');
+  if(fab && !fab.contains(e.target)){
+    document.getElementById('fab-btn').classList.remove('open');
+    document.getElementById('fab-items').classList.remove('open');
+  }
+});
+function fabGo(tab){
+  switchTab(tab);
+  document.getElementById('fab-btn').classList.remove('open');
+  document.getElementById('fab-items').classList.remove('open');
+  // Mettre à jour le style actif
+  document.querySelectorAll('.fab-item[id^="fab-"]').forEach(el=>el.classList.remove('active'));
+  const el = document.getElementById('fab-'+tab);
+  if(el) el.classList.add('active');
+}
+function fabNewsletter(){
+  switchTab('about');
+  document.getElementById('fab-btn').classList.remove('open');
+  document.getElementById('fab-items').classList.remove('open');
+  setTimeout(()=>{
+    const wl = document.querySelector('#tab-about-content .waitlist-input');
+    if(wl){ wl.scrollIntoView({behavior:'smooth',block:'center'}); wl.focus(); }
+  }, 300);
+}
+function fabShare(){
+  const url = 'https://smartvaluescanner.com';
+  const msg = '🔎 SmartValue — Scanner d'actions fondamental gratuit\nAnalysez 200+ entreprises mondiales avec un score clair sur 100.\n👉 ' + url;
+  if(navigator.share){
+    navigator.share({title:'SmartValue Scanner',text:msg,url:url}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(msg).then(()=>showToast('🔗 Lien SmartValue copié !')).catch(()=>{});
+  }
+  document.getElementById('fab-btn').classList.remove('open');
+  document.getElementById('fab-items').classList.remove('open');
+}
+// Marquer l'onglet actif dans le FAB
+const _origSwitchTab = typeof switchTab === 'function' ? switchTab : null;
 </script>
 </body>
 </html>
