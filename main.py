@@ -52,17 +52,8 @@ def cache_scheduler():
 # Lancer le cache au démarrage
 @app.on_event("startup")
 def startup_event():
-    # Cache scheduler
     thread = threading.Thread(target=cache_scheduler, daemon=True)
     thread.start()
-    # Newsletter scheduler
-    try:
-        from newsletter import run_scheduler
-        nl_thread = threading.Thread(target=run_scheduler, daemon=True)
-        nl_thread.start()
-        print("[Newsletter] Scheduler démarré")
-    except Exception as e:
-        print(f"[Newsletter] Erreur démarrage : {e}")
     print("[Cache] Scheduler démarré")
 
 from fastapi import Request
@@ -189,7 +180,7 @@ def root():
 <title>SmartValue — Scanner d'actions fondamental</title>
 </head>
 <body>
-<script>window.location.href='/app';</script>
+<script>window.location.href='/app'+window.location.search;</script>
 </body>
 </html>"""
     from fastapi.responses import HTMLResponse
@@ -237,17 +228,6 @@ Allow: /
 User-agent: Twitterbot
 Allow: /
 """)
-
-@app.get("/api/newsletter-test-sv2026")
-def test_newsletter():
-    """Endpoint secret pour tester l envoi newsletter."""
-    try:
-        from newsletter import send_newsletter
-        success = send_newsletter()
-        return {"success": success, "message": "Newsletter envoyée !" if success else "Erreur — voir les logs"}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
-
 
 @app.get("/api/debug/{ticker}")
 def debug_ticker(ticker: str):
