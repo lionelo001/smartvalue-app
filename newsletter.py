@@ -14,7 +14,7 @@ BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
 BREVO_LIST_ID = 2
 SCANNER_URL = "https://smartvaluescanner.com"
 CACHE_FILE = "cache.json"
-SENDER_EMAIL = "newsletter@smartvaluescanner.com"
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "newsletter@smartvaluescanner.com")
 SENDER_NAME = "SmartValue Scanner"
 
 
@@ -284,43 +284,41 @@ def get_brevo_contacts() -> list:
 
 
 def send_campaign(html: str, subject: str) -> bool:
-    """Envoie la newsletter via Brevo campaign."""
-    payload = {
-        "name": f"Top 5 SmartValue — {datetime.now().strftime('%d/%m/%Y')}",
-        "subject": subject,
-        "sender": {"name": SENDER_NAME, "email": SENDER_EMAIL},
-        "type": "classic",
-        "htmlContent": html,
-        "recipients": {"listIds": [BREVO_LIST_ID]},
-        # scheduledAt omis = envoi immédiat
-    }
+    """Envoie la newsletter via API transactionnelle Brevo (un email par contact)."""
+    contacts = get_brevo_contacts()
+    if not contacts:
+        print("[Newsletter] Aucun contact dans la liste")
+        return False
 
-    r = requests.post(
-        "https://api.brevo.com/v3/emailCampaigns",
-        headers={"api-key": BREVO_API_KEY, "Content-Type": "application/json"},
-        json=payload,
-        timeout=15
-    )
+    print(f"[Newsletter] Envoi à {len(contacts)} contacts...")
+    success_count = 0
 
-    if r.status_code in [200, 201]:
-        campaign_id = r.json().get("id")
-        print(f"[Newsletter] Campagne créée (ID: {campaign_id})")
+    for contact in contacts:
+        email = contact.get("email")
+        if not email:
+            continue
 
-        # Envoyer immédiatement
-        r2 = requests.post(
-            f"https://api.brevo.com/v3/emailCampaigns/{campaign_id}/sendNow",
-            headers={"api-key": BREVO_API_KEY},
+        payload = {
+            "sender": {"name": SENDER_NAME, "email": SENDER_EMAIL},
+            "to": [{"email": email}],
+            "subject": subject,
+            "htmlContent": html,
+        }
+
+        r = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={"api-key": BREVO_API_KEY, "Content-Type": "application/json"},
+            json=payload,
             timeout=10
         )
-        if r2.status_code == 204:
-            print("[Newsletter] ✅ Envoyée avec succès !")
-            return True
+
+        if r.status_code in [200, 201]:
+            success_count += 1
         else:
-            print(f"[Newsletter] Erreur envoi : {r2.status_code} — {r2.text}")
-            return False
-    else:
-        print(f"[Newsletter] Erreur création campagne : {r.status_code} — {r.text}")
-        return False
+            print(f"[Newsletter] Erreur envoi à {email} : {r.status_code} — {r.text[:100]}")
+
+    print(f"[Newsletter] ✅ {success_count}/{len(contacts)} emails envoyés !")
+    return success_count > 0
 
 
 # =========================
