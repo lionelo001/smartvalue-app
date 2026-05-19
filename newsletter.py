@@ -23,13 +23,25 @@ SENDER_NAME = "SmartValue Scanner"
 # =========================
 
 def load_results() -> list:
-    """Charge les résultats depuis le cache disque."""
+    """Charge les résultats — depuis le cache mémoire ou disque."""
+    # Essayer d'abord le cache mémoire via import
+    try:
+        from main import _cache
+        if _cache.get("results"):
+            print(f"[Newsletter] Cache mémoire : {len(_cache['results'])} résultats")
+            return _cache["results"]
+    except Exception as e:
+        print(f"[Newsletter] Cache mémoire indisponible : {e}")
+
+    # Fallback sur disque
     if not os.path.exists(CACHE_FILE):
         print("[Newsletter] Pas de cache disque trouvé")
         return []
     with open(CACHE_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
-    return data.get("results", [])
+    results = data.get("results", [])
+    print(f"[Newsletter] Cache disque : {len(results)} résultats")
+    return results
 
 
 def get_top5(results: list) -> list:
