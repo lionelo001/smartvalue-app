@@ -292,7 +292,7 @@ def send_campaign(html: str, subject: str) -> bool:
         "type": "classic",
         "htmlContent": html,
         "recipients": {"listIds": [BREVO_LIST_ID]},
-        "scheduledAt": None,  # Envoi immédiat
+        # scheduledAt omis = envoi immédiat
     }
 
     r = requests.post(
