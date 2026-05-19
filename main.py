@@ -238,6 +238,17 @@ User-agent: Twitterbot
 Allow: /
 """)
 
+@app.get("/api/newsletter-test-sv2026")
+def test_newsletter():
+    """Endpoint secret pour tester l envoi newsletter."""
+    try:
+        from newsletter import send_newsletter
+        success = send_newsletter()
+        return {"success": success, "message": "Newsletter envoyée !" if success else "Erreur — voir les logs"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 @app.get("/api/debug/{ticker}")
 def debug_ticker(ticker: str):
     """Endpoint temporaire pour débugger les données yfinance"""
