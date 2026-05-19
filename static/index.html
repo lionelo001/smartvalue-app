@@ -44,7 +44,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--bg4);}
 
-/* ── FAB MENU FLOTTANT ── */
+/* FAB MENU FLOTTANT */
 .fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;}
 .fab-btn{width:48px;height:48px;border-radius:50%;background:var(--blue);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 4px 16px rgba(37,99,235,0.35);transition:transform 0.2s,box-shadow 0.2s;}
 .fab-btn:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(37,99,235,0.45);}
@@ -726,7 +726,7 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
             <div class="pc-ticker">TSM <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Taiwan Semiconductor</span></div>
             <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">SÛR</span><span class="pc-tag">CROISSANCE</span></div>
           </div>
-          <div><div class="pc-score">80.6</div><div class="pc-conf">88.8%</div></div>
+          <div><div class="pc-score">74.8</div><div class="pc-conf">88.8%</div></div>
         </div>
         <div class="pc">
           <div class="pc-avatar" style="background:#1E2330;">ME</div>
@@ -734,15 +734,15 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
             <div class="pc-ticker">META <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Meta Platforms</span></div>
             <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">CROISSANCE</span></div>
           </div>
-          <div><div class="pc-score">72.6</div><div class="pc-conf">92%</div></div>
+          <div><div class="pc-score">69.6</div><div class="pc-conf">92%</div></div>
         </div>
         <div class="pc">
-          <div class="pc-avatar" style="background:#34A853;">GO</div>
+          <div class="pc-avatar" style="background:#6B7080;">AD</div>
           <div>
-            <div class="pc-ticker">GOOGL <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Alphabet Inc.</span></div>
-            <div class="pc-tags"><span class="pc-tag">QUALITÉ</span><span class="pc-tag">CROISSANCE</span></div>
+            <div class="pc-ticker">ADBE <span style="font-weight:400;font-size:0.72rem;color:var(--muted2);">— Adobe Inc.</span></div>
+            <div class="pc-tags"><span class="pc-tag">VALUE</span><span class="pc-tag">QUALITÉ</span></div>
           </div>
-          <div><div class="pc-score">71.9</div><div class="pc-conf">91%</div></div>
+          <div><div class="pc-score">69.0</div><div class="pc-conf">92%</div></div>
         </div>
       </div>
     </div>
@@ -798,7 +798,7 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 <!-- WAITLIST -->
 <section class="waitlist">
   <h2>Chaque lundi, les 5 meilleures<br>opportunités du scanner.</h2>
-  <p>Recevez directement dans votre boîte mail les actions les mieux scorées de la semaine — avec leur score, leurs points forts et le lien vers l'analyse complète.</p>
+  <p>Recevez directement dans votre boîte mail les actions les mieux scorées de la semaine.</p>
   <div class="waitlist-form">
     <input class="waitlist-input" id="email-input" type="email" placeholder="votre@email.com">
     <button class="btn-waitlist" onclick="submitWaitlist()">M'inscrire →</button>
@@ -1121,10 +1121,10 @@ document.addEventListener('click',e=>{if(!e.target.closest('.nav-search-wrap'))d
 
 // ── SEARCH ────────────────────────────────────────────────
 async function searchTicker(forceTicker) {
-  const input = document.getElementById('ticker-input');
-  const ticker = forceTicker ? forceTicker.toUpperCase() : input.value.trim().toUpperCase();
-  if (!ticker) return;
-  if(input) input.value = ticker;
+  const input=document.getElementById('ticker-input');
+  const ticker=forceTicker?forceTicker.toUpperCase():input.value.trim().toUpperCase();
+  if(!ticker) return;
+  if(input) input.value=ticker;
   document.getElementById('autocomplete').classList.remove('open');
   if(typeof gtag !== 'undefined') gtag('event','ticker_searched',{ticker:ticker});
   const area = document.getElementById('results-area');
@@ -1137,7 +1137,8 @@ async function searchTicker(forceTicker) {
     setTimeout(loadLogos, 50);
     // Scroll automatique vers le résultat
     setTimeout(() => {
-      document.getElementById('results-area').scrollIntoView({behavior:'smooth', block:'start'});
+      document.title=ticker.toUpperCase()+' - SmartValue';
+  document.getElementById('results-area').scrollIntoView({behavior:'smooth', block:'start'});
     }, 100);
   } catch(e){showToast('Erreur lors de la recherche');renderEmpty();}
 }
@@ -1304,15 +1305,15 @@ function renderCard(r, rank, sectorAvgs) {
       <div class="score-bars-label">Détail du score</div>
       <div class="score-bars">${bars}</div>
       <div style="display:flex;gap:12px;margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid var(--border);align-items:center;">
-        <a href="https://finance.yahoo.com/quote/${r.Ticker}" target="_blank" rel="noopener" style="font-size:0.68rem;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.15s;" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted2)'">↗ Yahoo Finance</a>
-        <a href="https://www.google.com/finance/quote/${r.Ticker}" target="_blank" rel="noopener" style="font-size:0.68rem;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.15s;" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted2)'">↗ Google Finance</a>
-        <div class="share-btn" onclick="toggleShareMenu('${r.Ticker}',event)" title="Partager">
-          🔗 Partager
+        <a href="https://finance.yahoo.com/quote/${r.Ticker}" target="_blank" rel="noopener" style="font-size:0.68rem;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:4px;" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted2)'">&#x2197; Yahoo Finance</a>
+        <a href="https://www.google.com/finance/quote/${r.Ticker}" target="_blank" rel="noopener" style="font-size:0.68rem;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:4px;" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted2)'">&#x2197; Google Finance</a>
+        <div class="share-btn" onclick="toggleShareMenu('${r.Ticker}',event)">
+          &#x1F517; Partager
           <div class="share-menu" id="share-menu-${r.Ticker}">
-            <button class="share-menu-item" onclick="shareVia('whatsapp','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)"><span>💬</span> WhatsApp</button>
-            <button class="share-menu-item" onclick="shareVia('twitter','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)"><span>🐦</span> Twitter / X</button>
-            <button class="share-menu-item" onclick="shareVia('linkedin','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)"><span>💼</span> LinkedIn</button>
-            <button class="share-menu-item" onclick="shareVia('copy','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)"><span>📋</span> Copier</button>
+            <button class="share-menu-item" onclick="shareVia('whatsapp','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)">&#x1F4AC; WhatsApp</button>
+            <button class="share-menu-item" onclick="shareVia('twitter','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)">&#x1F426; Twitter / X</button>
+            <button class="share-menu-item" onclick="shareVia('linkedin','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)">&#x1F4BC; LinkedIn</button>
+            <button class="share-menu-item" onclick="shareVia('copy','${r.Ticker}','${r.Société}',${score},'${(r.Tags||"").replace(/'/g,"")}',event)">&#x1F4CB; Copier</button>
           </div>
         </div>
       </div>
@@ -1321,73 +1322,41 @@ function renderCard(r, rank, sectorAvgs) {
 }
 
 function animateBars(card){
-  const fills = card.querySelectorAll('.bar-fill');
-  fills.forEach((el,i)=>{
-    const target = el.getAttribute('data-w')||'0';
-    el.style.width='0%';
-    setTimeout(()=>{ el.style.width=target+'%'; }, 60 + i*70);
-  });
+  const fills=card.querySelectorAll('.bar-fill');
+  fills.forEach((el,i)=>{ const t=el.getAttribute('data-w')||'0'; el.style.width='0%'; setTimeout(()=>{ el.style.width=t+'%'; },60+i*70); });
 }
-
-function toggleCard(rank) {
+function toggleCard(rank){
   const card=document.getElementById('card-'+rank);
-  const wasOpen = card.classList.contains('open');
+  const wasOpen=card.classList.contains('open');
   card.classList.toggle('open');
-  if(!wasOpen){
-    if(typeof gtag !== 'undefined') gtag('event','card_opened',{rank:rank});
-    setTimeout(()=>{
-      animateBars(card);
-      card.scrollIntoView({behavior:'smooth', block:'nearest'});
-    }, 120);
-  }
+  if(!wasOpen){ if(typeof gtag!=='undefined') gtag('event','card_opened',{rank:rank}); setTimeout(()=>{ animateBars(card); card.scrollIntoView({behavior:'smooth',block:'nearest'}); },120); }
 }
-
-function toggleShareMenu(ticker, e){
+function toggleShareMenu(ticker,e){
   e.stopPropagation();
-  document.querySelectorAll('.share-menu.open').forEach(m => {
-    if(m.id !== 'share-menu-'+ticker) m.classList.remove('open');
-  });
-  const menu = document.getElementById('share-menu-'+ticker);
+  document.querySelectorAll('.share-menu.open').forEach(m=>{ if(m.id!=='share-menu-'+ticker) m.classList.remove('open'); });
+  const menu=document.getElementById('share-menu-'+ticker);
   if(menu) menu.classList.toggle('open');
 }
-
-document.addEventListener('click', ()=>{
-  document.querySelectorAll('.share-menu.open').forEach(m => m.classList.remove('open'));
-});
-
-function shareVia(platform, ticker, name, score, tags, e){
+document.addEventListener('click',()=>{ document.querySelectorAll('.share-menu.open').forEach(m=>m.classList.remove('open')); });
+function shareVia(platform,ticker,name,score,tags,e){
   e.stopPropagation();
-  const url = window.location.origin + '/?q=' + encodeURIComponent(ticker);
-  const msg = '🔎 ' + ticker + ' — ' + name + '\n'
-    + '📊 Score SmartValue : ' + score + '/100\n'
-    + '🏷️ ' + tags + '\n'
-    + '\n👉 Voir l\'analyse complète : ' + url
-    + '\n\n_Analysé par SmartValue — Scanner d\'actions fondamental_';
-  let link = '';
-  if(platform === 'whatsapp') link = 'https://wa.me/?text=' + encodeURIComponent(msg);
-  else if(platform === 'twitter'){
-    const tweet = '🔎 ' + ticker + ' — Score ' + score + '/100 sur SmartValue\n' + tags + '\n👉 ' + url;
-    link = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
-  } else if(platform === 'linkedin') link = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url);
-  else if(platform === 'copy'){
-    navigator.clipboard.writeText(msg).then(()=>showToast('📋 Récapitulatif copié !')).catch(()=>{
-      const inp=document.createElement('textarea');inp.value=msg;document.body.appendChild(inp);inp.select();document.execCommand('copy');document.body.removeChild(inp);showToast('📋 Récapitulatif copié !');
-    });
+  const url=window.location.origin+'/?q='+encodeURIComponent(ticker);
+  const msg='SmartValue: '+ticker+' - '+name+'\nScore: '+score+'/100\n'+tags+'\nAnalyse: '+url;
+  let link='';
+  if(platform==='whatsapp') link='https://wa.me/?text='+encodeURIComponent(msg);
+  else if(platform==='twitter') link='https://twitter.com/intent/tweet?text='+encodeURIComponent(ticker+' Score '+score+'/100 sur SmartValue '+url);
+  else if(platform==='linkedin') link='https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(url);
+  else if(platform==='copy'){
+    navigator.clipboard.writeText(msg).then(()=>showToast('Copie OK!')).catch(()=>{ const i=document.createElement('textarea');i.value=msg;document.body.appendChild(i);i.select();document.execCommand('copy');document.body.removeChild(i);showToast('Copie OK!'); });
     document.getElementById('share-menu-'+ticker)?.classList.remove('open');
-    if(typeof gtag !== 'undefined') gtag('event','share_action',{ticker:ticker,platform:'copy'});
+    if(typeof gtag!=='undefined') gtag('event','share_action',{ticker:ticker,platform:'copy'});
     return;
   }
-  if(link){ window.open(link,'_blank','noopener'); document.getElementById('share-menu-'+ticker)?.classList.remove('open'); if(typeof gtag !== 'undefined') gtag('event','share_action',{ticker:ticker,platform:platform}); }
+  if(link){ window.open(link,'_blank','noopener'); document.getElementById('share-menu-'+ticker)?.classList.remove('open'); }
 }
-
-// Gestion URL ?q=TICKER
 (function(){
-  const params = new URLSearchParams(window.location.search);
-  const q = params.get('q');
-  if(q){
-    document.title = q.toUpperCase() + ' — SmartValue';
-    window.addEventListener('load', ()=>{ setTimeout(()=>{ searchTicker(q.toUpperCase()); }, 400); });
-  }
+  const q=new URLSearchParams(window.location.search).get('q');
+  if(q){ document.title=q.toUpperCase()+' - SmartValue'; window.addEventListener('load',()=>{ setTimeout(()=>{ searchTicker(q.toUpperCase()); },400); }); }
 })();
 
 function renderEmpty() {
@@ -1722,38 +1691,24 @@ function setDivFilter(val) {
 }
 </script>
 
-<!-- FAB MENU FLOTTANT -->
 <div class="fab" id="fab">
   <div class="fab-items" id="fab-items">
-    <button class="fab-item" id="fab-scanner" onclick="fabGo('scanner')">
-      <span class="fab-item-icon">📊</span> Scanner
-    </button>
-    <button class="fab-item" id="fab-newsletter" onclick="fabNewsletter()">
-      <span class="fab-item-icon">📬</span> Top hebdo
-    </button>
-    <button class="fab-item" onclick="fabShare()">
-      <span class="fab-item-icon">🔗</span> Partager SmartValue
-    </button>
-    <button class="fab-item" id="fab-about" onclick="fabGo('about')">
-      <span class="fab-item-icon">ℹ️</span> En savoir plus
-    </button>
-    <button class="fab-item" id="fab-support" onclick="fabGo('support')">
-      <span class="fab-item-icon">💬</span> Support
-    </button>
+    <button class="fab-item active" id="fab-scanner" onclick="fabGo('scanner')">&#x1F4CA; Scanner</button>
+    <button class="fab-item" id="fab-newsletter" onclick="fabNewsletter()">&#x1F4EC; Top hebdo</button>
+    <button class="fab-item" onclick="fabShare()">&#x1F517; Partager SmartValue</button>
+    <button class="fab-item" id="fab-about" onclick="fabGo('about')">&#x2139;&#xFE0F; En savoir plus</button>
+    <button class="fab-item" id="fab-support" onclick="fabGo('support')">&#x1F4AC; Support</button>
   </div>
-  <button class="fab-btn" id="fab-btn" onclick="toggleFab()">☰</button>
+  <button class="fab-btn" id="fab-btn" onclick="toggleFab()">&#x2630;</button>
 </div>
-
 <script>
 function toggleFab(){
-  const btn = document.getElementById('fab-btn');
-  const items = document.getElementById('fab-items');
-  btn.classList.toggle('open');
-  items.classList.toggle('open');
+  document.getElementById('fab-btn').classList.toggle('open');
+  document.getElementById('fab-items').classList.toggle('open');
 }
-document.addEventListener('click', function(e){
-  const fab = document.getElementById('fab');
-  if(fab && !fab.contains(e.target)){
+document.addEventListener('click',function(e){
+  const fab=document.getElementById('fab');
+  if(fab&&!fab.contains(e.target)){
     document.getElementById('fab-btn').classList.remove('open');
     document.getElementById('fab-items').classList.remove('open');
   }
@@ -1762,33 +1717,23 @@ function fabGo(tab){
   switchTab(tab);
   document.getElementById('fab-btn').classList.remove('open');
   document.getElementById('fab-items').classList.remove('open');
-  // Mettre à jour le style actif
   document.querySelectorAll('.fab-item[id^="fab-"]').forEach(el=>el.classList.remove('active'));
-  const el = document.getElementById('fab-'+tab);
-  if(el) el.classList.add('active');
+  const el=document.getElementById('fab-'+tab); if(el) el.classList.add('active');
 }
 function fabNewsletter(){
   switchTab('about');
   document.getElementById('fab-btn').classList.remove('open');
   document.getElementById('fab-items').classList.remove('open');
-  setTimeout(()=>{
-    const wl = document.querySelector('#tab-about-content .waitlist-input');
-    if(wl){ wl.scrollIntoView({behavior:'smooth',block:'center'}); wl.focus(); }
-  }, 300);
+  setTimeout(()=>{ const wl=document.querySelector('.waitlist-input'); if(wl){ wl.scrollIntoView({behavior:'smooth',block:'center'}); wl.focus(); } },300);
 }
 function fabShare(){
-  const url = 'https://smartvaluescanner.com';
-  const msg = '🔎 SmartValue — Scanner d\u2019actions fondamental gratuit\nAnalysez 200+ entreprises mondiales avec un score clair sur 100.\n👉 ' + url;
-  if(navigator.share){
-    navigator.share({title:'SmartValue Scanner',text:msg,url:url}).catch(()=>{});
-  } else {
-    navigator.clipboard.writeText(msg).then(()=>showToast('🔗 Lien SmartValue copié !')).catch(()=>{});
-  }
+  const url='https://smartvaluescanner.com';
+  const msg='SmartValue - Scanner d actions fondamental gratuit. Analysez 200+ entreprises mondiales. '+url;
+  if(navigator.share){ navigator.share({title:'SmartValue Scanner',text:msg,url:url}).catch(()=>{}); }
+  else { navigator.clipboard.writeText(url).then(()=>showToast('Lien copie!')).catch(()=>{}); }
   document.getElementById('fab-btn').classList.remove('open');
   document.getElementById('fab-items').classList.remove('open');
 }
-// Marquer l'onglet actif dans le FAB
-const _origSwitchTab = typeof switchTab === 'function' ? switchTab : null;
 </script>
 </body>
 </html>
