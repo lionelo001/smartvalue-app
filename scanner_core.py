@@ -501,15 +501,6 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
     # On récupère le secteur yfinance pour détecter les banques correctement
     yf_sector = info.get("sector", "")
 
-    # Graham Number — nécessite EPS et Book Value par action
-    eps = safe_float(info.get("trailingEps"), 0.0)
-    book_value = safe_float(info.get("bookValue"), 0.0)
-    graham_number = 0.0
-    if eps > 0 and book_value > 0:
-        import math
-        gn = math.sqrt(22.5 * eps * book_value)
-        graham_number = round(gn, 2)
-
     return {
         "ticker": ticker,
         "name": info.get("longName") or info.get("shortName") or ticker,
@@ -533,9 +524,6 @@ def fetch_metrics(ticker: str, client: FMPClient = None) -> Optional[dict]:
         "ocf": ocf,
         "rev_growth": rev_growth,
         "div_yield": div_yield,
-        "eps": eps,
-        "book_value": book_value,
-        "graham_number": graham_number,
     }
 
 
@@ -843,13 +831,6 @@ class SmartValueScanner:
         dte_val = safe_float(m.get("debt_to_equity"), 0.0)
         rg_val = safe_float(m.get("rev_growth"), 0.0) * 100
 
-        # Graham Number et marge de sécurité
-        graham = safe_float(m.get("graham_number"), 0.0)
-        price_val = safe_float(m.get("price"), 0.0)
-        marge_securite = 0.0
-        if graham > 0 and price_val > 0:
-            marge_securite = round(((graham - price_val) / graham) * 100, 1)
-
         return {
             "Ticker": m["ticker"],
             "Société": (m["name"][:45] + "…") if len(m["name"]) > 45 else m["name"],
@@ -871,8 +852,6 @@ class SmartValueScanner:
             "Market Cap": m.get("market_cap", 0),
             "Div %": div_pct,
             "Div affichage": format_div(div_pct),
-            "Graham Number": graham if graham > 0 else None,
-            "Marge Sécurité %": marge_securite if graham > 0 else None,
 
             "Score": score,
             "Confiance %": confidence,
