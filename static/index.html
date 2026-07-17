@@ -1261,32 +1261,7 @@ function renderCard(r, rank, sectorAvgs) {
     {l:'Dette/Equity',v:r['Dette/Equity']??'—'},
     {l:'Croissance CA',v:r['Croissance CA %']!=null?r['Croissance CA %']+'%':'—'},
     {l:'Dividende',v:r['Div %']>0?(r['Div %']+'%'):'—'},
-    ...(r['Graham Number'] ? [{
-      l:'Graham Number',
-      v:(()=>{
-        const gn = r['Graham Number'];
-        const prix = r['Prix'];
-        const ms = r['Marge Sécurité %'];
-        const devise = r['Devise']||'';
-        let affichage = gn.toFixed(2)+' '+devise;
-        if(ms !== null && ms !== undefined){
-          if(ms > 0) affichage += ' ✅';
-          else affichage += ' ⚠️';
-        }
-        return affichage;
-      })()
-    }] : []),
-  ].map(m=>{
-    const isGraham = m.l === 'Graham Number';
-    let style = 'cursor:pointer;';
-    if(isGraham && r['Marge Sécurité %'] !== null){
-      const ms = r['Marge Sécurité %'];
-      if(ms > 20) style += 'background:#f0fdf4;border:1px solid #86efac;';
-      else if(ms > 0) style += 'background:#fefce8;border:1px solid #fde047;';
-      else style += 'background:#fef2f2;border:1px solid #fca5a5;';
-    }
-    return `<div class="metric-box" onclick="showTooltip(event,'${m.l}')" style="${style}"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l}</div></div>`;
-  }).join('');
+  ].map(m=>`<div class="metric-box" onclick="showTooltip(event,'${m.l}')" style="cursor:pointer;"><div class="metric-v">${m.v}</div><div class="metric-l">${m.l}</div></div>`).join('');
 
   return `
   <div class="card" id="card-${rank}">
@@ -1327,10 +1302,6 @@ function renderCard(r, rank, sectorAvgs) {
       </div>
 
       <div class="metrics-grid">${metrics}</div>
-      ${r['Graham Number'] ? `<div style="font-size:0.72rem;padding:8px 10px;border-radius:8px;margin-bottom:0.75rem;${r['Marge Sécurité %']>20?'background:#f0fdf4;color:#16a34a;border:1px solid #86efac;':r['Marge Sécurité %']>0?'background:#fefce8;color:#a16207;border:1px solid #fde047;':'background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;'}">
-        <strong>Valeur intrinsèque (Graham) :</strong> ${r['Graham Number'].toFixed(2)} ${r['Devise']} 
-        ${r['Marge Sécurité %']>0 ? '— Marge de sécurité : <strong>+'+r['Marge Sécurité %']+'%</strong> ✅ (action décotée selon Graham)' : '— Surcote de <strong>'+Math.abs(r['Marge Sécurité %'])+'%</strong> ⚠️ (au-dessus de la valeur Graham)'}
-      </div>` : ''}
       <div class="score-bars-label">Détail du score</div>
       <div class="score-bars">${bars}</div>
       <div style="display:flex;gap:12px;margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid var(--border);align-items:center;">
@@ -1418,7 +1389,6 @@ const METRIC_INFO = {
   'ROE':{desc:"Rentabilité des capitaux propres. Mesure le profit généré pour chaque euro investi par les actionnaires.",example:'ROE > 15% = très bonne rentabilité · ROE > 25% = exceptionnel.'},
   'Marge nette':{desc:"Bénéfice net divisé par le chiffre affaires. Part des revenus qui devient du profit.",example:"Marge 10% = pour 100€ de ventes, 10€ de profit net."},
   'EV/EBITDA':{desc:"Valeur d'entreprise / profit opérationnel. Mesure le coût de l'entreprise par rapport à sa capacité à générer des bénéfices.",example:'EV/EBITDA < 12 = valorisation attractive · > 20 = prix élevé.'},
-  'Graham Number':{desc:"Formule de Benjamin Graham (père de l'investissement value) : √(22.5 × BPA × Valeur comptable/action). Représente le prix maximum qu'un investisseur value devrait payer. Si le prix est inférieur au Graham Number, l'action est potentiellement sous-évaluée.",example:'Prix < Graham Number = marge de sécurité positive ✅ · Prix > Graham Number = surévalué selon Graham ⚠️'},
   'Dette/Equity':{desc:"Dette totale / capitaux propres. Mesure le niveau d'endettement de l'entreprise.",example:'< 0.5 = peu endettée · > 1.5 = endettement élevé, risque plus fort.'},
   'Croissance CA':{desc:"Évolution du chiffre d'affaires sur la dernière année.",example:"15% = le CA a augmenté de 15% vs l'année précédente."},
   'Dividende':{desc:"Rendement du dividende annuel. Pourcentage du prix de l'action versé chaque année aux actionnaires. Un dividende régulier indique une entreprise mature et profitable.",example:"Dividende 3% = pour une action à 100€, vous recevez 3€/an. > 4% = très attractif."},
