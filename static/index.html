@@ -212,8 +212,13 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 .advanced-toggle:hover,.advanced-toggle.open{border-color:var(--blue);color:var(--blue);}
 .advanced-toggle-icon{font-size:0.6rem;transition:transform 0.2s;}
 .advanced-toggle.open .advanced-toggle-icon{transform:rotate(180deg);}
-.advanced-panel{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.25rem;margin-bottom:1rem;}
-.advanced-panel.open{display:block;}
+.advanced-panel{display:none;position:fixed;inset:0;z-index:700;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,0.6);}
+.advanced-panel.open{display:flex;}
+.advanced-panel-inner{background:#1A1D27;border:1px solid var(--border2);border-radius:14px;padding:1.5rem;width:100%;max-width:540px;max-height:85vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.4);}
+.advanced-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.advanced-panel-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;color:var(--text);}
+.advanced-panel-close{background:none;border:none;font-size:1.2rem;color:var(--muted2);cursor:pointer;padding:2px 6px;border-radius:4px;transition:color 0.15s;}
+.advanced-panel-close:hover{color:var(--text);}
 .advanced-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 .advanced-field{display:flex;flex-direction:column;gap:4px;}
 .advanced-label{font-size:0.68rem;color:var(--muted2);display:flex;justify-content:space-between;align-items:center;}
@@ -486,7 +491,12 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
       <span class="advanced-toggle-icon">▼</span>
       Filtres avancés
     </button>
-  <div class="advanced-panel" id="advanced-panel">
+  <div class="advanced-panel" id="advanced-panel" onclick="closeAdvancedOnBg(event)">
+    <div class="advanced-panel-inner">
+    <div class="advanced-panel-header">
+      <span class="advanced-panel-title">Filtres avancés</span>
+      <button class="advanced-panel-close" onclick="toggleAdvanced()">✕</button>
+    </div>
     <div class="advanced-grid">
       <div class="advanced-field">
         <div class="advanced-label">PER maximum <span id="adv-per-val">—</span></div>
@@ -531,6 +541,8 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
         </div>
       </div>
     <button class="advanced-reset" onclick="resetAdvanced()">Réinitialiser les filtres</button>
+    <button onclick="toggleAdvanced()" style="width:100%;margin-top:0.75rem;padding:0.65rem;background:#3B82F6;color:#fff;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;">Appliquer</button>
+  </div><!-- fin advanced-panel-inner -->
   </div>
 
     <button class="scan-btn" id="scan-btn" onclick="startScan()" style="margin-top:auto;">Lancer le scan</button>
@@ -588,7 +600,7 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 #tab-about-content .hero h1 span{color:var(--blue);}
 #tab-about-content .hero-sub{font-size:1rem;color:var(--muted2);line-height:1.75;max-width:500px;margin:0 auto 2.5rem;font-weight:300;}
 #tab-about-content .hero-btns{display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;}
-#tab-about-content .btn-primary{background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.8rem 1.75rem;text-decoration:none;border-radius:6px;transition:opacity 0.15s;display:inline-block;}
+#tab-about-content .btn-primary{background:#3B82F6;color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.8rem 1.75rem;text-decoration:none;border-radius:6px;transition:opacity 0.15s;display:inline-block;}
 #tab-about-content .btn-primary:hover{opacity:0.85;}
 #tab-about-content .btn-secondary{background:transparent;color:var(--text);font-family:'Syne',sans-serif;font-weight:600;font-size:0.82rem;padding:0.8rem 1.75rem;border:1px solid var(--border2);text-decoration:none;border-radius:6px;transition:all 0.15s;display:inline-block;}
 #tab-about-content .btn-secondary:hover{background:var(--bg2);}
@@ -602,7 +614,7 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 /* ── SECTIONS ── */
 #tab-about-content .section{padding:5rem 2rem;max-width:860px;margin:0 auto;}
 #tab-about-content .section-label{font-size:0.6rem;color:var(--blue);letter-spacing:0.12em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:0.75rem;}
-#tab-about-content .section h2{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.75rem;}
+#tab-about-content .section h2{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.75rem;color:#F1F5F9;}
 #tab-about-content .section-sub{color:var(--muted2);font-size:0.92rem;line-height:1.75;max-width:460px;font-weight:300;}
 
 /* ── PROBLÈME ── */
@@ -661,20 +673,20 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;paddi
 #tab-about-content .cloud-tag.hl{background:#EFF6FF;border-color:#BFDBFE;color:var(--blue);}
 
 /* ── WAITLIST ── */
-#tab-about-content .waitlist{background:var(--accent);padding:5rem 2rem;text-align:center;}
+#tab-about-content .waitlist{background:#1A2744;padding:5rem 2rem;text-align:center;border-top:1px solid rgba(59,130,246,0.2);}
 #tab-about-content .waitlist h2{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3vw,2rem);font-weight:800;letter-spacing:-0.02em;color:#fff;margin-bottom:0.75rem;}
 #tab-about-content .waitlist p{color:rgba(255,255,255,0.65);font-size:0.9rem;line-height:1.75;margin-bottom:2rem;}
 #tab-about-content .waitlist-form{display:flex;gap:8px;max-width:420px;margin:0 auto;}
 #tab-about-content .waitlist-input{flex:1;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;font-family:'DM Sans',sans-serif;font-size:0.88rem;padding:0.7rem 1rem;outline:none;border-radius:6px;transition:border-color 0.15s;}
 #tab-about-content .waitlist-input::placeholder{color:rgba(255,255,255,0.45);}
 #tab-about-content .waitlist-input:focus{border-color:rgba(255,255,255,0.5);}
-#tab-about-content .btn-waitlist{background:#fff;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.7rem 1.25rem;border:none;cursor:pointer;border-radius:6px;white-space:nowrap;transition:opacity 0.15s;}
+#tab-about-content .btn-waitlist{background:#3B82F6;color:#fff;border:1px solid rgba(255,255,255,0.2);font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase;padding:0.7rem 1.25rem;border:none;cursor:pointer;border-radius:6px;white-space:nowrap;transition:opacity 0.15s;}
 #tab-about-content .btn-waitlist:hover{opacity:0.9;}
 #tab-about-content .waitlist-note{font-size:0.7rem;color:rgba(255,255,255,0.45);margin-top:0.75rem;}
 #tab-about-content .waitlist-success{display:none;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:0.85rem 1.5rem;color:#fff;font-size:0.85rem;margin-top:1rem;max-width:420px;margin-left:auto;margin-right:auto;}
 
 /* ── CTA FINAL ── */
-#tab-about-content .cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto;}
+#tab-about-content .cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto;background:#0F1117;}
 #tab-about-content .cta h2{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3.5vw,2.5rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1rem;}
 #tab-about-content .cta p{color:var(--muted2);font-size:0.92rem;line-height:1.75;margin-bottom:2rem;}
 
@@ -1501,6 +1513,9 @@ init();
 // ── SCREENER AVANCÉ ───────────────────────────────────────
 const advFilters = { per:null, roe:null, margin:null, dte:null, growth:null, pb:null, div:null, cap:null };
 
+function closeAdvancedOnBg(e){
+  if(e.target.id==='advanced-panel') toggleAdvanced();
+}
 function toggleAdvanced() {
   const btn = document.getElementById('advanced-toggle');
   const panel = document.getElementById('advanced-panel');
